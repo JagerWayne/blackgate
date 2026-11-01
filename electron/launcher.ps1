@@ -7,7 +7,6 @@
 param([Parameter(Mandatory)][string]$Root, [string]$GameArgs = '')
 
 $ErrorActionPreference = 'Stop'
-Add-Type -AssemblyName System.Windows.Forms, System.IO.Compression.FileSystem
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $Repo = 'JagerWayne/blackgate'
@@ -20,6 +19,7 @@ function Start-Game {
   exit 0
 }
 function Fail([string]$why) {
+  Add-Type -AssemblyName System.Windows.Forms
   [Windows.Forms.MessageBox]::Show($why, 'BLACKGATE', 'OK', 'Error') | Out-Null
   exit 1
 }
@@ -32,9 +32,12 @@ $have = if ($ready) { Installed-Build } else { $null }
 # 1. what is the latest build?
 try {
   $rel = Invoke-RestMethod "https://api.github.com/repos/$Repo/releases/latest" -Headers $Headers -TimeoutSec 15
-  $url = { param($n) ($rel.assets | Where-Object name -eq $n | Select-Object -First 1).browser_download_url }
-  $latest = Invoke-RestMethod (& $url 'latest.json') -Headers $Headers -TimeoutSec 15
-  $zipUrl = & $url $latest.zip
+  $asset = { param($n) $rel.assets | Where-Object name -eq $n | Select-Object -First 1 }
+  # through the API, not the download link: a re-uploaded asset gets a new id,
+  # while the download link can be served stale from a cache for a while
+  $latest = Invoke-RestMethod (& $asset 'latest.json').url -Headers ($Headers + @{ Accept = 'application/octet-stream' }) -TimeoutSec 15
+  if ($latest -is [string]) { $latest = $latest | ConvertFrom-Json }
+  $zipUrl = (& $asset $latest.zip).browser_download_url
   if (-not $latest.build -or -not $latest.sha256 -or -not $zipUrl) { throw 'the release has no app archive' }
 } catch {
   if ($ready) { Start-Game }
@@ -42,7 +45,8 @@ try {
 }
 if ($ready -and $have -eq $latest.build) { Start-Game }
 
-# 2. download it, with a progress bar
+# 2. download it, with a progress bar (WinForms loads only now: it is slow to load)
+Add-Type -AssemblyName System.Windows.Forms, System.IO.Compression.FileSystem
 $zip = Join-Path $env:TEMP "blackgate-$([guid]::NewGuid()).zip"
 $form = New-Object Windows.Forms.Form -Property @{
   Text = 'BLACKGATE'; Width = 440; Height = 130; FormBorderStyle = 'FixedDialog'
@@ -91,6 +95,7 @@ try {
 } catch {
   $form.Close()
   if (Test-Path "$App.new") { Remove-Item "$App.new" -Recurse -Force -ErrorAction SilentlyContinue }
+  Add-Content (Join-Path $Root 'blackgate.log') "$(Get-Date -Format o) launcher: update to $($latest.build) failed: $($_.Exception.Message)" -ErrorAction SilentlyContinue
   if ($ready -and (Test-Path $Exe)) { Start-Game } # keep playing the installed build
   Fail "BLACKGATE could not install the update.`n`n$($_.Exception.Message)`n`nIf the game is open, close it and try again."
 } finally {
