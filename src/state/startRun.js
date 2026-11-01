@@ -16,7 +16,8 @@ export function startRun(state, w, h) {
       return saved;
     }
   }
-  const seed = state.login.seed.trim() ? hashSeed(state.login.seed.trim()) : Math.floor(Math.random() * 2 ** 31);
+  // every new run gets its own random world
+  const seed = Math.floor(Math.random() * 2 ** 31);
   const game = makeGame(state.login.handle.trim() || 'OPERATOR', seed);
   setDark(game.settings.darkSkin);
   openShell(state.windows, w, h);
@@ -30,12 +31,3 @@ function openShell(windows, w, h) {
   openWindow(windows, 'contracts', desk);
 }
 
-/// A seed from a word.
-function hashSeed(text) {
-  let h = 2166136261;
-  for (let i = 0; i < text.length; i += 1) {
-    h ^= text.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 1;
-}

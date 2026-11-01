@@ -102,6 +102,7 @@ The Windows app keeps everything for your Windows account in
 | `app\` | The installed game. Replaced by each new build. |
 | `app\version.json` | The version and build id of the installed copy. |
 | `saves\<OPERATOR>.json` | One save file per operator (user). |
+| `hosts\<OPERATOR>.json` | The machines that operator has connected to, written on every save: security, services, logs (yours marked) and files (copied, deleted, decrypted). |
 | `*.json`, `hints\`, `sessionActions\`, `images\people\index.json` | Your copy of the game's content files. |
 | `data-version.json` | The build that last checked your content files. |
 | `blackgate.log` | Warnings, for example about content files that differ from the game's. |
@@ -125,9 +126,8 @@ file it could not read.
 
 1. **Boot.** The machine boots and types out its start-up log.
 2. **Log in.** The login screen lists the saved operators. Pick one to carry
-   on their run, or choose **NEW SESSION**, type a handle and, if you like, a
-   world seed. The same seed always builds the same world: the same
-   companies, people and machines. Leave the seed empty for a random world.
+   on their run, or choose **NEW SESSION** and type a handle. Every new
+   session builds a new random world.
    - Each operator has one save. Starting a new session under a handle that
      already has a save replaces it; the login screen warns you in red first.
    - **DELETE SAVE** removes the selected operator's save. Press it twice to
@@ -253,8 +253,11 @@ highlighted when the brief is shown.
   your bounce route. More hops slow it down. A warning appears when it is
   getting close; a TRACE TRACKER makes the warning come earlier. If the trace completes, the connection is seized
   and **the run is over**. Disconnect in time.
-- **Logs.** Your actions write logs on the machines you touch. Logs you leave
-  behind count against you, so delete or modify them before you leave.
+- **Logs.** Every link writes a *session open* log with your address on the
+  target and on each bounce hop, and your actions add more on the target.
+  A machine keeps its logs until you scrub or wipe them. Logs you leave
+  behind become heat when you disconnect (2 each on the target, 1.1 each on
+  a hop), so delete or modify them before you leave.
 - **Heat.** Evidence left behind becomes heat. Heat cools down over game
   time, including while the clock runs faster.
 - **Raids.** If heat reaches 100, you are raided. Security parts can save

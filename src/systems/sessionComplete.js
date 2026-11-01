@@ -37,6 +37,7 @@ export function completeTask(game, s, task) {
       if (f) {
         game.player.storage.push({ name: f.name, size: f.size, tag: f.tag, enc: f.enc, source: h.name });
         game.stats.filesStolen += 1;
+        f.copied = true;
         pushLine(s, `copied // ${f.name}`);
         h.logs.push({ minute: game.clock.minutes, ip, text: `download ${f.name}`, loud: true });
       }
@@ -55,6 +56,7 @@ export function completeTask(game, s, task) {
       const f = h.files[task.arg];
       if (f) {
         f.enc = 0;
+        f.decrypted = true;
         pushLine(s, `decrypted // ${f.name}`);
         h.logs.push({ minute: game.clock.minutes, ip, text: `decrypt ${f.name}`, loud: true });
       }

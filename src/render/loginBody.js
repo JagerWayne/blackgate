@@ -1,5 +1,5 @@
-// The left column of the welcome screen: the operator handle and the world
-// seed.
+// The left column of the welcome screen: the operator handle. Every new run
+// gets a random world.
 
 import { draw as drawText } from '../core/text.js';
 import { color } from '../core/theme.js';
@@ -26,24 +26,10 @@ export function drawLoginBody(ctx, st, sk, px, py, pw, ph, compact, input, ui, e
   }
   y += 48;
 
-  drawText(ctx, 'WORLD SEED (OPTIONAL)', lx, y, 9, color(sk.dim), { baseline: 'middle' });
-  y += 16;
-  const seed = drawField(
-    ctx, ui, sk, 'login.seed',
-    { x: lx, y, w: innerW, h: 34 },
-    st.seed, 'RANDOM', false, input,
-  );
-  if (seed !== null) {
-    st.seed = seed;
-    events.push({ type: 'edit', id: 'login.seed', value: seed });
-  }
-  y += 48;
-
   // the helper notes only when the column has room left over
   if (py + ph - y >= 70 && !compact) {
     [
-      'leave the seed empty for a random world.',
-      'the same seed always builds the same network.',
+      'every new session builds a new random network.',
       'your first jobs only need the installed v1 kit.',
     ].forEach((line, i) => {
       drawText(ctx, line, lx, y + i * 20, 8.5, color(sk.dim));

@@ -60,8 +60,7 @@ export function drawUsers(ctx, st, sk, px, py, pw, ph, input, ui, events) {
     const iy = det.y + 10;
     if (st.sel === 0) {
       drawText(ctx, 'NEW SESSION', ix, iy, 9.5, color(sk.inset_accent));
-      const seed = st.seed.trim() || 'random';
-      drawText(ctx, ellipsize(ctx, `handle ${handle} // world seed ${seed}`, 8.5, det.w - 24), ix, iy + 22, 8.5, color(sk.inset_dim));
+      drawText(ctx, ellipsize(ctx, `handle ${handle} // random world`, 8.5, det.w - 24), ix, iy + 22, 8.5, color(sk.inset_dim));
       // one save per operator: a new run under a saved handle is written over it
       const same = st.slots.find((s) => safeName(s.handle) === safeName(handle));
       if (same) drawText(ctx, ellipsize(ctx, `replaces the saved run of ${same.handle}`, 8.5, det.w - 24), ix, iy + 40, 8.5, color(sk.danger));

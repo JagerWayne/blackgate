@@ -102,6 +102,28 @@ ipcMain.on('save:remove', (e, key) => {
     e.returnValue = false;
   }
 });
+/// An operator's visited-hosts report, hosts/<NAME>.json. Names are plain names.
+function reportFile(name) {
+  if (!/^[A-Z0-9_-]+$/.test(name)) throw new Error(`bad report name: ${name}`);
+  return path.join(USER, 'hosts', `${name}.json`);
+}
+ipcMain.on('report:write', (e, name, text) => {
+  try {
+    fs.mkdirSync(path.join(USER, 'hosts'), { recursive: true });
+    fs.writeFileSync(reportFile(name), text);
+    e.returnValue = true;
+  } catch {
+    e.returnValue = false;
+  }
+});
+ipcMain.on('report:remove', (e, name) => {
+  try {
+    fs.rmSync(reportFile(name), { force: true });
+    e.returnValue = true;
+  } catch {
+    e.returnValue = false;
+  }
+});
 ipcMain.on('save:list', (e) => {
   try {
     e.returnValue = fs.readdirSync(path.join(USER, 'saves')).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5));

@@ -9,6 +9,7 @@ import { personRecord } from '../data/worldCompanies.js';
 import { rankName } from '../core/theme.js';
 import { stockPart } from './economy.js';
 import { ramCountBelow } from './gateway.js';
+import { hostReport } from './hostReport.js';
 
 // One save per operator, under PREFIX + their file-safe name. LEGACY is the
 // old single save; it is moved to its operator's key the first time it is seen.
@@ -61,6 +62,10 @@ export function saveRun(game) {
   plain.rng = rngToJson(game.rng);
   try {
     store().setItem(keyOf(game.player.handle), JSON.stringify(plain));
+    // the desktop app keeps a readable report of the visited hosts beside it
+    try {
+      globalThis.blackgate?.writeReport?.(safeName(game.player.handle), JSON.stringify(hostReport(game), null, 2));
+    } catch {} // the report is a convenience: a failure never fails the save
     current = game.player.handle;
     return true;
   } catch {
@@ -236,6 +241,7 @@ export function deleteRun(handle = current) {
   if (handle == null) return false;
   try {
     store().removeItem(keyOf(handle));
+    globalThis.blackgate?.removeReport?.(safeName(handle));
     return true;
   } catch {
     return false;

@@ -10,7 +10,7 @@ import { drawLoginBody } from './loginBody.js';
 import { drawUsers } from './loginUsers.js';
 
 export function makeLogin() {
-  return { handle: '', seed: '', sel: 0, slots: [], error: '', notice: '', confirmDelete: false };
+  return { handle: '', sel: 0, slots: [], error: '', notice: '', confirmDelete: false };
 }
 
 /// The blue field and the panel the screen sits on.

@@ -71,6 +71,14 @@ export function sessionTick(game, dt) {
       s.traceRate = 0.0032 * Math.max(h.trace, 1) * routeFactor(game)
         * (1 + 0.1 * h.proxy) * traceFactor(game.player.gateway);
       pushLine(s, `connected // ${h.ip}`);
+      // the link leaves a log on every machine it passes through; it stays
+      // until the operator scrubs or wipes it, and counts as heat on leaving
+      [...s.route, s.target].forEach((id) => {
+        const host = game.world.hosts[id];
+        host.logs.push({ minute: game.clock.minutes, ip: game.player.gateway.ip, text: 'session open', loud: false });
+        host.firstVisit ??= game.clock.minutes;
+        host.lastVisit = game.clock.minutes;
+      });
       if (h.firewall > 0) pushLine(s, 'warning: host firewall active');
       if (h.monitor > 0) pushLine(s, 'warning: intrusion monitor active');
     }
