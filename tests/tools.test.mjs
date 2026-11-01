@@ -141,13 +141,17 @@ async function playState() {
   return { view: { w: 1600, h: 900 }, input: makeInput(), ui: makeUiState(), windows: makeWindows(), game: makeGame('KEYS', 7), win: {}, mode: 'play' };
 }
 
-test('1-9 open the applications and Space pauses, unless a field has the keys', async () => {
+test('the number keys open nothing, the backtick opens the command prompt, and Space pauses unless a field has the keys', async () => {
   const { frameKeys } = await import('../src/systems/hotkeys.js');
-  const { WINDOWS } = await import('../src/state/windows.js');
   const state = await playState();
   state.input.text = '2';
   frameKeys(state);
-  assert.equal(state.windows.list[0]?.key, WINDOWS.filter((w) => !w.hidden)[1].key);
+  assert.equal(state.windows.list.length, 0, 'the 1-9 shortcuts are gone');
+  state.input.text = '`';
+  frameKeys(state);
+  assert.equal(state.windows.list[0]?.key, 'terminal');
+  assert.equal(state.ui.focus, 'terminal', 'and it takes the typing');
+  state.ui.focus = null;
   state.input.text = ' ';
   frameKeys(state);
   assert.equal(state.game.paused, true);

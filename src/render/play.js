@@ -23,6 +23,7 @@ import { drawMap } from '../windows/map.js';
 import { drawSession } from '../windows/session.js';
 import { drawCheats } from '../windows/cheats.js';
 import { drawMissions } from '../windows/missions.js';
+import { drawTerminal } from '../windows/terminal.js';
 import { saveRun } from '../state/save.js';
 
 /// The applications, by window key.
@@ -41,6 +42,7 @@ const APPS = {
   blackgate: drawSession,
   cheats: drawCheats,
   missions: drawMissions,
+  terminal: drawTerminal,
 };
 
 // the desktop geometry lives with the state, so the state can place windows

@@ -24,6 +24,7 @@ lives in JSON files you can read and edit.
 - [How to play](#how-to-play)
 - [Controls](#controls)
 - [The applications](#the-applications)
+- [Command Prompt](#command-prompt)
 - [Jobs](#jobs)
 - [Traces, heat and raids](#traces-heat-and-raids)
 - [Your machine: the gateway](#your-machine-the-gateway)
@@ -162,7 +163,7 @@ The game saves automatically every 45 seconds (this can be switched off in
 | Input | Action |
 |---|---|
 | Mouse | Everything: windows, buttons, lists, the map |
-| `1` – `9` | Open the Start menu's applications, in menu order |
+| `` ` `` (backtick) | Open the **Command Prompt** with the typing in it |
 | `Space` | Pause or resume the clock |
 | `D` | Switch between the light and dark skins |
 | `Tab` / `Shift+Tab` | Move between text fields |
@@ -171,7 +172,7 @@ The game saves automatically every 45 seconds (this can be switched off in
 | `F11` | Full screen (Windows app) |
 | Any key | Turn the machine back on after **Turn off the PC** |
 
-The number keys, `Space` and `D` only act when you are not typing in a field.
+The backtick, `Space` and `D` only act when you are not typing in a field.
 
 **On the NEXUS MAP:**
 
@@ -192,8 +193,7 @@ has a button on the taskbar.
 
 ## The applications
 
-All are opened from the Start menu (or with `1`–`9`) and appear on the
-taskbar while open.
+All are opened from the Start menu and appear on the taskbar while open.
 
 | Application | What it does |
 |---|---|
@@ -209,9 +209,126 @@ taskbar while open.
 | **OPERATOR** | Your rating, rank and statistics. |
 | **SYSTEM** | The light (LUNA) or dark (NOIR) skin, autosave every 45 seconds, an 8× fast-forward for the world clock, **SAVE NOW** and **SAVE + QUIT**. |
 | **Notepad** | A notepad kept with your run, with line numbers, word wrap and scroll bars. |
+| **Command Prompt** | Type commands to drive every other application. See [Command Prompt](#command-prompt). |
 
 Two more windows are not in the Start menu: **CHEATS** and
 **MISSION BUILDER** (see [Cheat menu](#cheat-menu)).
+
+---
+
+## Command Prompt
+
+Open it from the Start menu or with the **backtick** key (`` ` ``). Commands
+take the form **`<app> <action> [what]`**, for example `mail read new` or
+`ct accept 12`. A command that changes the game does exactly what the
+matching button does, with the same costs, checks and messages.
+
+- **Pointing at things:** after a list, `#n` picks its n-th row
+  (`ct list`, then `ct accept #2`). Hosts can also be named by IP or name,
+  contracts by id, files by name.
+- **Spaces:** put text with spaces in quotes: `bg alter "Ana Diaz" status deceased`.
+- **Keys:** `Enter` runs the line, `Tab` completes it (commands, actions,
+  file names, IPs, contract ids, tools), `Up`/`Down` recall earlier lines,
+  `Esc` clears the line, and the mouse wheel scrolls back.
+- **Safety:** commands that take a part out of your machine or wipe the
+  notepad need `--yes`.
+- Typing an app's name alone lists its commands.
+
+**General**
+
+| Command | Does |
+|---|---|
+| `help [app]` | The apps, or one app's commands |
+| `apps` | The applications and which are open |
+| `open <app>` / `close <app>` | Open or close an application's window |
+| `clear` | Clear the screen |
+| `history` | The commands typed this session |
+| `whoami` | Handle, rank, rating, money and heat |
+| `time` | Game time, clock speed, paused or not |
+| `pause` / `resume` | Stop or start the clock |
+| `save` | Save now |
+| `exit` | Close the command prompt |
+
+**mail**
+
+| Command | Does |
+|---|---|
+| `mail list [new\|all]` | The messages, newest first (`*` = unread) |
+| `mail read <#\|new>` | Show a message and mark it read; `new` reads the oldest unread one |
+| `mail readall` | Mark every message read |
+| `mail accept <#>` / `mail decline <#>` | Answer the job a message offers |
+| `mail target <#>` | Show the offered job's target on the map |
+
+**contracts** (`ct`)
+
+| Command | Does |
+|---|---|
+| `ct list [offered\|accepted\|ready\|done\|all]` | Jobs with id, kind, payout and deadline |
+| `ct show <id>` | The full brief and objective |
+| `ct accept <id>` / `ct decline <id>` | Take or turn down an offered job |
+| `ct drop <id>` | Abandon an accepted job |
+| `ct target <id>` | Reveal and select the target on the map |
+| `ct link <id>` | Connect to the target through your route |
+| `ct submit <id>` | Hand in finished work and get paid |
+
+**map**
+
+| Command | Does |
+|---|---|
+| `map hosts [kind] [text]` | Found hosts, filtered by kind (`relay`, `bank`, `gov`, `fav`, …) or text |
+| `map show <host>` | IP, owner, kind, security, services and the records it keeps |
+| `map select <host>` | Select it; the map glides to it |
+| `map fav <host>` | Mark or unmark a favourite |
+| `map route` | Show the bounce route |
+| `map route add <host>` / `map route remove <host>` | Add or remove a hop |
+| `map route clear` / `map route save` | Empty or keep the route |
+| `map routes` | The saved routes |
+| `map route load <#>` / `map route delete <#>` | Use or delete a saved route |
+| `map link <host>` | Connect through the current route |
+
+**blackgate** (`bg`)
+
+| Command | Does |
+|---|---|
+| `bg connect <host>` / `bg disconnect` | Open or close the live link |
+| `bg status` | Heat, the trace and the running tasks |
+| `bg services` / `bg files` | What the host offers |
+| `bg logs [wipe\|scrub]` | Show the logs; `wipe` deletes them, `scrub` quietly removes only yours |
+| `bg records [text]` | The people on the host, with search |
+| `bg crack [service #]` | Break a password (the first locked service by default) |
+| `bg bypass firewall\|monitor\|proxy` | Bypass a defence |
+| `bg copy <file>` / `bg delete <file>` / `bg decrypt <file>` | File tasks |
+| `bg alter <person> <field> <value>` | Change a record |
+| `bg osint` | Run an OSINT sweep |
+
+**gateway** (`gw`)
+
+| Command | Does |
+|---|---|
+| `gw specs` | The fitted parts, by slot |
+| `gw shop [cpu\|ram\|storage\|modem\|security\|chassis]` | Parts for sale |
+| `gw buy <#> [--yes]` | Buy from the last shop list (`--yes` if it takes a part out) |
+| `gw remove <slot #> --yes` | Take a part out into stock |
+| `gw stock` | The parts in stock |
+| `gw fit <#>` / `gw sell <#> --yes` | Fit or sell a part from stock |
+
+**Other applications**
+
+| Command | Does |
+|---|---|
+| `sw list` / `sw shop` / `sw info <tool>` | Your tools, the shop, what a tool does |
+| `sw buy <tool> [version]` | Buy or upgrade a tool (the next version by default) |
+| `storage list` / `storage space` / `storage delete <file>` | Your downloads and drive space |
+| `bank balance` / `bank ledger [n]` | Your money and the last n transactions |
+| `news list` / `news read <#>` | The newswire |
+| `operator` | Rating, rank and statistics |
+| `sys autosave on\|off` / `sys fast on\|off` / `sys theme light\|dark` | Settings |
+| `sys save` / `sys quit` | Save, or save and log out |
+| `notepad show` / `notepad write "<text>"` / `notepad wrap on\|off` / `notepad clear --yes` | Your notes |
+
+**cheat** (left out of `help`; `help cheat` shows it): `cheat money <n>`,
+`cheat heat <0-99>`, `cheat rating <n>`, `cheat speed <1|2|4|8|16>`,
+`cheat reveal`, `cheat tools`, `cheat gateway`, `cheat mission`.
 
 ---
 

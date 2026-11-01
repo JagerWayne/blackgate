@@ -1,38 +1,33 @@
-// The left column of the welcome screen: the operator handle. Every new run
-// gets a random world.
+// The new-session entry under the users: a tile with the handle field. Every
+// new run gets a random world.
 
-import { draw as drawText } from '../core/text.js';
-import { color } from '../core/theme.js';
+import { draw as drawText, ellipsize } from '../core/text.js';
 import { drawField } from '../ui/field.js';
+import { safeName } from '../state/save.js';
+import { pick, tile, goRect, goButton, SANS, NEW_H } from './loginUsers.js';
 
-/// Draws the operator's details.
-export function drawLoginBody(ctx, st, sk, px, py, pw, ph, compact, input, ui, events) {
-  const pad = compact ? 14 : 28;
-  const leftW = Math.min(Math.max(pw * 0.38, 200), 380);
-  const innerW = Math.max(leftW - pad * 2, 52);
-  const lx = px + pad;
-  let y = py + 16;
-
-  drawText(ctx, 'OPERATOR HANDLE', lx, y, 9, color(sk.dim), { baseline: 'middle' });
-  y += 16;
-  const handle = drawField(
-    ctx, ui, sk, 'login.handle',
-    { x: lx, y, w: innerW, h: 34 },
-    st.handle, 'HANDLE', false, input,
-  );
+/// Draws the new-session entry at y.
+export function drawLoginBody(ctx, st, sk, list, y, input, ui, events) {
+  const r = { x: list.x, y, w: list.w, h: NEW_H - 6 };
+  if (r.y + r.h > list.y + list.h + 12) return;
+  pick(st, r, 0, input);
+  const on = st.sel === 0;
+  const go = { ...goRect(r), y: r.y + 30 };
+  const fx = r.x + 66;
+  const fr = { x: fx, y: r.y + 32, w: Math.max((on ? go.x - 8 : r.x + r.w - 8) - fx, 40), h: 24 };
+  tile(ctx, r, on, 'New session', '', '#2b8fd6', '+', r.x + r.w - 8);
+  const handle = drawField(ctx, ui, sk, 'login.handle', fr, st.handle, 'type a handle', false, input);
   if (handle !== null) {
     st.handle = handle;
     events.push({ type: 'edit', id: 'login.handle', value: handle });
   }
-  y += 48;
-
-  // the helper notes only when the column has room left over
-  if (py + ph - y >= 70 && !compact) {
-    [
-      'every new session builds a new random network.',
-      'your first jobs only need the installed v1 kit.',
-    ].forEach((line, i) => {
-      drawText(ctx, line, lx, y + i * 20, 8.5, color(sk.dim));
-    });
-  }
+  if (!on) return;
+  goButton(ctx, sk, go, input, ui, events);
+  // one save per operator: a new run under a saved handle is written over it
+  const name = st.handle.trim() || 'OPERATOR';
+  const same = st.slots.find((s) => safeName(s.handle) === safeName(name));
+  const line = same ? `replaces the saved run of ${same.handle}` : 'a new random network';
+  drawText(ctx, ellipsize(ctx, line, 11, r.x + r.w - fx - 8, SANS), fx, r.y + 72, 11, same ? '#ff6a50' : '#d6e4ff', {
+    baseline: 'middle', family: SANS,
+  });
 }

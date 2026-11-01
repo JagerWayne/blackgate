@@ -1,5 +1,6 @@
 // The bootstrap: owns the canvas, loads the content folder, runs the screens.
 
+import { runPending } from './windows/terminal.js';
 import { startLoop } from './core/loop.js';
 import { initContent } from './data/content.js';
 import { makeInput, attach, endFrame } from './systems/input.js';
@@ -143,6 +144,8 @@ function render() {
   const events = [];
   drawPlay(ctx, sk, w, h, state, events);
   handleEvents(state, events, desktop(w, h));
+  // the command prompt's lines run once the frame's clicks are in
+  runPending(state, desktop(w, h));
 }
 
 // the shell's own keys are read once per drawn frame, before the screen

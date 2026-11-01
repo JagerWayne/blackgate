@@ -4,7 +4,7 @@
 
 import { setDark, isDark } from '../core/theme.js';
 import { makeBoot } from '../render/boot.js';
-import { WINDOWS, openWindow } from '../state/windows.js';
+import { openWindow } from '../state/windows.js';
 import { desktop } from '../state/desk.js';
 
 /// Applies the shell's own keys for this frame.
@@ -23,11 +23,14 @@ export function frameKeys(state) {
     setDark(!isDark());
     if (state.game) state.game.settings.darkSkin = isDark();
   }
-  // in play, 1-9 open the Start menu's applications and Space pauses
+  // in play, Space pauses and the backtick opens the command prompt with
+  // the typing in it
   if (!state.ui.focus && state.mode === 'play' && state.game) {
-    const app = WINDOWS.filter((w) => !w.hidden)[Number(input.text) - 1];
-    if (/^[1-9]$/.test(input.text) && app) openWindow(state.windows, app.key, desktop(state.view.w, state.view.h));
-    else if (input.text === ' ') state.game.paused = !state.game.paused;
+    if (input.text === ' ') state.game.paused = !state.game.paused;
+    else if (input.text === '`') {
+      openWindow(state.windows, 'terminal', desktop(state.view.w, state.view.h));
+      state.ui.focus = 'terminal';
+    }
   }
   keyboard(state);
   // a press lets go of the typing focus; the field under the pointer takes
@@ -46,7 +49,8 @@ function keyboard(state) {
   ui.lastDefault = ui.defaultId ?? null;
   ui.defaultId = null;
   ui.fire = null;
-  if (input.tab && ui.lastFields.length) {
+  // in the command prompt Tab completes the line, so it keeps the focus
+  if (input.tab && ui.lastFields.length && ui.focus !== 'terminal') {
     const at = ui.lastFields.indexOf(ui.focus);
     const n = ui.lastFields.length;
     const next = at < 0 ? (input.shift ? n - 1 : 0) : (at + (input.shift ? n - 1 : 1)) % n;
@@ -61,6 +65,7 @@ function keyboard(state) {
     }
     else if (state.startOpen) state.startOpen = false;
   }
-  // Enter in the notes is a new line, not a button
-  if (input.enter && ui.focus !== 'notepad' && ui.lastDefault) ui.fire = ui.lastDefault;
+  // Enter in the notes is a new line, and in the command prompt it runs
+  // the command: neither presses a button
+  if (input.enter && ui.focus !== 'notepad' && ui.focus !== 'terminal' && ui.lastDefault) ui.fire = ui.lastDefault;
 }
