@@ -1,0 +1,244 @@
+{
+  "software": [
+    {
+      "cpu": 1.399999976158142,
+      "desc": "Brute-forces service passwords. Level must meet or beat the lock.",
+      "kind": "PasswordCracker",
+      "name": "PASSWORD BREAKER",
+      "price": 700,
+      "short": "BREAKER",
+      "versions": [
+        "HASHBUSTER",
+        "KRAKEN",
+        "SKELETON KEY",
+        "ZERODAY",
+        "ORACLE"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Routes your traffic through relays that scrub the origin address.",
+      "kind": "ProxyBypass",
+      "name": "PROXY BYPASS",
+      "price": 600,
+      "short": "PROXY",
+      "versions": [
+        "GHOSTLINE",
+        "COLDSPOT",
+        "BLACK HOLE",
+        "SEVEN VEILS",
+        "NOWHERE"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Opens a hole in a host firewall so intrusive actions can run.",
+      "kind": "FirewallBypass",
+      "name": "FIREWALL BYPASS",
+      "price": 750,
+      "short": "FIREWALL",
+      "versions": [
+        "CROWBAR",
+        "RAM",
+        "BREACH",
+        "SIEGEBREAK",
+        "NO WALLS"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Blinds the intrusion monitor, starving the active trace of evidence.",
+      "kind": "MonitorBypass",
+      "name": "MONITOR BYPASS",
+      "price": 900,
+      "short": "MONITOR",
+      "versions": [
+        "BLINDFOLD",
+        "DEAF EYE",
+        "SILENCE",
+        "DEAD AIR",
+        "NO WITNESS"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Displays exact trace progress instead of a coarse estimate.",
+      "kind": "TraceTracker",
+      "name": "TRACE TRACKER",
+      "price": 500,
+      "short": "TRACE",
+      "versions": [
+        "PING",
+        "RADAR",
+        "SONAR",
+        "LIDAR",
+        "OMNISCIENT"
+      ]
+    },
+    {
+      "cpu": 0.800000011920929,
+      "desc": "Pulls files across the link. Higher levels move more data per second.",
+      "kind": "FileCopier",
+      "name": "FILE COPIER",
+      "price": 650,
+      "short": "COPIER",
+      "versions": [
+        "STRAW",
+        "PIPELINE",
+        "FLUME",
+        "RIVER",
+        "FLOOD"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Destroys files and, at higher levels, their shadow copies.",
+      "kind": "FileDeleter",
+      "name": "FILE DELETER",
+      "price": 450,
+      "short": "DELETER",
+      "versions": [
+        "ERASER",
+        "SHREDDER",
+        "ACID",
+        "VACUUM",
+        "OBLIVION"
+      ]
+    },
+    {
+      "cpu": 1.399999976158142,
+      "desc": "Decrypts protected files so they can be read or submitted.",
+      "kind": "Decrypter",
+      "name": "DECRYPTER",
+      "price": 1100,
+      "short": "DECRYPT",
+      "versions": [
+        "PIN",
+        "LOCKPICK",
+        "WAYPOINT",
+        "PASSKEY",
+        "SEMANTIC"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Rewrites an entry instead of removing it. Subtle, slower, safer.",
+      "kind": "LogModifier",
+      "name": "LOG MODIFIER",
+      "price": 550,
+      "short": "LOGMOD",
+      "versions": [
+        "BLUR",
+        "SMUDGE",
+        "REWRITE",
+        "PALIMPSEST",
+        "AUTHOR"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Removes access logs. Cheap, and suspicious if it is overused.",
+      "kind": "LogDeleter",
+      "name": "LOG DELETER",
+      "price": 400,
+      "short": "LOGDEL",
+      "versions": [
+        "TEAR",
+        "CUT",
+        "SEVER",
+        "AMNESIA",
+        "NOTHING"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Resolves ownership, host role and exposed services of an address.",
+      "kind": "IpProbe",
+      "name": "IP PROBE",
+      "price": 500,
+      "short": "PROBE",
+      "versions": [
+        "LOOKUP",
+        "RESOLVE",
+        "ATLAS",
+        "PANOPTIC",
+        "OMEN"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Renders the live route and per-hop analysis on the connection HUD.",
+      "kind": "HudConnect",
+      "name": "HUD CONNECTION ANALYSIS",
+      "price": 350,
+      "short": "HUD",
+      "versions": [
+        "WIREFRAME",
+        "OVERVIEW",
+        "TACTICAL",
+        "PANORAMA",
+        "GODVIEW"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Enumerates internal subnets reachable from a compromised host.",
+      "kind": "LanScan",
+      "name": "LAN SCANNER",
+      "price": 2400,
+      "short": "LANSCAN",
+      "versions": [
+        "SWEEP",
+        "GRID",
+        "SUBNET",
+        "DEEPMAP",
+        "TOTAL RECALL"
+      ]
+    },
+    {
+      "cpu": 1.399999976158142,
+      "desc": "Crawls social and breach data for credentials and personal detail.",
+      "kind": "OsintSweep",
+      "name": "OSINT SWEEPER",
+      "price": 1300,
+      "short": "OSINT",
+      "versions": [
+        "CRAWL",
+        "SPIDER",
+        "DREDGE",
+        "SIPHON",
+        "TOTAL OSINT"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Replays leaked credentials against a target's services.",
+      "kind": "CredentialStuff",
+      "name": "CREDENTIAL STUFFER",
+      "price": 1800,
+      "short": "STUFFER",
+      "versions": [
+        "RETRY",
+        "SPRAY",
+        "STUFF",
+        "MASTERKEY",
+        "UNIVERSAL"
+      ]
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Synthesises a matching voiceprint for voice-authorised systems.",
+      "kind": "VoiceAnalyser",
+      "name": "VOICE ANALYSER",
+      "price": 3000,
+      "short": "VOICE",
+      "versions": [
+        "SAMPLE",
+        "MIMIC",
+        "PARROT",
+        "DOPPEL",
+        "PERFECT PITCH"
+      ]
+    }
+  ]
+}

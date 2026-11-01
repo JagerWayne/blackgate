@@ -1,0 +1,12 @@
+{
+  "id": "scrubProxy",
+  "kind": "BypassProxy",
+  "label": "SCRUB PROXY",
+  "tool": "ProxyBypass",
+  "reasons": {
+    "none": "no proxy here",
+    "noTool": "no bypass installed",
+    "weak": "the bypass is too weak",
+    "done": "already scrubbed"
+  }
+}

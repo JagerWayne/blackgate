@@ -1,0 +1,45 @@
+{
+  "name": "blackgate",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BLACKGATE hacking sim",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win dir && node electron/build-launcher.js",
+    "test": "node --test tests/*.mjs"
+  },
+  "build": {
+    "appId": "com.blackgate.game",
+    "productName": "BLACKGATE",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "src/**/*",
+      "data/**/*",
+      "electron/main.js",
+      "electron/preload.js",
+      "electron/files.js",
+      "build/icon.png",
+      "package.json"
+    ],
+    "icon": "build/icon.png",
+    "win": {
+      "target": "dir",
+      "icon": "build/icon.png"
+    },
+    "electronLanguages": [
+      "en-US"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "allowScripts": {
+    "electron@38.8.6": true,
+    "electron-winstaller@5.4.0": true
+  }
+}

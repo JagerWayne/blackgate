@@ -1,0 +1,10 @@
+{
+  "id": "wipeLogs",
+  "kind": "WipeLogs",
+  "label": "WIPE LOGS",
+  "tool": "LogDeleter",
+  "reasons": {
+    "none": "nothing written down",
+    "noTool": "no log deleter installed"
+  }
+}
