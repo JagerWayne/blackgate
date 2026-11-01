@@ -1,13 +1,14 @@
 {
   "name": "blackgate",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "BLACKGATE hacking sim",
   "main": "electron/main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win dir && node electron/build-launcher.js",
-    "test": "node --test tests/*.mjs"
+    "dist": "node electron/release.js --no-upload",
+    "test": "node --test tests/*.mjs",
+    "release": "node electron/release.js"
   },
   "build": {
     "appId": "com.blackgate.game",

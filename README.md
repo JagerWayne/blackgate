@@ -43,22 +43,32 @@ lives in JSON files you can read and edit.
 
 ### Windows app (blackgate.exe)
 
-Run `blackgate.exe`, the portable file produced by the build (see
-[Building from source](#building-from-source)). It needs no installer and no
-administrator rights.
+Download `blackgate.exe` from the
+[latest release](https://github.com/JagerWayne/blackgate/releases/latest)
+and run it. It is a small launcher (about 60 KB): the game itself comes from
+GitHub. It needs no installer and no administrator rights.
 
-- **First launch, or a new build:** a small window shows *installing update*
-  while the game is copied to `Documents\Games\Blackgate\app`. This takes
-  about half a minute. The game then starts.
-- **Later launches:** the launcher sees that the installed copy matches its
-  own build and starts it straight away, in about two seconds.
+- **First run:** the launcher copies itself to `Documents\Games\Blackgate`,
+  puts a **BLACKGATE** shortcut on the desktop, downloads the game (about
+  125 MB) with a progress bar, checks it against the SHA-256 published with
+  the release, installs it to `Documents\Games\Blackgate\app`, and starts it.
+- **Later runs:** it asks GitHub for the latest release. If the installed
+  build is the latest, the game starts straight away. If a newer build is
+  out, it is downloaded and installed first.
+- **Offline**, or when GitHub cannot be reached, the installed game starts
+  as it is. With nothing installed yet, the launcher says it could not
+  download the game.
+- The shortcut is made again if you delete it. Moving or deleting the
+  downloaded `blackgate.exe` does no harm: the shortcut points to the copy in
+  `Documents\Games\Blackgate`.
 - Every build has its own **build id**: the version plus the build time, for
-  example `0.1.0+20261101T172244522Z`. A new build always reinstalls once,
-  even when the version number did not change.
+  example `0.2.0+20261101T174943713Z`.
 - **F11** switches full screen on and off. The window has no menu bar.
 
-An update only replaces `app\`. Your saves and your edited content files sit
-beside it and are never touched by an update.
+An update only replaces `app\`, and only once the new copy is downloaded,
+checked and unpacked: a failed update leaves the installed game working.
+Your saves and your edited content files sit beside `app\` and are never
+touched by an update.
 
 ### In a browser
 
@@ -378,21 +388,27 @@ npm install
 | Command | What it does |
 |---|---|
 | `npm start` | Runs the game in Electron from the source folder. |
-| `npm run dist` | Builds `dist/blackgate.exe`. |
+| `npm run dist` | Builds the app zip, `latest.json` and the launcher in `dist/`. |
+| `npm run release` | Does the same, then uploads them to the GitHub release `v<version>`. |
 | `npm test` | Runs the test suite. |
 
-How `npm run dist` works:
+How a build works (`electron/release.js`):
 
 1. `electron-builder --win dir` builds the unpacked app in
    `dist/win-unpacked`, with the English language pack only.
-2. `electron/build-launcher.js` writes a new build id to
-   `resources/build.json`, then compiles `electron/launcher.nsi` with NSIS
-   into `dist/blackgate.exe`: a self-contained launcher that carries the whole
-   app and installs or starts it as described in
+2. A new build id is written to `resources/build.json`.
+3. `dist/win-unpacked` is zipped to `dist/blackgate-app.zip`, and
+   `dist/latest.json` records the version, build id, SHA-256 and size.
+4. `electron/launcher.nsi` is compiled with NSIS into `dist/blackgate.exe`.
+   It carries only `electron/launcher.ps1`, the updater described in
    [Windows app](#windows-app-blackgateexe).
+5. `npm run release` uploads `blackgate.exe`, `blackgate-app.zip` and
+   `latest.json` with the GitHub CLI (`gh`, logged in). A new version makes
+   a new release; running it again at the same version replaces that
+   release's files, which ships a new build to every launcher.
 
-Only `dist/blackgate.exe` is needed after a build; the rest of `dist/` can be
-deleted.
+To release: raise `version` in `package.json`, commit and push, then run
+`npm run release`.
 
 **How the Electron shell works** (`electron/main.js`):
 
