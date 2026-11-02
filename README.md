@@ -124,7 +124,7 @@ The Windows app keeps everything for your Windows account in
 | `saves\<OPERATOR>.json` | One save file per profile (four at most). It holds the whole world (40 companies, 2,000 people), your dossiers and your run: about 0.7 MB. |
 | `hosts\<OPERATOR>.json` | The machines that operator has connected to, written on every save: security, services, logs (yours marked) and files (copied, deleted, decrypted). |
 | `*.json`, `hints\`, `sessionActions\`, `images\people\index.json`, `images\socialmedia\*.json` | Your copy of the game's content files. |
-| `data-version.json` | The build that last checked your content files. |
+| `data-version.json` | The build that last checked your content files, and a hash of each file as the game copied it (to tell a file you edited from one you never touched). |
 | `blackgate.log` | Warnings, for example about content files that differ from the game's. |
 
 **First run:** the folder and `saves\` are created, and every content JSON
