@@ -128,13 +128,14 @@ The Windows app keeps everything for your Windows account in
 | `blackgate.log` | Warnings, for example about content files that differ from the game's. |
 
 **First run:** the folder and `saves\` are created, and every content JSON
-file the game ships is copied in. A file that already exists is **never
-overwritten**, so your edits survive updates.
+file the game ships is copied in.
 
-**After an update:** if one of your content files differs from the one the
-new build ships, it is kept as it is and a warning is written to
-`blackgate.log`. To take the new version of a file, delete your copy; it is
-copied again on the next launch.
+**After an update:** a content file you never edited is replaced with the new
+build's copy. A file you **did** edit is never overwritten: it is kept as it
+is and a warning is written to `blackgate.log`. To take the new version of an
+edited file, delete your copy; it is copied again on the next launch. A copy
+made by a build from before this rule has no recorded hash, so it counts as
+edited until you delete it once.
 
 **Broken files:** if one of your content files is missing or is not valid
 JSON, the game uses its built-in copy instead and shows a message naming the
