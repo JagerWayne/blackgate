@@ -157,7 +157,7 @@ test('the map has a legend', () => {
 
 test('a software version says what it does', () => {
   assert.equal(versionEffect('PasswordCracker', 3), 'beats locks up to v3');
-  assert.match(versionEffect('FileCopier', 2), /56 GB/);
+  assert.equal(versionEffect('MonitorBypass', 3), 'blinds monitors up to strength 3');
   assert.match(versionEffect('LanScan', 1), /no task/);
   const state = playState();
   openWindow(state.windows, 'software', DESK);

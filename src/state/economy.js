@@ -155,6 +155,7 @@ export function buyTool(game, kind, level) {
   const def = software().find((d) => d.kind === kind);
   if (!def) return 'no such tool';
   if (versionEffect(kind, level) === NO_TASK) return NO_TASK;
+  if (level > def.versions.length) return 'no such version';
   const price = toolPrice(def, level);
   const owned = game.player.tools.find((t) => t.kind === kind);
   if (owned && owned.level >= level) return 'already owned';

@@ -24,10 +24,7 @@
       "short": "PROXY",
       "versions": [
         "GHOSTLINE",
-        "COLDSPOT",
-        "BLACK HOLE",
-        "SEVEN VEILS",
-        "NOWHERE"
+        "COLDSPOT"
       ]
     },
     {
@@ -41,8 +38,7 @@
         "CROWBAR",
         "RAM",
         "BREACH",
-        "SIEGEBREAK",
-        "NO WALLS"
+        "SIEGEBREAK"
       ]
     },
     {
@@ -56,8 +52,7 @@
         "BLINDFOLD",
         "DEAF EYE",
         "SILENCE",
-        "DEAD AIR",
-        "NO WITNESS"
+        "DEAD AIR"
       ]
     },
     {
@@ -83,11 +78,7 @@
       "price": 650,
       "short": "COPIER",
       "versions": [
-        "STRAW",
-        "PIPELINE",
-        "FLUME",
-        "RIVER",
-        "FLOOD"
+        "STRAW"
       ]
     },
     {
@@ -98,11 +89,7 @@
       "price": 450,
       "short": "DELETER",
       "versions": [
-        "ERASER",
-        "SHREDDER",
-        "ACID",
-        "VACUUM",
-        "OBLIVION"
+        "ERASER"
       ]
     },
     {
@@ -114,10 +101,7 @@
       "short": "DECRYPT",
       "versions": [
         "PIN",
-        "LOCKPICK",
-        "WAYPOINT",
-        "PASSKEY",
-        "SEMANTIC"
+        "LOCKPICK"
       ]
     },
     {
@@ -128,11 +112,7 @@
       "price": 550,
       "short": "LOGMOD",
       "versions": [
-        "BLUR",
-        "SMUDGE",
-        "REWRITE",
-        "PALIMPSEST",
-        "AUTHOR"
+        "BLUR"
       ]
     },
     {
@@ -143,11 +123,7 @@
       "price": 400,
       "short": "LOGDEL",
       "versions": [
-        "TEAR",
-        "CUT",
-        "SEVER",
-        "AMNESIA",
-        "NOTHING"
+        "TEAR"
       ]
     },
     {
@@ -206,8 +182,7 @@
         "CRAWL",
         "SPIDER",
         "DREDGE",
-        "SIPHON",
-        "TOTAL OSINT"
+        "SIPHON"
       ]
     },
     {
@@ -218,11 +193,7 @@
       "price": 1800,
       "short": "STUFFER",
       "versions": [
-        "RETRY",
-        "SPRAY",
-        "STUFF",
-        "MASTERKEY",
-        "UNIVERSAL"
+        "RETRY"
       ]
     },
     {
@@ -235,9 +206,7 @@
       "versions": [
         "SAMPLE",
         "MIMIC",
-        "PARROT",
-        "DOPPEL",
-        "PERFECT PITCH"
+        "PARROT"
       ]
     },
     {
@@ -249,10 +218,7 @@
       "short": "SPOOF",
       "versions": [
         "MASK",
-        "MIMIC",
-        "CHAMELEON",
-        "SHAPESHIFT",
-        "GHOSTLINE"
+        "MIMIC"
       ]
     }
   ]

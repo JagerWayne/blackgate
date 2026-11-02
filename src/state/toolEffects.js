@@ -7,7 +7,7 @@ const BY_LEVEL = {
   PasswordCracker: (v) => `beats locks up to v${v}`,
   FirewallBypass: (v) => `gets past firewalls up to FW ${v + 1}`,
   ProxyBypass: (v) => `scrubs proxies up to PX ${v}`,
-  FileCopier: (v) => `copies at ${28 * v} GB a minute, if the link keeps up`,
+  MonitorBypass: (v) => `blinds monitors up to strength ${v}`,
   Decrypter: (v) => `opens files encrypted up to v${v}`,
   TraceTracker: (v) => `warns of a trace ${5 * v}% earlier`,
   VoiceAnalyser: (v) => `records voices and matches voice locks up to v${v}`,
@@ -17,7 +17,7 @@ const BY_LEVEL = {
 };
 
 /// The tools a task needs installed, at any version.
-const ANY_LEVEL = new Set(['MonitorBypass', 'FileDeleter', 'LogDeleter', 'LogModifier']);
+const ANY_LEVEL = new Set(['FileCopier', 'FileDeleter', 'LogDeleter', 'LogModifier']);
 
 /// What a tool no task uses says: the shop will not sell it.
 export const NO_TASK = 'no task uses this tool yet';
@@ -25,6 +25,6 @@ export const NO_TASK = 'no task uses this tool yet';
 /// What one version of a tool does.
 export function versionEffect(kind, level) {
   if (BY_LEVEL[kind]) return BY_LEVEL[kind](level);
-  if (ANY_LEVEL.has(kind)) return level === 1 ? 'does the job; later versions add nothing yet' : 'same as v1 for now';
+  if (ANY_LEVEL.has(kind)) return 'does the whole job';
   return NO_TASK;
 }

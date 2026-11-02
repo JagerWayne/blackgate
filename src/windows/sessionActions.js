@@ -62,6 +62,7 @@ function whyNot(game, s, spec) {
     case 'BypassMonitor':
       if (!h.monitor) return r.none ?? '';
       if (lvl === 0) return r.noTool ?? '';
+      if (lvl < h.monitor) return r.weak ?? '';
       if (s.monBypassed) return r.done ?? '';
       return '';
     case 'BypassProxy':

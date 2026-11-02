@@ -5,10 +5,10 @@ import { padsOf } from './notes.js';
 import { rngFromJson } from '../core/rng.js';
 import { SAVE_VERSION } from './gameState.js';
 import { cheatsOf } from './cheats.js';
-import { componentsOf, firstNames } from '../data/content.js';
+import { componentsOf, firstNames, software } from '../data/content.js';
 import { personRecord } from '../data/worldCompanies.js';
 import { rankName } from '../core/theme.js';
-import { stockPart } from './economy.js';
+import { stockPart, toolPrice } from './economy.js';
 import { ramCountBelow } from './gateway.js';
 import { hostReport } from './hostReport.js';
 
@@ -115,6 +115,7 @@ export function loadRun(handle = current) {
     fillRecords(g);
     revealLiveTargets(g);
     repairLiveJobs(g);
+    cutLostLevels(g);
     return g;
   } catch (e) {
     console.error('save: could not load the run', e);
@@ -176,6 +177,21 @@ function revealLiveTargets(g) {
     if (!['offered', 'accepted', 'ready'].includes(c.state)) return;
     const h = g.world.hosts[c.target];
     if (h) h.discovered = true;
+  });
+}
+
+/// A run that owns a tool level the catalogue no longer sells: the tool is cut
+/// back to its last level and the price of the levels above it is paid back.
+function cutLostLevels(g) {
+  (g.player.tools ?? []).forEach((t) => {
+    const def = software().find((d) => d.kind === t.kind);
+    const last = def?.versions.length;
+    if (!def || t.level <= last) return;
+    const back = Math.max(toolPrice(def, t.level) - toolPrice(def, last), 0);
+    g.player.credits += back;
+    t.level = last;
+    if (!Array.isArray(g.log)) g.log = [];
+    g.log.push({ minute: g.clock.minutes, text: `${def.short} cut back to v${last} // ${back} cr paid back` });
   });
 }
 

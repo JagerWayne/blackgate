@@ -234,7 +234,7 @@ All are opened from the Start menu and appear on the taskbar while open.
 | **Internet XPlorer** | The web browser, and the only window open when a run starts. Its start page links to **DSNET** (the job market), **SleekPages** (the social network) and the **Business Directory** (every company's website). See [Internet XPlorer](#internet-xplorer). |
 | **NEXUS MAP** | The world map with every machine you have discovered, a search and a **KIND** dropdown (All, Relay, Public…). Beside it, three tabs: **HOSTS** (the list, with **+HOP** / **-HOP** and **LINK** on every row, and the picked host's card), **ROUTE** (your hops as a chain from your gateway to the target, each with **UP**, **DOWN**, **SHOW** and **REMOVE**, green while your gateway hides it cleanly and red when it slows the link) and **SAVED** (kept routes with **USE** and **DELETE**). **SHOW ON MAP** anywhere selects the host on the map *and* in the HOSTS list. |
 | **GATEWAY** | Your own computer: the chassis and the parts in it, a shop for new parts, and a stock of parts you have taken out. |
-| **SOFTWARE** | The tool shop: tool cards coloured by family (break-in, bypass, stealth, data, recon, social) with **ALL / INSTALLED / SHOP** filters, and a spec sheet with a five-step upgrade track, one big **BUY / UPGRADE** button and the RAM the tool takes while running. |
+| **SOFTWARE** | The tool shop: tool cards coloured by family (break-in, bypass, stealth, data, recon, social) with **ALL / INSTALLED / SHOP** filters, and a spec sheet with an upgrade track (one step per version the tool has), one big **BUY / UPGRADE** button and the RAM the tool takes while running. |
 | **STORAGE** | The files you have downloaded, against your drive space. |
 | **BANKING** | Your money and transactions. |
 | **DOSSIERS** | Everyone you have on file: what you know about them and what you have done to their phone and inbox. See [People and OSINT](#people-and-osint). |
@@ -631,6 +631,57 @@ paid work:
 | 5 | 70 |
 
 ---
+
+## What each software level does
+
+A tool has exactly as many versions as it has things to do: a version is only
+sold if it does something the one below it does not, so the top version of a
+tool beats the hardest target in the game. Tools with one job have one version.
+A target needs a version at least as strong as its own rating (lock, firewall,
+proxy, monitor strength, encryption, voice lock).
+
+| Tool | Version | What it does |
+|---|---|---|
+| **BREAKER** | V1 HASHBUSTER | beats locks up to v1 |
+| | V2 KRAKEN | beats locks up to v2 |
+| | V3 SKELETON KEY | beats locks up to v3 |
+| | V4 ZERODAY | beats locks up to v4 |
+| | V5 ORACLE | beats locks up to v5 |
+| **PROXY** | V1 GHOSTLINE | scrubs proxies up to PX 1 |
+| | V2 COLDSPOT | scrubs proxies up to PX 2 |
+| **FIREWALL** | V1 CROWBAR | gets past firewalls up to FW 2 |
+| | V2 RAM | gets past firewalls up to FW 3 |
+| | V3 BREACH | gets past firewalls up to FW 4 |
+| | V4 SIEGEBREAK | gets past firewalls up to FW 5 |
+| **MONITOR** | V1 BLINDFOLD | blinds monitors up to strength 1 |
+| | V2 DEAF EYE | blinds monitors up to strength 2 |
+| | V3 SILENCE | blinds monitors up to strength 3 |
+| | V4 DEAD AIR | blinds monitors up to strength 4 |
+| **TRACE** | V1 PING | warns of a trace 5% earlier |
+| | V2 RADAR | warns of a trace 10% earlier |
+| | V3 SONAR | warns of a trace 15% earlier |
+| | V4 LIDAR | warns of a trace 20% earlier |
+| | V5 OMNISCIENT | warns of a trace 25% earlier |
+| **DECRYPT** | V1 PIN | opens files encrypted up to v1 |
+| | V2 LOCKPICK | opens files encrypted up to v2 |
+| **OSINT** | V1 CRAWL | PROFILE finds email and role |
+| | V2 SPIDER | PROFILE finds the phone too |
+| | V3 DREDGE | PROFILE finds the social handle too |
+| | V4 SIPHON | PROFILE finds leaked passwords too |
+| **VOICE** | V1 SAMPLE | records voices and matches voice locks up to v1 |
+| | V2 MIMIC | records voices and matches voice locks up to v2 |
+| | V3 PARROT | records voices and matches voice locks up to v3 |
+| **SPOOF** | V1 MASK | spoofed calls, phishing and spam; taps need v2 |
+| | V2 MIMIC | spoofed calls, phishing, spam and phone taps |
+| **COPIER** | V1 STRAW | does the whole job |
+| **DELETER** | V1 ERASER | does the whole job |
+| **LOGDEL** | V1 TEAR | does the whole job |
+| **LOGMOD** | V1 BLUR | does the whole job |
+| **STUFFER** | V1 RETRY | opens an inbox with its owner's leaked password |
+
+PROBE, HUD and LANSCAN have no task yet, so the shop does not sell them. A saved
+run that owns a version that no longer exists is cut back to the tool's last
+version when it loads, and the price of the levels above it is paid back.
 
 ## Cheat menu
 

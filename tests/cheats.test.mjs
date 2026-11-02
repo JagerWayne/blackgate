@@ -263,7 +263,7 @@ test('reveal, tools and gateway do what they say', () => {
   assert.ok(g.world.hosts.every((h) => h.discovered), 'every host is on the map');
   click(state, 'cheat.tools');
   assert.equal(g.player.tools.length, software().length);
-  assert.ok(g.player.tools.every((t) => t.level === 5));
+  assert.ok(g.player.tools.every((t) => t.level === software().find((d) => d.kind === t.kind).versions.length), 'every tool at its last version');
   click(state, 'cheat.gateway');
   const best = Math.max(...chassis().map((c) => c.tier));
   assert.equal(g.player.gateway.chassis, best, 'the best chassis');

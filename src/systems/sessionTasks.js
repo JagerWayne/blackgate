@@ -67,6 +67,7 @@ function planTask(game, s, h, kind, arg) {
       return { label: 'bypass firewall', dur: 2.5 + h.firewall * 1.6, loud: false };
     }
     case 'BypassMonitor':
+      if (toolLevel(game, 'MonitorBypass') < h.monitor) return { error: 'monitor bypass too weak' };
       if (s.monBypassed) return { error: 'monitor already blinded' };
       return { label: 'blind monitor', dur: 3.5 + h.monitor * 1.2, loud: false };
     case 'BypassProxy': {

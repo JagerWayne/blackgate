@@ -47,7 +47,7 @@ export function drawSoftware(ctx, sk, r, game, ui, input, events, view) {
   });
   const shown = tools
     .map((d, index) => ({ d, index, have: levelOf(d.kind) }))
-    .filter(({ have }) => filter === 'ALL' || (filter === 'INSTALLED' ? have > 0 : have < 5));
+    .filter(({ d, have }) => filter === 'ALL' || (filter === 'INSTALLED' ? have > 0 : have < d.versions.length));
   const cards = custom(Math.max(shown.length * (CARD_H + 6), 30), (c, s, rr, inp) => {
     if (!shown.length) drawText(c, 'nothing here', rr.x + 8, rr.y + 8, FONT.body, color(s.dim));
     shown.forEach(({ d, index, have }, i) => {
@@ -84,14 +84,14 @@ export function drawSoftware(ctx, sk, r, game, ui, input, events, view) {
     spacer(6),
     // the upgrade track: owned, can buy, needs rating
     custom(54, (c, s, rr) => {
-      const step = (rr.w - 40) / 4;
+      const step = (rr.w - 40) / Math.max(d.versions.length - 1, 1);
       c.strokeStyle = color(s.line);
       c.lineWidth = 2;
       c.beginPath();
       c.moveTo(rr.x + 20, rr.y + 14);
       c.lineTo(rr.x + rr.w - 20, rr.y + 14);
       c.stroke();
-      for (let level = 1; level <= 5; level += 1) {
+      for (let level = 1; level <= d.versions.length; level += 1) {
         const x = rr.x + 20 + (level - 1) * step;
         const locked = game.player.rating < (unlock[level - 1] ?? 0);
         const dot = level <= have ? s.ok : locked ? s.dim : s.warn;
@@ -113,7 +113,7 @@ export function drawSoftware(ctx, sk, r, game, ui, input, events, view) {
 
   // the next version: one big button, or why not
   const next = have + 1;
-  if (next <= 5) {
+  if (next <= d.versions.length) {
     const need = unlock[next - 1] ?? 0;
     if (game.player.rating < need) controls.push(label(`V${next} ${nameOf(next)} needs rating ${need} (you have ${game.player.rating})`, FONT.body, sk.dim));
     else {
@@ -131,7 +131,7 @@ export function drawSoftware(ctx, sk, r, game, ui, input, events, view) {
   const ram = toolRam(d);
   controls.push(meter(`RAM WHILE RUNNING // ${ram} GB`, Math.min(ram / 64, 1), sk.warn));
   controls.push(spacer(4));
-  for (let level = 1; level <= 5; level += 1) {
+  for (let level = 1; level <= d.versions.length; level += 1) {
     const need = unlock[level - 1] ?? 0;
     const state = have >= level ? 'INSTALLED' : game.player.rating < need ? `RATING ${need}` : `${priceOf(level).toLocaleString('en-US')} cr`;
     const t = have >= level ? sk.ok : game.player.rating < need ? sk.dim : sk.warn;
