@@ -14,7 +14,6 @@ import { hit } from '../ui/kit.js';
 import { draw as drawText, ellipsize, FONT } from '../core/text.js';
 import { color, cssA } from '../core/theme.js';
 import { versionEffect, NO_TASK } from '../state/toolEffects.js';
-import { toolRam } from '../systems/sessionTasks.js';
 
 /// Each tool's family and its colour.
 const FAMILY = {
@@ -127,8 +126,6 @@ export function drawSoftware(ctx, sk, r, game, ui, input, events, view) {
   } else controls.push(label('fully upgraded', FONT.body, sk.ok));
 
   controls.push(spacer(6));
-  const ram = toolRam(d);
-  controls.push(meter(`RAM WHILE RUNNING // ${ram} GB`, Math.min(ram / 64, 1), sk.warn));
   controls.push(spacer(4));
   for (let level = 1; level <= d.versions.length; level += 1) {
     const need = unlock[level - 1] ?? 0;

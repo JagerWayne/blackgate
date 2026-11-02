@@ -8,8 +8,7 @@ import { cheatsOf } from './cheats.js';
 import { componentsOf, firstNames, software } from '../data/content.js';
 import { personRecord } from '../data/worldCompanies.js';
 import { rankName } from '../core/theme.js';
-import { stockPart, toolPrice } from './economy.js';
-import { ramCountBelow } from './gateway.js';
+import { toolPrice } from './economy.js';
 import { hostReport } from './hostReport.js';
 
 // One save per operator, under PREFIX + their file-safe name. LEGACY is the
@@ -101,6 +100,7 @@ export function loadRun(handle = current) {
   if (!text) return null;
   try {
     const g = JSON.parse(text);
+    if (g?.version === 1) refundOldHardware(g);
     if (!isSound(g)) return null;
     g.rng = rngFromJson(g.rng);
     g.session = null;
@@ -110,8 +110,6 @@ export function loadRun(handle = current) {
     g.toasts = [];
     cheatsOf(g);
     padsOf(g);
-    splitMemory(g);
-    orderParts(g);
     fillRecords(g);
     revealLiveTargets(g);
     repairLiveJobs(g);
@@ -123,39 +121,35 @@ export function loadRun(handle = current) {
   }
 }
 
-/// A run saved before RAM and STORAGE were split: its memory is RAM now, and
-/// it is given the smallest drive that holds what it has staged, so no file
-/// is lost.
-function splitMemory(g) {
-  const gw = g.player?.gateway;
-  if (!gw?.parts) return;
-  gw.parts.forEach((p) => {
-    if (p.kind === 'memory') p.kind = 'ram';
-  });
-  if (gw.parts.some((p) => p.kind === 'storage')) return;
-  const staged = (g.player.storage ?? []).reduce((n, f) => n + (f.size ?? 0), 0);
-  const drives = componentsOf('storage');
-  const drive = drives.find((d) => d.capacity >= staged) ?? drives.at(-1);
-  if (drive) gw.parts.push({ kind: 'storage', level: drive.tier, name: drive.name });
-}
+/// The prices of the catalogue before the Modern Uplink hardware (save version
+/// 1), kept only to pay an old run back.
+const OLD_PRICES = {
+  cpu: [3200, 9800, 26000, 61000, 140000],
+  ram: [900, 3200, 8600, 19000, 48000],
+  memory: [900, 3200, 8600, 19000, 48000],
+  storage: [600, 2800, 7500, 18000, 45000],
+  modem: [1200, 6400, 18000, 52000, 150000],
+  security: [1800, 7200, 21000, 58000, 130000],
+};
+const OLD_CHASSIS_PRICES = [0, 15000, 48000, 120000, 300000];
 
-/// A run saved before the slot rules: CPUs and RAM become one model each
-/// (the best fitted), RAM runs at an allowed count, and what does not fit the
-/// rules goes to stock rather than being lost.
-function orderParts(g) {
-  const gw = g.player?.gateway;
-  if (!gw?.parts) return;
-  if (!Array.isArray(g.player.stock)) g.player.stock = [];
-  const out = [];
-  ['cpu', 'ram'].forEach((kind) => {
-    const set = gw.parts.filter((p) => p.kind === kind);
-    const best = set.reduce((n, p) => Math.max(n, p.level), 0);
-    let keep = set.filter((p) => p.level === best);
-    if (kind === 'ram') keep = keep.slice(0, ramCountBelow(keep.length));
-    set.filter((p) => !keep.includes(p)).forEach((p) => out.push(p));
-  });
-  gw.parts = gw.parts.filter((p) => !out.includes(p));
-  out.forEach((p) => stockPart(g, p));
+/// A run saved on the old catalogue (version 1): every fitted part, every
+/// stocked part and the chassis are paid back at the old prices, and the
+/// gateway goes back to the starter Pelican. The world, jobs, mail, dossiers
+/// and tools are kept.
+function refundOldHardware(g) {
+  const gwy = g.player.gateway ?? {};
+  const parts = (gwy.parts ?? []).reduce((n, p) => n + (OLD_PRICES[p.kind]?.[p.level - 1] ?? 0), 0);
+  const stock = (g.player.stock ?? []).reduce((n, s) => n + (s.value ?? 0), 0);
+  const chassisPrice = OLD_CHASSIS_PRICES[(gwy.chassis ?? 1) - 1] ?? 0;
+  const back = parts + stock + chassisPrice;
+  g.player.credits += back;
+  const start = componentsOf('cpu')[0];
+  g.player.gateway = { chassis: 1, ip: gwy.ip ?? '', migrateUntil: 0, parts: [{ kind: 'cpu', level: start.tier, name: start.name }] };
+  g.player.stock = [];
+  g.version = SAVE_VERSION;
+  if (!Array.isArray(g.log)) g.log = [];
+  g.log.push({ minute: g.clock?.minutes ?? 0, text: `new hardware catalogue // the old rig was paid back: ${back} cr` });
 }
 
 /// A run saved before people had records: each gets the record a new world of

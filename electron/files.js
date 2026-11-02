@@ -58,4 +58,12 @@ function saveFile(dir, key) {
   return path.join(dir, 'saves', `${key}.json`);
 }
 
-module.exports = { buildId, readBuild, seed, saveFile };
+/// Whether the player copy of a data file may be used. A catalogue file carries a
+/// `"schema"` number near the top; a copy with a lower one than the shipped file
+/// was made for older code and is ignored. A file with no schema is always used.
+function userCopyOk(userText, shippedText) {
+  const schema = (t) => Number(/"schema":\s*(\d+)/.exec(t.slice(0, 300))?.[1] ?? 0);
+  return schema(userText) >= schema(shippedText);
+}
+
+module.exports = { buildId, readBuild, seed, saveFile, userCopyOk };

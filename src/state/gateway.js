@@ -17,7 +17,6 @@ export function slotsFor(gw, kind) {
   const c = chassisOf(gw);
   switch (kind) {
     case 'cpu': return c.cpu_slots;
-    case 'ram': return c.ram_slots;
     case 'storage': return c.storage_slots ?? 1;
     case 'modem': return c.modem_slots;
     case 'security': return c.security_slots;
@@ -28,22 +27,14 @@ export function slotsFor(gw, kind) {
 /// How many components of a kind are fitted.
 export function usedSlots(gw, kind) { return gw.parts.filter((p) => p.kind === kind).length; }
 
-/// The sizes a RAM set runs at: a stick, a pair, four or eight.
-export const RAM_COUNTS = [1, 2, 4, 8];
-
 /// The kinds that must be one model across every slot.
-const MATCHED = new Set(['cpu', 'ram']);
+const MATCHED = new Set(['cpu']);
 
 /// Whether every fitted part of a kind must be the same model.
 export function matched(kind) { return MATCHED.has(kind); }
 
 /// The model (tier) of a matched set, or null when none is fitted.
 export function fittedModel(gw, kind) { return partsOf(gw, kind)[0]?.level ?? null; }
-
-/// The largest allowed RAM count at or below a number of sticks.
-export function ramCountBelow(n) {
-  return RAM_COUNTS.filter((c) => c <= n).at(-1) ?? 0;
-}
 
 /// What buying a part would do: how many go in, which fitted parts come out
 /// (to stock), and why it cannot be done ('' when it can).
@@ -52,14 +43,11 @@ export function fitPlan(gw, def) {
   const fitted = partsOf(gw, kind);
   const slots = slotsFor(gw, kind);
   const label = kindLabel(kind);
+  if (def.needs_rack && !chassisOf(gw).rack) return { add: 0, out: [], why: 'needs a rack chassis' };
+  if (!slots) return { add: 0, out: [], why: `no ${label} slot on this chassis` };
   if (matched(kind) && fitted.length && fitted[0].level !== def.tier) {
     // a new model replaces the whole set: one goes in, more follow
     return { add: 1, out: fitted, why: '' };
-  }
-  if (kind === 'ram') {
-    const next = RAM_COUNTS.find((c) => c > fitted.length && c <= slots);
-    if (!next) return { add: 0, out: [], why: `all ${label} slots full` };
-    return { add: next - fitted.length, out: [], why: '' };
   }
   if (fitted.length < slots) return { add: 1, out: [], why: '' };
   if (matched(kind)) return { add: 0, out: [], why: `all ${label} slots full` };
@@ -70,10 +58,9 @@ export function fitPlan(gw, def) {
 /// The components of a kind that are fitted.
 export function partsOf(gw, kind) { return gw.parts.filter((p) => p.kind === kind); }
 
-/// The catalogue entry of the best fitted component of a kind.
-function best(gw, kind) {
-  const fitted = partsOf(gw, kind).map((p) => componentDef(kind, p.level)).filter(Boolean);
-  return fitted.reduce((top, d) => (!top || d.tier >= top.tier ? d : top), null);
+/// The catalogue entries of the fitted security parts: they work together.
+function securityDefs(gw) {
+  return partsOf(gw, 'security').map((p) => componentDef('security', p.level)).filter(Boolean);
 }
 
 /// How many heavy processes run at once.
@@ -87,30 +74,15 @@ export function crypt(gw) {
   return Math.max(mult, 1);
 }
 
-/// The RAM, in GB: what the running tools are loaded into.
-export function ram(gw) {
-  return partsOf(gw, 'ram').reduce((n, p) => n + (componentDef('ram', p.level)?.memory ?? 0), 0);
-}
-
-/// How much faster the software runs on the fastest RAM fitted: 1x on the
-/// first tier, 12% more for every tier above it.
-export function ramSpeed(gw) {
-  return ramSpeedOf(partsOf(gw, 'ram').reduce((n, p) => Math.max(n, p.level), 1));
-}
-
-/// The software speed one tier of RAM gives.
-export function ramSpeedOf(tier) {
-  return 1 + 0.12 * (tier - 1);
-}
-
-/// The drive space, in GB: what downloaded files are kept on.
+/// The drive space, in GB: what the chassis carries onboard plus every card.
 export function storage(gw) {
-  return partsOf(gw, 'storage').reduce((n, p) => n + (componentDef('storage', p.level)?.capacity ?? 0), 0);
+  return chassisOf(gw).onboard_storage + partsOf(gw, 'storage').reduce((n, p) => n + (componentDef('storage', p.level)?.capacity ?? 0), 0);
 }
 
-/// The link bandwidth, in Mbps. Two uplinks add up.
+/// The link bandwidth, in Mbps: the chassis uplink plus every modem fitted
+/// (they add up).
 export function bandwidth(gw) {
-  return partsOf(gw, 'modem').reduce((n, p) => n + (componentDef('modem', p.level)?.bandwidth ?? 0), 0);
+  return chassisOf(gw).onboard_uplink + partsOf(gw, 'modem').reduce((n, p) => n + (componentDef('modem', p.level)?.bandwidth ?? 0), 0);
 }
 
 /// The route hops carried without a latency penalty.
@@ -119,28 +91,28 @@ export function hops(gw) {
 }
 
 /// How much the security units slow an active trace.
-function traceDelay(gw) { return best(gw, 'security')?.trace_delay ?? 0; }
+function traceDelay(gw) { return Math.max(0, ...securityDefs(gw).map((d) => d.trace_delay)); }
 
-/// The share of a raid the security units absorb.
-export function raidShield(gw) { return best(gw, 'security')?.raid_shield ?? 0; }
+/// The share of a raid the security units absorb: the best of them.
+export function raidShield(gw) { return Math.max(0, ...securityDefs(gw).map((d) => d.raid_shield)); }
 
-/// The trace level at which the security units warn.
-export function warnAt(gw) { return best(gw, 'security')?.warn_at ?? 0.85; }
+/// The trace level at which the security units warn: the earliest of them.
+export function warnAt(gw) { return Math.min(0.85, ...securityDefs(gw).map((d) => d.warn_at)); }
 
 /// What the security units do when a raid reaches the end.
 export function failsafe(gw) {
-  const s = best(gw, 'security');
-  if (s && s.failsafe) return s.failsafe;
-  if (chassisOf(gw).emergency_purge) return 'PURGE';
-  return '';
+  return ownFailsafe(gw) || (chassisOf(gw).emergency_purge ? 'PURGE' : '');
 }
 
-/// The failsafe the security part itself carries, or '' (the chassis purge
+/// The failsafe a security part itself carries, or '' (the chassis purge
 /// does not count).
-export function ownFailsafe(gw) { return best(gw, 'security')?.failsafe || ''; }
+export function ownFailsafe(gw) { return securityDefs(gw).find((d) => d.failsafe)?.failsafe || ''; }
 
 /// The defence the security units provide.
-export function defense(gw) { return best(gw, 'security')?.defense ?? 'NO PROTECTION'; }
+export function defense(gw) {
+  const names = securityDefs(gw).map((d) => d.defense).filter(Boolean);
+  return names.length ? names.join(' + ') : 'NO PROTECTION';
+}
 
 /// How fast a passive trace finds the machine.
 export function traceFactor(gw) { return chassisOf(gw).trace_factor * (1 - 0.07 * traceDelay(gw)); }

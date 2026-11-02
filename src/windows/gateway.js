@@ -15,10 +15,10 @@ import { FONT } from '../core/text.js';
 /// Draws the gateway window.
 export function drawGateway(ctx, sk, r, game, ui, input, events, view) {
   const tab = view.tab ?? 0;
-  const cats = ['cpu', 'ram', 'storage', 'modem', 'security', 'gateway', 'stock'];
+  const cats = ['cpu', 'storage', 'modem', 'security', 'gateway', 'stock'];
   const stocked = game.player.stock?.length ?? 0;
   const labels = {
-    cpu: 'CPU', ram: 'RAM', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'CHASSIS',
+    cpu: 'COMPUTE', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'CHASSIS',
     stock: stocked ? `STOCK ${stocked}` : 'STOCK',
   };
   const body = drawFrame(ctx, sk, r, ui, input, events, '', 'your chassis, its parts and the supply line');
@@ -39,9 +39,9 @@ export function drawGateway(ctx, sk, r, game, ui, input, events, view) {
   const stats = [
     ['TASK LANES', String(gw.lanes(g))],
     ['CRYPT', `${gw.crypt(g).toFixed(1)}x`],
-    ['RAM', `${gw.ram(g)} GB // ${gw.ramSpeed(g).toFixed(2)}x`],
     ['STORAGE', `${storageUsed(game)}/${gw.storage(g)} GB`],
     ['LINK', `${gw.bandwidth(g)} Mb/s`],
+    ['DEFENSE SLOTS', `${gw.usedSlots(g, 'security')}/${gw.slotsFor(g, 'security')}`],
     ['CLEAN HOPS', String(gw.hops(g))],
     ['DEFENCE', gw.defense(g)],
     ['PUBLIC IP', g.ip],

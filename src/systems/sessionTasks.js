@@ -2,7 +2,7 @@
 
 import { freeLane, pushLine } from '../state/session.js';
 import { toolLevel, storageUsed, keepsRecord, validRecord } from '../state/gameState.js';
-import { bandwidth, crypt, storage, ram, lanes } from '../state/gateway.js';
+import { bandwidth, crypt, storage, lanes } from '../state/gateway.js';
 import { software } from '../data/content.js';
 import { voiceAdmin, hasSample } from '../state/voice.js';
 import { knows, spammed } from '../state/intel.js';
@@ -227,33 +227,6 @@ function planPeople(game, s, h, kind, i) {
     default:
       return { error: 'not a task' };
   }
-}
-
-/// The RAM a task with no tool behind it takes, in GB.
-const BARE_TASK_GB = 4;
-
-/// The RAM one running task takes, in GB: its tool's load, eight GB a unit.
-function taskRam(kind) {
-  const def = software().find((d) => d.kind === toolFor(kind));
-  return def ? toolRam(def) : BARE_TASK_GB;
-}
-
-/// The RAM a tool takes while it runs, in GB.
-export function toolRam(def) {
-  return Math.round(def.cpu * 8 * 10) / 10;
-}
-
-/// The RAM the running tasks take together, in GB.
-export function ramLoad(game) {
-  return (game.session?.tasks ?? []).reduce((n, t) => n + taskRam(t.kind), 0);
-}
-
-/// How fast the tasks run for lack of RAM: 1 while they fit, less as the
-/// machine swaps the rest to disk.
-export function swapFactor(game) {
-  const load = ramLoad(game);
-  const have = Math.max(ram(game.player.gateway), 1);
-  return load > have ? have / load : 1;
 }
 
 /// The tool a task needs.

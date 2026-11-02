@@ -72,15 +72,16 @@ test('asking whether a task can run does not put the person on file', () => {
   assert.equal(g.intel?.[i], undefined);
 });
 
-test('the best security part counts, not the last one fitted', () => {
+test('the order the security parts were fitted in does not change what they do', () => {
   const g = makeGame('AUDIT', 7);
   const gw = g.player.gateway;
   const sec = (level) => ({ kind: 'security', level, name: 's' });
   gw.parts = gw.parts.filter((p) => p.kind !== 'security');
-  gw.parts.push(sec(1));
-  const low = traceFactor(gw);
-  gw.parts.push(sec(4), sec(1));
-  assert.ok(traceFactor(gw) < low, 'a later weaker part does not undo the strong one');
+  gw.parts.push(sec(1), sec(2));
+  const one = traceFactor(gw);
+  gw.parts = gw.parts.filter((p) => p.kind !== 'security');
+  gw.parts.push(sec(2), sec(1));
+  assert.equal(traceFactor(gw), one);
 });
 
 test('a job that is already done when it is taken is ready at once', () => {
@@ -128,7 +129,7 @@ test('the supply line shows what a security part does', () => {
   const box = { x: 0, y: 0, w: 900, h: 700 };
   drawGatewayShop(ctx, theme(), box, game, makeUiState(), makeInput(), [], {}, 0, ['security'], { security: 'SECURITY' });
   const shown = ctx.texts.map((t) => t.s).join(' ');
-  assert.match(shown, /auditory/);
+  assert.match(shown, /Wireless/);
 });
 
 test('a file is freed when its job is turned down', () => {

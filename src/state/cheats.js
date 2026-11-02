@@ -149,8 +149,9 @@ export function maxGateway(game) {
   g.chassis = Math.max(...chassis().map((c) => c.tier));
   g.migrateUntil = 0;
   g.parts = [];
+  const rack = chassis().find((c) => c.tier === g.chassis).rack;
   HW_KINDS.forEach((kind) => {
-    const best = componentsOf(kind).reduce((a, b) => (b.tier > a.tier ? b : a));
+    const best = componentsOf(kind).filter((d) => !d.needs_rack || rack).reduce((a, b) => (b.tier > a.tier ? b : a));
     for (let i = 0; i < slotsFor(g, kind); i += 1) {
       g.parts.push({ kind, level: best.tier, name: best.name });
     }

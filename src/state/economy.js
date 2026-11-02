@@ -134,10 +134,7 @@ export function removePlan(game, index) {
   const g = game.player.gateway;
   const p = g.parts[index];
   if (!p) return [];
-  if (p.kind !== 'ram') return [p];
-  const sticks = gw.partsOf(g, 'ram');
-  const keep = gw.ramCountBelow(sticks.length - 1);
-  return [p, ...sticks.filter((s) => s !== p).slice(0, sticks.length - keep - 1)];
+  return [p];
 }
 
 /// Takes a component out of the machine and puts it in stock, to refit or to

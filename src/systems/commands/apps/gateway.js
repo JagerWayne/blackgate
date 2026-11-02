@@ -17,14 +17,14 @@ export const gatewayApp = {
       },
     },
     shop: {
-      args: '[cpu|ram|storage|modem|security|chassis]', help: 'the parts for sale',
+      args: '[cpu|storage|modem|security|chassis]', help: 'the parts for sale',
       run(ctx, [kind = 'cpu']) {
         if (kind === 'chassis') {
           ctx.term.last = { kind: 'shop', ids: chassis().map((c) => `gw.chassis.${c.tier}`) };
           return chassis().map((c, i) => ({ text: `${pad(`#${i + 1}`, 5)}${pad(c.name, 26)}${pad(cr(c.price), 12)}${c.note ?? ''}` }));
         }
         const list = componentsOf(kind);
-        if (!list.length) fail('usage: gw shop [cpu|ram|storage|modem|security|chassis]');
+        if (!list.length) fail('usage: gw shop [cpu|storage|modem|security|chassis]');
         ctx.term.last = { kind: 'shop', ids: list.map((d) => `gw.buy.${kind}.${d.tier}`) };
         return list.map((d, i) => ({ text: `${pad(`#${i + 1}`, 5)}T${d.tier} ${pad(d.name, 30)}${pad(cr(d.price), 12)}${d.note ?? ''}` }));
       },

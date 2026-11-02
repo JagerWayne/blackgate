@@ -14,9 +14,7 @@ import { HOST_LABEL } from '../data/enums.js';
 import { drawAccess, drawFiles, drawLogs, drawRecords } from './sessionTabs.js';
 import { sessionActionControls } from './sessionActions.js';
 import { contractLabel } from '../state/contracts.js';
-import { ram, ramSpeed } from '../state/gateway.js';
 import { traceWarnAt } from '../systems/sessionTick.js';
-import { ramLoad, swapFactor } from '../systems/sessionTasks.js';
 import { RECORD_LABEL, recordText } from '../state/gameState.js';
 import { hint } from '../data/content.js';
 import { taskRow } from '../ui/taskFx.js';
@@ -71,15 +69,6 @@ export function drawSession(ctx, sk, r, game, ui, input, events, view) {
   controls.push(section(`TASK LANES // ${s.tasks.length}`));
   if (!s.tasks.length) controls.push(label('no tasks running', 10, sk.dim));
   s.tasks.forEach((t) => controls.push(taskRow(t, game.uiTime ?? 0)));
-  // the RAM the running tools take: past the top the machine swaps, and every
-  // task slows down
-  const have = Math.max(ram(game.player.gateway), 1);
-  const used = Math.round(ramLoad(game));
-  const swap = swapFactor(game);
-  const ramText = swap < 1
-    ? `RAM ${used} / ${have} GB // SWAPPING ${Math.round(swap * 100)}% SPEED`
-    : `RAM ${used} / ${have} GB // ${ramSpeed(game.player.gateway).toFixed(2)}x SPEED`;
-  controls.push(meter(ramText, Math.min(used / have, 1), swap < 1 ? sk.danger : sk.accent));
   const scroll = { x: pane.x, y: pane.y, w: pane.w, h: Math.max(pane.h - 36, 20) };
   drawScrolled(ctx, sk, scroll, controls, 'sess.side', ui, input, events);
   const disc = { x: pane.x, y: pane.y + pane.h - 26, w: pane.w - 6, h: 26 };

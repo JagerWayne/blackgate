@@ -8,7 +8,7 @@ import { STARTER_TOOLS } from '../data/enums.js';
 import { seedWorld } from './seed.js';
 
 /// The shape of a saved run. A save of any other version is turned away.
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 /// Builds a new run.
 export function makeGame(handle, seed) {
@@ -17,11 +17,7 @@ export function makeGame(handle, seed) {
   const gw = makeGateway();
   gw.ip = `172.${range(rng, 16, 31)}.${range(rng, 0, 255)}.${range(rng, 2, 254)}`;
   gw.parts = [
-    { kind: 'cpu', level: 1, name: 'PHENOM-X 4-CORE' },
-    { kind: 'ram', level: 1, name: '16 GB DDR4 SODIMM' },
-    { kind: 'storage', level: 1, name: '32 GB 5400RPM DISK' },
-    { kind: 'modem', level: 1, name: '100 Mbps DOCSIS MODEM' },
-    { kind: 'security', level: 1, name: 'SURGE PROTECTOR + SENSOR' },
+    { kind: 'cpu', level: 1, name: 'SERVER XEON GEN 1 // 32 CORES' },
   ];
 
   const bank = world.companies.findIndex((c) => c.kind === 'bank');

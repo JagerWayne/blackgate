@@ -69,14 +69,12 @@ function componentRows(ctx, wrapW, sk, game, g, cat, migrating, armed) {
     const swap = plan.out.length > 0;
     const sure = armed === id && !why && swap;
     const stat = cat === 'cpu'
-      ? `${d.multiplier}x crypt // ${d.lanes} lanes`
-      : cat === 'ram'
-        ? `${d.memory} GB // ${d.buffer_speed} MT/s // ${gw.ramSpeedOf(d.tier).toFixed(2)}x speed`
-        : cat === 'storage'
-          ? `${d.capacity >= 1024 ? `${d.capacity / 1024} TB` : `${d.capacity} GB`} of drive space`
+      ? `${d.lanes} thread slots a socket`
+      : cat === 'storage'
+        ? `${d.capacity >= 1024 ? `${d.capacity / 1024} TB` : `${d.capacity} GB`} of drive space`
         : cat === 'modem'
-          ? `${d.bandwidth} Mb/s // ${d.hops} hops`
-          : `trace delay ${d.trace_delay} // +${Math.round(d.raid_shield * 100)}% shield`;
+          ? `${d.bandwidth >= 1000 ? `${d.bandwidth / 1000} Gb/s` : `${d.bandwidth} Mb/s`} // ${d.hops} hops`
+          : `trace delay ${d.trace_delay} // +${Math.round(d.raid_shield * 100)}% shield${d.failsafe ? ' // burns the drives in a raid' : ''}`;
     const cells = [
       { text: d.name, size: FONT.emphasis, color: sk.text_hi, col: 0, line: 0 },
       { text: `${d.price} cr`, size: FONT.body, color: sk.warn, align: 'right', col: 1, line: 0 },

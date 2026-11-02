@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initContent } from '../src/data/content.js';
 import { makeGame } from '../src/state/gameState.js';
+import { storage, bandwidth } from '../src/state/gateway.js';
 import { spawnContract } from '../src/state/contractSpawn.js';
 import { mapHosts } from '../src/state/mapQuery.js';
 import { acceptContract, submitContract, evaluateMissions } from '../src/state/contracts.js';
@@ -59,8 +60,8 @@ test('the gateway numbers follow what is fitted', async () => {
   const g = makeGame('TEST', 7);
   const lanes1 = g.player.gateway.parts.filter((p) => p.kind === 'cpu').length;
   assert.ok(lanes1 >= 1);
-  // RAM and a drive are fitted from the start
-  const ram = g.player.gateway.parts.filter((p) => p.kind === 'ram').reduce((n, p) => n + p.level, 0);
-  assert.ok(ram >= 1);
-  assert.ok(g.player.gateway.parts.some((p) => p.kind === 'storage'));
+  // the drive and the uplink come with the chassis; there is no RAM part
+  assert.ok(!g.player.gateway.parts.some((p) => p.kind === 'ram'));
+  const gwy = g.player.gateway;
+  assert.ok(storage(gwy) > 0 && bandwidth(gwy) > 0);
 });

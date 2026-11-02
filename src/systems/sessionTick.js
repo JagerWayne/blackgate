@@ -2,9 +2,8 @@
 
 import { makeSession, pushLine } from '../state/session.js';
 import { note, discover, routeFactor, toolLevel } from '../state/gameState.js';
-import { bandwidth, hops, traceFactor, warnAt, heatFactor, ramSpeed } from '../state/gateway.js';
+import { bandwidth, hops, traceFactor, warnAt, heatFactor } from '../state/gateway.js';
 import { completeTask } from './sessionComplete.js';
-import { swapFactor } from './sessionTasks.js';
 import { voiceAdmin } from '../state/voice.js';
 import { spammed, SPAM_TRACE } from '../state/intel.js';
 
@@ -93,11 +92,9 @@ export function sessionTick(game, dt) {
     return;
   }
   const done = [];
-  // faster RAM speeds every task up; too little for what is running swaps
-  const memo = ramSpeed(game.player.gateway) * swapFactor(game);
   s.tasks.forEach((t, i) => {
     const load = Math.max(1 - 0.05 * (s.tasks.length - 1), 0.6);
-    t.progress += (dt / t.dur) * load * memo;
+    t.progress += (dt / t.dur) * load;
     if (t.progress >= 1) done.push(i);
   });
   done.reverse().forEach((i) => {

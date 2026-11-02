@@ -340,7 +340,7 @@ matching button does, with the same costs, checks and messages.
 | Command | Does |
 |---|---|
 | `gw specs` | The fitted parts, by slot |
-| `gw shop [cpu\|ram\|storage\|modem\|security\|chassis]` | Parts for sale |
+| `gw shop [cpu\|storage\|modem\|security\|chassis]` | Parts for sale |
 | `gw buy <#> [--yes]` | Buy from the last shop list (`--yes` if it takes a part out) |
 | `gw remove <slot #> --yes` | Take a part out into stock |
 | `gw stock` | The parts in stock |
@@ -576,31 +576,41 @@ own colours and header layout.
 
 ## Your machine: the gateway
 
-Your gateway is a **chassis** filled with **parts**. The chassis sets how
-many of each part fit:
+Your gateway is a **chassis** filled with **parts**. The chassis comes with a
+drive and an uplink of its own, and sets how many of each part fit:
 
-| Chassis | CPU | RAM | Storage | Modem | Security |
-|---|---|---|---|---|---|
-| RELIC NANO-BOX | 1 | 1 | 1 | 1 | 1 |
-| CERBERUS MID-TOWER | 2 | 2 | 2 | 1 | 1 |
-| AEGIS 2U RACKMOUNT | 2 | 4 | 2 | 1 | 2 |
-| KOWLOON GHOST CHASSIS | 4 | 4 | 3 | 2 | 2 |
-| LEVIATHAN CRYO-FRAME | 6 | 8 | 4 | 2 | 3 |
+| Chassis | Price | CPU sockets | Onboard drive | Onboard uplink | Defense slots | Rack | Trait |
+|---|---|---|---|---|---|---|---|
+| PELICAN FIELD RIG | free | 1 | 2 TB (+1 card) | 1 Gbps (+1) | 0 |  | high physical risk |
+| GHOST-VPS BASTION | 6,500 | 2 | 4 TB (+1 card) | 2.5 Gbps (+1) | 0 |  | offshore hosting |
+| STEALTH MICRO-SERVER | 14,000 | 2 | 8 TB (+2 cards) | 5 Gbps (+1) | 1 |  | hidden in a utility enclosure |
+| SUB-ZERO RACK | 32,000 | 4 | 32 TB (+4 cards) | 10 Gbps (+1) | 2 | yes | soundproofed safehouse |
+| DATASTORE RACK | 48,000 | 3 | 128 TB (+4 cards) | 10 Gbps (+1) | 2 | yes | cold storage |
+| CRYO-COOLED CLUSTER | 75,000 | 12 | 16 TB (+2 cards) | 10 Gbps (+1) | 1 |  | power spikes |
+| MOBILE C2 VAN | 120,000 | 8 | 64 TB (+4 cards) | 25 Gbps (+2) | 3 |  | base on wheels |
 
 The parts:
 
-- **CPU:** how many tasks can run at once. All CPUs in a machine must be the
-  same model.
-- **RAM:** makes tasks run faster. Each running task loads its tool into RAM;
-  run more than your RAM holds and every task slows down (*SWAPPING*). All
-  RAM sticks must be the same model, fitted in sets of 1, 2, 4 or 8.
-- **Storage:** how much you can download.
-- **Modem:** download speed, and how many hops your route can take cleanly.
-- **Security:** protection against traces and raids, including the
-  failsafes.
+- **Compute:** each socket gives thread slots, which is how many tasks can
+  run at once. All compute parts in a machine must be the same model.
+  SERVER XEON GEN 1 // 32 CORES (1,200 cr); SERVER EPYC GEN 2 // 64 CORES (3,500 cr); SERVER EPYC GEN 3 // 128 CORES (7,000 cr).
+- **Storage:** how much you can download. Cards add to the onboard drive; the
+  ZFS enclosures need a rack chassis.
+  ENCRYPTED NVME STRIP 4 TB (1,500 cr); ENCRYPTED NVME STRIP 8 TB (3,200 cr); ENCRYPTED NVME STRIP 16 TB (6,000 cr); ZFS FLASH ENCLOSURE 32 TB (9,500 cr); ZFS FLASH ENCLOSURE 64 TB (16,000 cr); ZFS FLASH ENCLOSURE 128 TB (28,000 cr).
+- **Modem:** download speed (added to the onboard uplink), and how many hops
+  your route can take cleanly.
+  FTTP MODEM 1 GBPS (800 cr); FTTP MODEM 2.5 GBPS (2,200 cr); SFP+ OPTICAL TRUNK 10 GBPS (7,500 cr); LEO PHASED-ARRAY 25 GBPS (18,000 cr).
+- **Security:** sensors and failsafes against traces and raids. They work
+  together: the earliest warning, the best shield and any failsafe count. A
+  chassis with no defense slot cannot fit them.
+  MULTI-SPECTRUM PERIMETER SENSORS (3,000 cr); AUTOMATED THERMITE CORE MELT (8,500 cr).
 
 Parts you take out go to your **stock**. Selling a part from stock pays 30%
 to 55% of its price.
+
+A run saved before this hardware (save version 1) is converted when it
+loads: every part and the old chassis are paid back at the old prices, and
+the gateway goes back to the starter rig.
 
 ---
 

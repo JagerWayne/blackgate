@@ -6,7 +6,7 @@ const { app, BrowserWindow, Menu, dialog, protocol, net, ipcMain } = require('el
 const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
-const { readBuild, seed, saveFile: saveIn } = require('./files.js');
+const { readBuild, seed, saveFile: saveIn, userCopyOk } = require('./files.js');
 
 const ROOT = path.join(__dirname, '..');
 const DATA = path.join(ROOT, 'data');
@@ -59,7 +59,7 @@ function serve(request) {
   if (file.startsWith(DATA + path.sep) && file.endsWith('.json')) {
     const sub = path.relative(DATA, file);
     const text = userJson(sub);
-    if (text != null) return new Response(text, { headers: { 'content-type': 'application/json' } });
+    if (text != null && userCopyOk(text, fs.readFileSync(file, 'utf8'))) return new Response(text, { headers: { 'content-type': 'application/json' } });
     fallbacks.add(sub.replaceAll('\\', '/'));
   }
   return net.fetch(pathToFileURL(file).toString());

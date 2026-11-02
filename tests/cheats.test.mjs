@@ -4,7 +4,7 @@
 import { offerCap } from '../src/systems/clockTick.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { initContent, software, chassis } from '../src/data/content.js';
+import { initContent, software, chassis, componentsOf } from '../src/data/content.js';
 import { makeGame } from '../src/state/gameState.js';
 import { makeInput, endFrame } from '../src/systems/input.js';
 import { frameKeys } from '../src/systems/hotkeys.js';
@@ -267,7 +267,9 @@ test('reveal, tools and gateway do what they say', () => {
   click(state, 'cheat.gateway');
   const best = Math.max(...chassis().map((c) => c.tier));
   assert.equal(g.player.gateway.chassis, best, 'the best chassis');
-  assert.ok(g.player.gateway.parts.every((p) => p.level === 5), 'the best parts');
+  const rack = chassis().find((c) => c.tier === best).rack;
+  const topTier = (kind) => Math.max(...componentsOf(kind).filter((d) => !d.needs_rack || rack).map((d) => d.tier));
+  assert.ok(g.player.gateway.parts.every((p) => p.level === topTier(p.kind)), 'the best parts the chassis takes');
   assert.ok(g.player.gateway.parts.length >= 4, 'every slot filled');
   assert.ok(g.player.gateway.migrateUntil <= g.clock.minutes, 'and no downtime');
 });

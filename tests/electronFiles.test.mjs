@@ -10,7 +10,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { buildId, readBuild, seed, saveFile } = require('../electron/files.js');
+const { buildId, readBuild, seed, saveFile, userCopyOk } = require('../electron/files.js');
 
 test('two builds of the same version get different ids', () => {
   const a = buildId('0.1.0', new Date('2026-11-01T10:00:00Z'));
@@ -65,4 +65,13 @@ test('a save name is a plain name, never a path', () => {
   for (const bad of ['../x', 'a/b', 'a\\b', '', '..']) {
     assert.throws(() => saveFile(dir, bad), /bad save key/, bad);
   }
+});
+
+test('a data file copy of an older schema than the shipped one is not used', () => {
+  const shipped = '{\n  "schema": 2,\n  "chassis": []\n}';
+  assert.equal(userCopyOk('{"chassis": []}', shipped), false, 'a copy with no schema is older');
+  assert.equal(userCopyOk('{"schema": 1}', shipped), false);
+  assert.equal(userCopyOk('{"schema": 2, "edited": true}', shipped), true, 'same schema: the player edits count');
+  assert.equal(userCopyOk('{"schema": 3}', shipped), true);
+  assert.equal(userCopyOk('{"chassis": []}', '{"chassis": []}'), true, 'a file with no schema is never refused');
 });
