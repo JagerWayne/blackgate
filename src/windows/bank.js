@@ -50,7 +50,7 @@ export function drawBank(ctx, sk, r, game, ui, input, events) {
 
 /// The money movements, newest first. A run saved before the ledger kept its
 /// own history reads what is left of it in the operator's log.
-export function ledgerOf(game) {
+function ledgerOf(game) {
   if (Array.isArray(game.ledger)) return game.ledger.slice().reverse();
   return game.log
     .filter((l) => l.text.startsWith('ledger'))

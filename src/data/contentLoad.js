@@ -27,7 +27,7 @@ export const TOPICS = Object.keys(TOPIC_FILES);
 
 /// The items that live one per file: group -> the item ids. Every item is a
 /// file of its own, so it can be read, changed and diffed on its own.
-export const ITEM_FILES = {
+const ITEM_FILES = {
   sessionActions: ['bypassFirewall', 'blindMonitor', 'scrubProxy', 'wipeLogs', 'scrubOwnLogs'],
   hints: [
     'contractCapacity', 'destroyObjective', 'allLanesBusy', 'destroyWarning', 'destroyOrder',

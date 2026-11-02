@@ -37,7 +37,7 @@ export function generateWorld(seed) {
 }
 
 /// The city closest to a point on the map.
-export function nearestCity(x, y) {
+function nearestCity(x, y) {
   let best = 0;
   cities().forEach((c, i) => {
     const b = cities()[best];

@@ -17,7 +17,7 @@ const COMPANY_PLAN = [
 ];
 
 /// Everyone in a new world: the staff, then civilians up to this many.
-export const POPULATION = 2000;
+const POPULATION = 2000;
 
 /// What a civilian does, and where their mail lives.
 const CIVILIAN_JOBS = [

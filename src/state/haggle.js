@@ -11,7 +11,7 @@ import { note, toast } from './gameState.js';
 /// The most a client will hear asked: above this the listing is pulled.
 export const INSULT = 2;
 /// How long an insulted client refuses to deal, in game minutes.
-export const SNUB_MINUTES = 24 * 60;
+const SNUB_MINUTES = 24 * 60;
 const STEEP = 1.78;
 
 /// A broker's site details, or a plain one for a client without a page.

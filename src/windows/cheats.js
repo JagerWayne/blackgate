@@ -11,7 +11,7 @@ import { draw as drawText, ellipsize, FONT } from '../core/text.js';
 import { SPEEDS, SKIPS, timeScale, cheatsOf } from '../state/cheats.js';
 import { RATING_MAX } from '../data/enums.js';
 
-export const CHEAT_TABS = ['PLAYER', 'WORLD', 'SWITCHES'];
+const CHEAT_TABS = ['PLAYER', 'WORLD', 'SWITCHES'];
 const TWO_COLUMNS = 700;
 
 const money = (n) => n.toLocaleString('en-US');

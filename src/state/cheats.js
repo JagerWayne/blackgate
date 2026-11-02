@@ -13,7 +13,7 @@ import { onMinutes } from '../systems/clockTick.js';
 export const SPEEDS = [1, 2, 4, 8, 16];
 
 /// The hottest the menu will set the heat: a raid starts at 100.
-export const HEAT_MAX = 99;
+const HEAT_MAX = 99;
 
 /// The time skips, in minutes.
 export const SKIPS = [60, 360, 1440];

@@ -114,7 +114,7 @@ const GLIDE_ZOOM = 3;
 
 /// Sets the camera's goal on a host: centred on it, zoomed in to at least
 /// GLIDE_ZOOM. The camera moves there over the next frames.
-export function aimAt(view, h) {
+function aimAt(view, h) {
   const z = Math.max(camera(view).z, GLIDE_ZOOM);
   view.goal = { zoom: z, ox: h.x - 0.5 / z, oy: toV(h.y) - 0.5 / z };
 }

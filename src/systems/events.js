@@ -196,8 +196,8 @@ function trackTarget(state, contractId, desk) {
 function handleToggle(state, e) {
   const g = state.game;
   if (e.id === 'set.auto') g.settings.autosave = e.value;
-  if (e.id === 'set.fx') g.settings.effects = e.value;
-  if (e.id === 'set.sound') g.settings.sound = e.value;
+  else if (e.id === 'set.fx') g.settings.effects = e.value;
+  else if (e.id === 'set.sound') g.settings.sound = e.value;
   else if (e.id === 'set.fast') cheat.setTimeScale(g, e.value ? 8 : 1);
   else if (e.id === 'mg.accept') (state.win.missions ??= {}).accept = e.value;
 }

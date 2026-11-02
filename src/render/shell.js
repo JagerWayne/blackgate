@@ -115,7 +115,6 @@ export function drawHeader(ctx, game, sk, r, ui, input, events) {
   const pb = { x: bx, y: r.y + 14, w: 28, h: 28 };
   if (drawButton(ctx, ui, sk, 'hdr.pause', pb, game.paused ? '\u25B6' : '\u2016', ghost(), input)) {
     game.paused = !game.paused;
-    events.push({ type: 'click', id: 'hdr.pause' });
   }
   bx += 38;
   if (showActive) {

@@ -41,7 +41,7 @@ export function sessionActionControls(game, sk, s) {
 }
 
 /// Is a sabotage job live on the host this link is on?
-export function sabotageOn(game, s) {
+function sabotageOn(game, s) {
   return game.contracts.some((c) => (c.state === 'accepted' || c.state === 'ready')
     && c.kind === 'destroy' && c.target === s.target);
 }

@@ -16,7 +16,7 @@ import { hasSample } from '../state/voice.js';
 
 /// The attacks, in the order they make sense: find out, then the phone, then
 /// the inbox.
-export const PEOPLE_ACTIONS = [
+const PEOPLE_ACTIONS = [
   { kind: 'Profile', text: 'PROFILE', gets: 'OSINT: their email, role, phone, social and leaked password' },
   { kind: 'CallRecord', text: 'CALL + RECORD', gets: 'a voice recording for voice locks; leaves a call log' },
   { kind: 'SpoofCall', text: 'SPOOFED CALL', gets: 'the recording, posing as their IT desk: no log, slower' },

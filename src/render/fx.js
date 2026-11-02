@@ -8,7 +8,7 @@ import { traceWarnAt } from '../systems/sessionTick.js';
 const GLITCH = 0.35;
 
 /// What the effects remember between frames.
-export function makeFx() {
+function makeFx() {
   return { linked: false, online: false, tasks: 0, alarmT: 0, glitchT: 0, lines: null };
 }
 

@@ -75,7 +75,7 @@ export function chatRows(ctx, log, w) {
 
 /// A chat console: a dark framed box, the client on the left in their colour,
 /// you on the right in blue, a status line along the bottom.
-export function chatConsole(c, b, hg) {
+function chatConsole(c, b, hg) {
   const log = hg?.log ?? [];
   const status = !hg ? 'channel open // make your ask below'
     : hg.state === 'waiting' ? `${c.client} is typing…`

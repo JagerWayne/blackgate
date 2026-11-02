@@ -51,7 +51,7 @@ export function navigate(view, url, now = 0) {
 }
 
 /// Closes a tab; the last one stays open.
-export function closeTab(view, i) {
+function closeTab(view, i) {
   browserOf(view);
   if (view.tabs.length <= 1 || !view.tabs[i]) return;
   view.tabs.splice(i, 1);

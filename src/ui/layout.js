@@ -54,7 +54,7 @@ export function placeChips(ctx, left, top, width, items) {
 }
 
 /// The height one control takes at a given width.
-export function heightOf(ctx, control, width, top, bottom, rest) {
+function heightOf(ctx, control, width, top, bottom, rest) {
   switch (control.kind) {
     case 'section':
       return 28 + GAP;

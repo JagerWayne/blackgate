@@ -98,7 +98,7 @@ export function addLeads(game, company) {
 
 /// The locked service a person's access opens: the strongest lock on their
 /// company's hosts that their clearance reaches. Voice locks need a voice.
-export function serviceFor(game, i) {
+function serviceFor(game, i) {
   const p = game.world.people[i];
   const co = game.world.companies[p.company];
   let best = null;

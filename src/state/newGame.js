@@ -62,7 +62,7 @@ export function makeGame(handle, seed) {
     story: { act: 0, faction: 0, flags: {} },
     session: null,
     nextId: 1,
-    settings: { sound: true, effects: true, autosave: true, fastForward: false, timeScale: 1, fontScale: 1, darkSkin: false },
+    settings: { sound: true, effects: true, autosave: true, fastForward: false, timeScale: 1, darkSkin: false },
     cheats: { freezeHeat: null, freezeTrace: false },
     stats: {
       missionsDone: 0, missionsFailed: 0, hostsBreached: 0, filesStolen: 0,

@@ -232,7 +232,7 @@ function planPeople(game, s, h, kind, i) {
 const BARE_TASK_GB = 4;
 
 /// The RAM one running task takes, in GB: its tool's load, eight GB a unit.
-export function taskRam(kind) {
+function taskRam(kind) {
   const def = software().find((d) => d.kind === toolFor(kind));
   return def ? toolRam(def) : BARE_TASK_GB;
 }
