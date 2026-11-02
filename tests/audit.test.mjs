@@ -9,6 +9,11 @@ import { startTask, taskError } from '../src/systems/sessionTasks.js';
 import { onMinutes } from '../src/systems/clockTick.js';
 import { traceFactor, storage } from '../src/state/gateway.js';
 import { acceptContract, declineContract } from '../src/state/contracts.js';
+import { drawGatewayShop } from '../src/windows/gatewayShop.js';
+import { makeInput } from '../src/systems/input.js';
+import { makeUiState } from '../src/ui/kit.js';
+import { theme } from '../src/core/theme.js';
+import { stubCtx } from './stubCanvas.mjs';
 
 await initContent();
 
@@ -115,6 +120,15 @@ test('a file being copied cannot be deleted under the copy', () => {
   const i = h.files.findIndex((f) => !f.deleted && f.enc === 0);
   assert.equal(startTask(g, 'CopyFile', i), null);
   assert.ok(taskError(g, g.session, 'DeleteFile', i));
+});
+
+test('the supply line shows what a security part does', () => {
+  const ctx = stubCtx();
+  const game = makeGame('SHOP', 7);
+  const box = { x: 0, y: 0, w: 900, h: 700 };
+  drawGatewayShop(ctx, theme(), box, game, makeUiState(), makeInput(), [], {}, 0, ['security'], { security: 'SECURITY' });
+  const shown = ctx.texts.map((t) => t.s).join(' ');
+  assert.match(shown, /auditory/);
 });
 
 test('a file is freed when its job is turned down', () => {

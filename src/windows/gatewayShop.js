@@ -5,7 +5,7 @@ import { drawTable, flex } from '../ui/table.js';
 import { primary, danger, ghost } from '../ui/styles.js';
 import { stockPlan } from '../state/economy.js';
 import { chassisDef, componentsOf, hint } from '../data/content.js';
-import { FONT } from '../core/text.js';
+import { FONT, wrapLines } from '../core/text.js';
 import * as gw from '../state/gateway.js';
 
 /// Draws the shop half of the gateway window.
@@ -20,7 +20,7 @@ export function drawGatewayShop(ctx, sk, r, game, ui, input, events, view, tab, 
     ? chassisRows(sk, game, g, migrating, view.armed)
     : cat === 'stock'
       ? stockRows(sk, game, view.armed)
-      : componentRows(sk, game, g, cat, migrating, view.armed);
+      : componentRows(ctx, listBody.w - 160, sk, game, g, cat, migrating, view.armed);
   drawTable(ctx, sk, listBody, {
     id: `gw.shop.${tab}`,
     columns: [flex('PART', 0.66), flex('PRICE', 0.34, 'right')],
@@ -59,7 +59,7 @@ function chassisRows(sk, game, g, migrating, armed) {
 /// Three lines a part: name and price, what it does, what it is. The row
 /// says how many of it are fitted, what a click adds, and what it takes out
 /// to stock; one that cannot be fitted says why.
-function componentRows(sk, game, g, cat, migrating, armed) {
+function componentRows(ctx, wrapW, sk, game, g, cat, migrating, armed) {
   return componentsOf(cat).map((d) => {
     const count = gw.partsOf(g, cat).filter((p) => p.level === d.tier).length;
     const plan = gw.fitPlan(g, d);
@@ -84,14 +84,18 @@ function componentRows(sk, game, g, cat, migrating, armed) {
       { text: d.note, size: FONT.body, color: sk.dim, col: 0, line: 2 },
     ];
     if (count) cells.push({ text: `FITTED ${count}`, size: FONT.body, color: sk.accent, align: 'right', col: 1, line: 1 });
+    // what the part does, when the catalogue says: wrapped lines under the note
+    const effect = d.effect ? wrapLines(ctx, d.effect, FONT.body, Math.max(wrapW, 120)) : [];
+    effect.forEach((text, i) => cells.push({ text, size: FONT.body, color: sk.text, col: 0, line: 3 + i, span: true }));
+    const last = 3 + effect.length;
     if (why) {
       // a full set of this model is not a problem to warn about, only a fact
-      cells.push({ text: why, size: FONT.body, color: count && plan.why ? sk.dim : sk.warn, col: 0, line: 3 });
+      cells.push({ text: why, size: FONT.body, color: count && plan.why ? sk.dim : sk.warn, col: 0, line: last });
     } else if (swap) {
       const names = plan.out.length > 1 ? `${plan.out.length}x ${plan.out[0].name}` : plan.out[0].name;
-      cells.push({ text: `${sure ? 'moves' : hint('swapOut')} ${names}${sure ? ' to stock' : ''}`, size: FONT.body, color: sure ? sk.danger : sk.warn, col: 0, line: 3, span: sure });
+      cells.push({ text: `${sure ? 'moves' : hint('swapOut')} ${names}${sure ? ' to stock' : ''}`, size: FONT.body, color: sure ? sk.danger : sk.warn, col: 0, line: last, span: sure });
     } else if (plan.add > 1) {
-      cells.push({ text: `adds ${plan.add} sticks // ${cost} cr`, size: FONT.body, color: sk.warn, col: 0, line: 3 });
+      cells.push({ text: `adds ${plan.add} sticks // ${cost} cr`, size: FONT.body, color: sk.warn, col: 0, line: last });
     }
     const row = { grid: true, cells, marker: sure ? sk.danger : count ? sk.accent : null };
     // a full set of the fitted model has nothing to buy: no button
