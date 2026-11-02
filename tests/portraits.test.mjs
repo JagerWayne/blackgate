@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readdirSync } from 'node:fs';
 import { initContent, portraits } from '../src/data/content.js';
 import { makeGame } from '../src/state/gameState.js';
-import { portraitOf, PLACEHOLDER } from '../src/ui/portrait.js';
+import { portraitOf, PLACEHOLDER, loadedImage } from '../src/ui/portrait.js';
 import { connect } from '../src/systems/sessionTick.js';
 import { drawRecords } from '../src/windows/sessionTabs.js';
 import { handleEvents } from '../src/systems/events.js';
@@ -102,4 +102,28 @@ test('picking a row shows that person in full in the detail pane', () => {
   const p = g.world.people[person];
   const texts = draw(g, view);
   for (const v of [p.email, p.social, String(p.clearance), p.status]) assert.ok(texts.includes(v), v);
+});
+
+test('a portrait that failed to load is tried again later, not for ever', () => {
+  const made = [];
+  globalThis.Image = class {
+    set src(v) {
+      made.push(v);
+      this.onerror?.();
+    }
+  };
+  const realNow = Date.now;
+  let t = 1000;
+  Date.now = () => t;
+  try {
+    assert.equal(loadedImage('missing.jpg'), null);
+    assert.equal(loadedImage('missing.jpg'), null);
+    assert.equal(made.length, 1, 'not asked for again at once');
+    t += 60000;
+    loadedImage('missing.jpg');
+    assert.equal(made.length, 2, 'asked for again after a while');
+  } finally {
+    Date.now = realNow;
+    delete globalThis.Image;
+  }
 });

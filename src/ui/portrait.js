@@ -24,13 +24,21 @@ export function portraitOf(game, index) {
 
 /// The images loaded so far, by path.
 const cache = new Map();
+/// How long a failed load waits before it is tried again.
+const RETRY_MS = 30000;
 
 /// A loaded image, or null while it loads (or where there is no browser).
 export function loadedImage(src) {
   if (typeof Image === 'undefined') return null;
   let img = cache.get(src);
+  // a load that failed is tried again after a while, not shown as missing for ever
+  if (img?.failedAt && Date.now() - img.failedAt > RETRY_MS) img = null;
   if (!img) {
     img = new Image();
+    img.onerror = () => {
+      img.failedAt = Date.now();
+      console.warn('portrait: could not load', src);
+    };
     img.src = src;
     cache.set(src, img);
   }
