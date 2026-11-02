@@ -63,6 +63,9 @@ export function handleDsnClick(view, id, now) {
   browserOf(view);
   const tab = tabOf(view);
   if (id.startsWith('dsn.go.')) navigate(view, id.slice(7), now);
+  // the sidebar's links have their own ids: a button drawn twice under one id
+  // loses its click to whichever copy is drawn first
+  else if (id.startsWith('dsn.side.')) navigate(view, id.slice(9), now);
   else if (id === 'dsn.addr.go') navigate(view, view.addr ?? tab.url, now);
   else if (id === 'dsn.search.go') navigate(view, `search/${encodeURIComponent((view.query ?? '').trim() || ' ')}`, now);
   else if (id === 'dsn.home') navigate(view, HOME, now);
@@ -162,7 +165,7 @@ function sidebar(game, url) {
     const style = here(u)
       ? { ...netPrimary() }
       : { ...flat(), dark: { ...flat().dark, text: tint ?? 'text' }, light: { ...flat().light, text: tint ?? 'text' } };
-    return buttons([{ id: `dsn.go.${u}`, text, style }]);
+    return buttons([{ id: `dsn.side.${u}`, text, style }]);
   };
   const cats = darknet().categories;
   return [

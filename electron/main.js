@@ -153,6 +153,7 @@ app.whenReady().then(() => {
     minWidth: 1024,
     minHeight: 640,
     fullscreenable: true,
+    fullscreen: true, // starts full screen; F11 leaves it
     backgroundColor: '#05080c',
     icon: path.join(ROOT, 'build', 'icon.png'),
     webPreferences: {

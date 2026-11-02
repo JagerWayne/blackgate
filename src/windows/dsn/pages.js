@@ -73,11 +73,12 @@ function hub(game, view) {
     accent: 0x7fd4ff,
     controls: [
       banner([
-        ' ___                ___                    _  _ ___ _____ ',
-        '|   \\ ___ _ __ _ __/ __|_ __  __ _ __ ___| \\| | __|_   _|',
-        '| |) / -_) \'_ \\ \'_ \\__ \\ \'_ \\/ _` / _/ -_) .` | _|  | |  ',
-        '|___/\\___| .__/ .__/___/ .__/\\__,_\\__\\___|_|\\_|___| |_|  ',
-        '         |_|  |_|      |_|   the hidden market for quiet work',
+        ' ____  ____  _   _ _____ _____ ',
+        '|  _ \\/ ___|| \\ | | ____|_   _|',
+        '| | | \\___ \\|  \\| |  _|   | |  ',
+        '| |_| |___) | |\\  | |___  | |  ',
+        '|____/|____/|_| \\_|_____| |_|  ',
+        '   THE MARKET FOR THE ANONYMOUS',
       ], '#7fd4ff'),
       field('dsn.search', view.query ?? '', 'search listings, brokers, companies'),
       buttons([{ id: 'dsn.search.go', text: 'SEARCH', style: netPrimary() }]),

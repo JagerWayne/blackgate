@@ -13,8 +13,15 @@ import { targetsFor } from '../state/contractTarget.js';
 import { jobFiles } from '../state/contractSpawn.js';
 import { recordsKept, keepsRecord, recordText, RECORD_LABEL } from '../state/gameState.js';
 
-/// The kinds the builder posts, and their buttons.
-const KINDS = [['retrieve', 'RETRIEVE'], ['delete', 'DELETE'], ['destroy', 'DESTROY'], ['modify', 'ALTERATION']];
+/// The kinds the builder posts: their names on the market, and what each asks.
+const KINDS = [
+  ['retrieve', 'DATA HEIST', 'copy a file off the host and bring it home to your gateway'],
+  ['delete', 'SCRUBBERS', 'erase one file from the host, so it never existed'],
+  ['destroy', 'BURN BOOK', 'wipe the host: every file and every log on it'],
+  ['modify', 'PAPERWORK', "rewrite one detail in a person's record: a death, a pardon, a promotion"],
+  ['transfer', 'MONEY MOVES', 'move funds out of an account on a bank host'],
+  ['model', 'MIND THEFT', 'steal a trained AI model off a lab host'],
+];
 
 /// The deadlines on offer, in hours; 0 is the board's usual.
 const HOURS = [0, 6, 24, 72, 168];
@@ -33,6 +40,7 @@ export function drawMissions(ctx, sk, r, game, ui, input, events, view) {
   const c = [
     section('KIND'),
     buttons(KINDS.map(([k, text]) => ({ id: `mg.kind.${k}`, text, style: on(kind === k) }))),
+    label(KINDS.find(([k]) => k === kind)?.[2] ?? '', FONT.body, sk.dim),
     section('TARGET'),
     keyValue('HOST', h ? `${h.name} // ${h.ip}` : 'RANDOM', h ? sk.accent : sk.dim),
     buttons([
@@ -50,6 +58,8 @@ export function drawMissions(ctx, sk, r, game, ui, input, events, view) {
     if (!h) c.push(label('choose a host first to pick one of its files', FONT.body, sk.dim));
   } else if (kind === 'destroy') {
     c.push(label('every file and every log on the host', FONT.body, sk.dim));
+  } else if (kind === 'transfer' || kind === 'model') {
+    c.push(label(kind === 'transfer' ? 'the account and the amount are set by the job' : 'the model file is set by the job', FONT.body, sk.dim));
   } else {
     c.push(keyValue('PERSON', p ? p.name : 'RANDOM', p ? sk.accent : sk.dim));
     c.push(buttons([

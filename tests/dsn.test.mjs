@@ -221,3 +221,28 @@ test('the map kind dropdown opens, picks a kind and closes', () => {
   assert.equal(state.win.map.kind, 'relay');
   assert.equal(state.win.map.kindOpen, false);
 });
+
+test('the hub link "manage your jobs" opens MY JOBS when clicked', () => {
+  const state = playState();
+  const g = state.game;
+  takeOffer(g, offered(g)[0].id);
+  openWindow(state.windows, 'dsn', DESK);
+  const draw = () => {
+    const ctx = stubCtx();
+    const ev = [];
+    state.game.uiTime += 5;
+    drawPlay(ctx, theme(), 1600, 900, state, ev);
+    handleEvents(state, ev, DESK);
+    return ctx;
+  };
+  draw();
+  const t = draw().texts.find((x) => /^manage your/.test(x.s));
+  assert.ok(t, 'the link is drawn');
+  // the sidebar's MY JOBS link is drawn first: it must not swallow this click
+  Object.assign(state.input, { mouse: { x: t.x + 5, y: t.y + 2 }, inside: true, pressed: true, down: true });
+  draw();
+  Object.assign(state.input, { pressed: false, down: false, released: true });
+  draw();
+  const v = state.win.dsn;
+  assert.equal(v.tabs[v.active].url, 'jobs');
+});
