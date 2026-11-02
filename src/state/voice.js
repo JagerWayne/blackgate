@@ -8,7 +8,7 @@
 export function voiceAdmin(game, host) {
   let best = null;
   game.world.people.forEach((p, i) => {
-    if (p.company !== host.company) return;
+    if (host.company == null || p.company !== host.company) return;
     if (best === null || p.clearance > game.world.people[best].clearance) best = i;
   });
   return best;

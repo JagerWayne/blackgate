@@ -4,11 +4,13 @@
 // hashing the world seed, so a run always shows the same site and no draw is
 // taken from the world's random numbers.
 
-import { custom } from '../../ui/controls.js';
+import { custom, field, buttons } from '../../ui/controls.js';
+import { flat } from '../../ui/styles.js';
 import { draw as drawText, ellipsize, FONT } from '../../core/text.js';
 import { socialImages, socialText, cities } from '../../data/content.js';
 import { portraitOf, drawPortrait, loadedImage } from '../../ui/portrait.js';
-import { phoneOf, intelOf } from '../../state/intel.js';
+import { intelOf } from '../../state/intel.js';
+import { detailLink } from './company.js';
 import { wrapRow } from '../notepad.js';
 
 const BLUE = '#3b5998';
@@ -20,17 +22,15 @@ const LINE = '#dddfe2';
 const BASE = './data/images/socialmedia/';
 const LH = 18;
 const FEED_POSTS = 14;
+const PAGE = 50;
+/// The biggest a square photo gets.
+const PHOTO_MAX = 520;
 
 /// A number from the seed and some words: the same every time.
 function hash(game, ...parts) {
   let h = 2166136261;
   for (const ch of `${game.seed}:${parts.join(':')}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
   return h;
-}
-
-/// Whether a person's profile shows their email and phone to anyone.
-export function isPublic(game, i) {
-  return hash(game, 'public', i) % 3 === 0;
 }
 
 /// One post: who wrote it, its photo and caption, when, and the counts.
@@ -92,7 +92,8 @@ const guessLines = (text, w) => Math.max(Math.ceil((text.length * 7.6) / Math.ma
 
 /// A post card: the author's face and name, the caption, the photo, the counts.
 function postCard(game, post) {
-  const photoH = (w) => Math.round(Math.min(w - 2, 640) * 0.56);
+  // the photo is square, as wide as the card allows up to PHOTO_MAX
+  const photoH = (w) => Math.round(Math.min(w - 2, PHOTO_MAX));
   return custom((w) => 60 + (guessLines(post.text, w) + 1) * LH + photoH(w) + 44, (ctx, sk, r, input, events) => {
     const box = { x: r.x, y: r.y, w: r.w, h: r.h - 10 };
     card(ctx, box);
@@ -109,7 +110,8 @@ function postCard(game, post) {
       y += LH;
     });
     y += 6;
-    const ph = { x: box.x + 1, y, w: box.w - 2, h: photoH(box.w) };
+    const side = photoH(box.w);
+    const ph = { x: box.x + (box.w - side) / 2, y, w: side, h: side };
     ctx.fillStyle = '#d0d4db';
     ctx.fillRect(ph.x, ph.y, ph.w, ph.h);
     const img = loadedImage(post.image);
@@ -127,9 +129,9 @@ function postCard(game, post) {
   });
 }
 
-/// The feed: the latest posts from everyone.
-function feed(game) {
-  const posts = Array.from({ length: FEED_POSTS }, (_, i) => postOf(game, `feed${i}`)).filter(Boolean);
+/// The feed: posts from random people, a new set each time the page loads.
+function feed(game, nonce) {
+  const posts = Array.from({ length: FEED_POSTS }, (_, i) => postOf(game, `feed${nonce}:${i}`)).filter(Boolean);
   return [topBar('sleekpages'), ...posts.map((p) => postCard(game, p))];
 }
 
@@ -138,13 +140,12 @@ function profile(game, i) {
   const p = game.world.people[i];
   if (!p) return null;
   const co = companyOf(game, p);
-  const open = isPublic(game, i);
   const about = [
-    ['Works at', `${title(p.role)} at ${co ? title(co.name) : 'nowhere'}`],
+    ['Works at', co ? `${title(p.role)} at ${title(co.name)}` : title(p.role)],
     ['Lives in', title(cityOf(game, p))],
-    ['Handle', p.social ?? '-'],
-    ['Email', open ? p.email : 'private'],
-    ['Phone', open ? phoneOf(p) : 'private'],
+    ['Handle', 'social'],
+    ['Email', 'email'],
+    ['Phone', 'phone'],
   ];
   const head = custom(200, (ctx, sk, r, input, events) => {
     card(ctx, { x: r.x, y: r.y, w: r.w, h: r.h - 10 });
@@ -168,46 +169,72 @@ function profile(game, i) {
     drawText(ctx, 'VIEW DOSSIER', b.x + b.w / 2, b.y + b.h / 2, FONT.body, '#ffffff', { align: 'center', baseline: 'middle' });
     if (press(input, b)) events.push({ type: 'click', id: `sp.dossier.${i}` });
   });
-  const aboutBox = custom(about.length * 26 + 50, (ctx, sk, r) => {
+  // the handle, email and phone are links when public: a click files them
+  const aboutBox = custom(about.length * 26 + 50, (ctx, sk, r, input, events) => {
     card(ctx, { x: r.x, y: r.y, w: r.w, h: r.h - 10 });
     drawText(ctx, 'About', r.x + 14, r.y + 12, FONT.emphasis, INK);
     about.forEach(([k, v], n) => {
       const y = r.y + 40 + n * 26;
       drawText(ctx, k, r.x + 14, y, FONT.body, DIM);
-      drawText(ctx, ellipsize(ctx, v, FONT.body, r.w - 130), r.x + 110, y, FONT.body, v === 'private' ? '#a0a6b0' : INK);
+      if (['social', 'email', 'phone'].includes(v)) detailLink(ctx, game, i, v, r.x + 110, y, r.w - 130, BLUE, '#a0a6b0', input, events);
+      else drawText(ctx, ellipsize(ctx, v, FONT.body, r.w - 130), r.x + 110, y, FONT.body, INK);
     });
   });
   const posts = [0, 1, 2].map((n) => postOf(game, `p${i}.${n}`, i)).filter(Boolean);
   return [topBar(''), head, aboutBox, ...posts.map((post) => postCard(game, post))];
 }
 
-/// The directory: everyone, a row each.
-function people(game) {
-  const all = game.world.people;
-  const rows = custom(all.length * 52 + 50, (ctx, sk, r, input, events) => {
+/// Whether a person matches a search: name, role, company or city.
+export function matches(game, p, q) {
+  if (!q) return true;
+  const hay = `${p.name} ${p.role} ${companyOf(game, p)?.name ?? ''} ${cityOf(game, p)}`.toLowerCase();
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
+}
+
+/// People: a search over everyone, fifty to a page.
+function people(game, view) {
+  const q = (view.spQuery ?? '').trim();
+  const found = [];
+  game.world.people.forEach((p, i) => { if (matches(game, p, q)) found.push(i); });
+  const pages = Math.max(Math.ceil(found.length / PAGE), 1);
+  const at = Math.min(view.spPage ?? 0, pages - 1);
+  const shown = found.slice(at * PAGE, at * PAGE + PAGE);
+  const rows = custom(shown.length * 52 + 50, (ctx, sk, r, input, events) => {
     card(ctx, { x: r.x, y: r.y, w: r.w, h: r.h - 10 });
-    drawText(ctx, `People // ${all.length}`, r.x + 14, r.y + 12, FONT.emphasis, INK);
-    all.forEach((p, i) => {
-      const row = { x: r.x + 1, y: r.y + 40 + i * 52, w: r.w - 2, h: 52 };
+    drawText(ctx, `${q ? `"${q}" // ` : ''}${found.length.toLocaleString('en-US')} people // page ${at + 1} of ${pages}`, r.x + 14, r.y + 12, FONT.emphasis, INK);
+    shown.forEach((i, k) => {
+      const p = game.world.people[i];
+      const row = { x: r.x + 1, y: r.y + 40 + k * 52, w: r.w - 2, h: 52 };
       if (inside(input, row)) {
         ctx.fillStyle = '#f2f3f5';
         ctx.fillRect(row.x, row.y, row.w, row.h);
       }
       drawPortrait(ctx, sk, { x: row.x + 12, y: row.y + 6, w: 40, h: 40 }, portraitOf(game, i), p.sex);
       drawText(ctx, title(p.name), row.x + 64, row.y + 10, FONT.emphasis, BLUE);
-      drawText(ctx, ellipsize(ctx, `${title(p.role)} · ${title(companyOf(game, p)?.name)}`, FONT.body, row.w - 80), row.x + 64, row.y + 30, FONT.body, DIM);
+      const where = companyOf(game, p) ? `${title(p.role)} · ${title(companyOf(game, p).name)}` : title(p.role);
+      drawText(ctx, ellipsize(ctx, `${where} · ${title(cityOf(game, p))}`, FONT.body, row.w - 80), row.x + 64, row.y + 30, FONT.body, DIM);
       if (press(input, row)) go(events, `sleekpages/person/${i}`);
     });
   });
-  return [topBar('sleekpages/people'), rows];
+  const nav = [];
+  if (at > 0) nav.push({ id: `sp.search.page.${at - 1}`, text: '‹ PREVIOUS', style: flat() });
+  if (at < pages - 1) nav.push({ id: `sp.search.page.${at + 1}`, text: 'NEXT ›', style: flat() });
+  return [
+    topBar('sleekpages/people'),
+    field('sp.q', view.spQuery ?? '', 'search people: name, job, company or city'),
+    buttons([{ id: 'sp.search.go', text: 'SEARCH', style: flat() }]),
+    rows,
+    ...(nav.length ? [buttons(nav)] : []),
+  ];
 }
 
 /// The SleekPages page for the rest of an address, or null for a 404.
-export function sleekPage(game, rest) {
+export function sleekPage(game, rest, view = {}) {
   const [part, arg] = rest.split('/');
+  const nonce = view.tabs?.[view.active]?.at ?? 0;
   let controls = null;
-  if (!part || part === 'feed') controls = feed(game);
-  else if (part === 'people') controls = people(game);
+  if (!part || part === 'feed') controls = feed(game, nonce);
+  else if (part === 'people') controls = people(game, view);
   else if (part === 'person') controls = profile(game, Number(arg));
   if (!controls) return null;
   return { title: 'sleekpages', site: 'web', bg: BG, accent: 0x3b5998, controls };

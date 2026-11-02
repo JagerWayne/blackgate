@@ -4,6 +4,7 @@
 import { draw as drawText, ellipsize } from '../core/text.js';
 import { hit, drawButton } from '../ui/widgets.js';
 import { roundRect } from '../ui/kit.js';
+import { MAX_PROFILES } from '../state/save.js';
 
 export const SANS = 'Tahoma, Verdana, sans-serif';
 export const ROW_H = 64;
@@ -20,7 +21,7 @@ const HUES = ['#3f8f3a', '#c0661c', '#7a3fa8', '#1f7fae', '#a83a4a', '#8a8a1e'];
 /// Draws the saved users and returns where the new-session entry goes.
 export function drawUsers(ctx, st, sk, list, input, ui, events) {
   const fits = Math.max(Math.floor((list.h - NEW_H) / ROW_H), 0);
-  const shown = st.slots.slice(0, fits);
+  const shown = st.slots.slice(0, Math.min(fits, MAX_PROFILES));
   let y = list.y + Math.max((list.h - shown.length * ROW_H - NEW_H) / 2, 0);
   shown.forEach((s, i) => {
     const r = { x: list.x, y, w: list.w, h: ROW_H - 6 };

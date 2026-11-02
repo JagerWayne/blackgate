@@ -1,3 +1,4 @@
+import { learn } from '../state/intel.js';
 import { fileLead } from '../windows/dsn/sleek.js';
 import { newPad, openPad, deletePad } from '../state/notes.js';
 // The events the operator made, applied to the game state.
@@ -205,6 +206,7 @@ function handleToggle(state, e) {
 function handleEdit(state, e) {
   if (e.id === 'cheat.money.field') (state.win.cheats ??= {}).money = e.value;
   if (e.id === 'dsn.search') (state.win.dsn ??= {}).query = e.value;
+  if (e.id === 'sp.q') Object.assign((state.win.dsn ??= {}), { spQuery: e.value, spPage: 0 });
   if (e.id === 'dsn.askfield') (state.win.dsn ??= {}).ask = e.value;
   else if (e.id.startsWith('mg.')) (state.win.missions ??= {})[e.id.slice(3)] = e.value;
 }
@@ -400,6 +402,11 @@ function handleDsn(state, id, desk) {
       view.dropArm = null;
     } else view.dropArm = cid;
   } else if (id === 'dsn.dossiers') openWindow(state.windows, 'dossiers', desk);
+  else if (id.startsWith('sp.learn.')) {
+    const [, , who, field] = id.split('.');
+    learn(game, Number(who), field);
+  } else if (id.startsWith('sp.search.page.')) view.spPage = Number(id.slice(15));
+  else if (id === 'sp.search.go') view.spPage = 0;
   else if (id.startsWith('sp.dossier.')) {
     fileLead(game, Number(id.slice(11)));
     openWindow(state.windows, 'dossiers', desk);

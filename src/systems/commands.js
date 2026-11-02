@@ -425,7 +425,7 @@ const APPS = {
           const staffOnly = fields.some((f) => WORK_FIELDS.includes(f)) && !fields.some((f) => !WORK_FIELDS.includes(f));
           const q = rest.join(' ').toLowerCase();
           const people = game.world.people.map((p, i) => ({ p, i }))
-            .filter(({ p }) => !staffOnly || p.company === h.company)
+            .filter(({ p }) => !staffOnly || (h.company != null && p.company === h.company))
             .filter(({ p }) => !q || p.name.toLowerCase().includes(q));
           ctx.term.last = { kind: 'person', ids: people.map(({ i }) => i) };
           if (!people.length) return [{ text: 'no one matches' }];
@@ -791,7 +791,7 @@ const APPS = {
         args: '', help: "the staff of the linked host's company",
         run(ctx) {
           const { h } = link(ctx);
-          const ids = ctx.game.world.people.map((p, i) => i).filter((i) => ctx.game.world.people[i].company === h.company);
+          const ids = ctx.game.world.people.map((p, i) => i).filter((i) => ctx.game.world.people[i].company === h.company && h.company != null);
           ctx.term.last = { kind: 'person', ids };
           return ids.map((i, n) => ({ text: `#${n + 1}  ${pad(ctx.game.world.people[i].name, 22)}clearance ${ctx.game.world.people[i].clearance}  ${intelText(ctx.game, i, 'role')}` }));
         },

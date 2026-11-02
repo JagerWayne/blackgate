@@ -55,8 +55,8 @@ test('the records draw nothing from the generator: the hosts of a seed are uncha
   const g = makeGame('FP', 7);
   const s = JSON.stringify(g.world.hosts.map((h) => [h.ip, h.files.map((f) => f.name + f.size + f.enc), h.services.map((v) => v.password)]));
   // the fingerprint of seed 7's hosts before people had records
-  assert.equal(createHash('sha1').update(s).digest('hex'), 'fd105a0e779852b14438977d38e3049ba9c19f20');
-  assert.equal(g.world.people.length, 158);
+  assert.equal(createHash('sha1').update(s).digest('hex'), '41b5c797a32a52359a6f439c61153d854a9afb9f');
+  assert.equal(g.world.people.length, 2000);
 });
 
 test('a save whose people lack the fields loads with the same values a new world has', () => {

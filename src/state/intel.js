@@ -29,8 +29,33 @@ export function intelOf(game, i) {
 
 /// Whether the operator knows a field of a person.
 export function knows(game, i, field) {
+  if (game.intel?.[i]?.known?.[field]) return true;
   const need = INTEL_FIELDS.find((f) => f.field === field)?.level ?? 0;
   return (game.intel?.[i]?.level ?? 0) >= need && need > 0;
+}
+
+/// The details a person may show the world, and whether they do: worked out
+/// from the seed, so a world keeps them without storing them. The role is
+/// always public.
+export const PUBLIC_FIELDS = ['email', 'phone', 'social'];
+export function isPublic(game, i, field) {
+  if (field === 'role') return true;
+  let h = 2166136261;
+  for (const ch of `${game.seed}:public:${field}:${i}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  return h % 100 < (field === 'social' ? 60 : field === 'email' ? 40 : 25);
+}
+
+/// Picks up one detail of a person (a click on a public email, phone or
+/// handle): they go on file and the detail is known from then on, as if a
+/// PROFILE had found it. Returns true when it was new.
+export function learn(game, i, field) {
+  const p = game.world.people[i];
+  if (!p || knows(game, i, field)) return false;
+  const intel = intelOf(game, i);
+  (intel.known ??= {})[field] = true;
+  const label = INTEL_FIELDS.find((f) => f.field === field)?.label ?? field.toUpperCase();
+  toast(game, `${label} of ${p.name} added to the dossier`, 'good');
+  return true;
 }
 
 /// A person's phone number. Worked out from their SSN, so it needs no draw
@@ -55,6 +80,7 @@ export function dossiers(game) {
 /// Every staffer of a company becomes a lead (a name on file, nothing more).
 export function addLeads(game, company) {
   let n = 0;
+  if (company === null || company === undefined) return 0;
   game.world.people.forEach((p, i) => {
     if (p.company !== company || game.intel?.[i]) return;
     intelOf(game, i);

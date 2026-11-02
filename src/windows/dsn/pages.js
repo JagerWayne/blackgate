@@ -14,6 +14,8 @@ import { broker, haggleOf, haggleOdds, snubbed, INSULT, MAX_ROUNDS } from '../..
 import { wrapRow } from '../notepad.js';
 import { jobCards } from './cards.js';
 import { sleekPage } from './sleek.js';
+import { companyPage, directoryPage } from './company.js';
+import { companyAt } from '../../state/sites.js';
 import { KIND_COLOR, hexOf, netPrimary, netSolid, netDanger } from './theme.js';
 
 export const HOME = 'hub';
@@ -350,7 +352,9 @@ export function buildPage(game, url, view = {}) {
   const rest = u.split('/').slice(1).join('/');
   let page = null;
   if (u === START) page = startPage();
-  else if (head === 'sleekpages') page = sleekPage(game, rest);
+  else if (head === 'sleekpages') page = sleekPage(game, rest, view);
+  else if (u === 'directory') page = directoryPage(game);
+  else if (companyAt(game, head) >= 0) page = companyPage(game, companyAt(game, head), rest);
   else if (u === HOME) page = hub(game, view);
   else if (u === MY_JOBS) page = jobsPage(game, view);
   else if (head === 'cat') page = category(game, rest);
@@ -442,6 +446,8 @@ function startPage() {
       label('the hidden market where clients post work', 10),
       links([['sleekpages', 'SleekPages  //  the social network: who works where, who posts what']]),
       label('people put their lives online. some of them leave the door open.', 10),
+      links([['directory', 'Business Directory  //  the websites of every company on the network']]),
+      label('about us, our team, contact: the staff pages are a gift to anyone looking', 10),
     ],
   };
 }

@@ -29,7 +29,7 @@ export function recordsKept(game, h) {
 /// Whether a host keeps one detail of one person.
 export function keepsRecord(game, h, person, field) {
   if (!recordsKept(game, h).includes(field)) return false;
-  return !WORK_FIELDS.includes(field) || game.world.people[person]?.company === h.company;
+  return !WORK_FIELDS.includes(field) || (h.company != null && game.world.people[person]?.company === h.company);
 }
 
 /// Whether a detail can read a value.

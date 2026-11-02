@@ -3,7 +3,7 @@
 
 import { draw as drawText, ellipsize } from '../core/text.js';
 import { drawField } from '../ui/field.js';
-import { safeName } from '../state/save.js';
+import { safeName, profilesFull, MAX_PROFILES } from '../state/save.js';
 import { pick, tile, goRect, goButton, SANS, NEW_H } from './loginUsers.js';
 
 /// Draws the new-session entry at y.
@@ -26,8 +26,10 @@ export function drawLoginBody(ctx, st, sk, list, y, input, ui, events) {
   // one save per operator: a new run under a saved handle is written over it
   const name = st.handle.trim() || 'OPERATOR';
   const same = st.slots.find((s) => safeName(s.handle) === safeName(name));
-  const line = same ? `replaces the saved run of ${same.handle}` : 'a new random network';
-  drawText(ctx, ellipsize(ctx, line, 11, r.x + r.w - fx - 8, SANS), fx, r.y + 72, 11, same ? '#ff6a50' : '#d6e4ff', {
+  const full = profilesFull(st.slots, st.handle);
+  const line = same ? `replaces the saved run of ${same.handle}`
+    : full ? `${MAX_PROFILES} profiles in use // delete one first` : `profile ${st.slots.length + 1} of ${MAX_PROFILES} // a new world of 2,000 people`;
+  drawText(ctx, ellipsize(ctx, line, 11, r.x + r.w - fx - 8, SANS), fx, r.y + 72, 11, same || full ? '#ff6a50' : '#d6e4ff', {
     baseline: 'middle', family: SANS,
   });
 }

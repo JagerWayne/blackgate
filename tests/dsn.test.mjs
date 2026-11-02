@@ -248,7 +248,9 @@ test('the hub link "manage your jobs" opens MY JOBS when clicked', () => {
 });
 
 import { parseText } from '../tools/socialmedia.mjs';
-import { postOf, isPublic } from '../src/windows/dsn/sleek.js';
+import { postOf, matches } from '../src/windows/dsn/sleek.js';
+import { isPublic, learn, knows } from '../src/state/intel.js';
+import { siteUrl, siteTheme, THEMES, staffOf } from '../src/state/sites.js';
 import { socialImages, socialText } from '../src/data/content.js';
 import { readFileSync } from 'node:fs';
 
@@ -266,7 +268,7 @@ test('SleekPages: the start page, the feed, profiles and the directory build and
     assert.notEqual(buildPage(g, url).title, '404', url);
   }
   assert.equal(normalize('dsnet'), 'hub');
-  assert.deepEqual(ids(buildPage(g, 'start')).sort(), ['dsn.go.hub', 'dsn.go.sleekpages']);
+  assert.deepEqual(ids(buildPage(g, 'start')).sort(), ['dsn.go.directory', 'dsn.go.hub', 'dsn.go.sleekpages']);
   assert.equal(buildPage(g, 'sleekpages/person/9999').title, '404');
 });
 
@@ -276,7 +278,7 @@ test('SleekPages: posts pair a topic photo with a caption from that topic, the s
   assert.deepEqual(postOf(g, 'feed3'), a);
   assert.ok(a.image.includes(`/socialmedia/${a.topic}/`));
   assert.ok(socialText()[a.topic].includes(a.text));
-  const open = g.world.people.filter((_, i) => isPublic(g, i)).length;
+  const open = g.world.people.filter((_, i) => isPublic(g, i, 'email')).length;
   assert.ok(open > 0 && open < g.world.people.length, 'some profiles are public, not all');
 });
 
@@ -296,4 +298,57 @@ test('SleekPages pages draw without throwing', () => {
     assert.doesNotThrow(() => drawPlay(ctx, theme(), 1600, 900, state, []), url);
     assert.ok(ctx.texts.length > 5, url);
   }
+});
+
+test('company sites: 40 addresses that open their home, team and contact pages; the directory lists them', () => {
+  const g = makeGame('WEB', 7);
+  const urls = g.world.companies.map(siteUrl);
+  assert.equal(new Set(urls).size, 40, 'every address unique');
+  urls.forEach((u) => {
+    for (const sub of ['', '/team', '/contact']) assert.notEqual(buildPage(g, u + sub).title, '404', u + sub);
+  });
+  assert.equal(buildPage(g, `${urls[0]}/nope`).title, '404');
+  assert.ok(new Set(g.world.companies.map((_, ci) => siteTheme(g, ci).name)).size >= 6, 'many of the ten looks in use');
+  assert.equal(THEMES.length, 10);
+  assert.equal(buildPage(g, 'directory').title, 'directory');
+  assert.ok(ids(buildPage(g, 'start')).includes('dsn.go.directory'));
+});
+
+test('a click on a public email files it: the dossier knows it and the inbox tasks open', () => {
+  const state = playState();
+  const g = state.game;
+  const i = g.world.people.findIndex((_, k) => isPublic(g, k, 'email') && !g.intel?.[k]);
+  assert.equal(knows(g, i, 'email'), false);
+  handleEvents(state, [{ type: 'click', id: `sp.learn.${i}.email` }], DESK);
+  assert.equal(knows(g, i, 'email'), true);
+  assert.equal(knows(g, i, 'phone'), false, 'only that detail');
+  assert.ok(g.toasts.some((t) => /EMAIL of .* added to the dossier/.test(t.text)));
+  assert.equal(learn(g, i, 'email'), false, 'a second click adds nothing');
+});
+
+test('company sites draw their team with photos and details', () => {
+  const state = playState();
+  const ci = 3;
+  openPortal(state, DESK, `${siteUrl(state.game.world.companies[ci])}/team`);
+  state.game.uiTime = 99;
+  const ctx = stubCtx();
+  drawPlay(ctx, theme(), 1600, 900, state, []);
+  const names = staffOf(state.game, ci).map((i) => state.game.world.people[i].name.toLowerCase());
+  assert.ok(ctx.texts.some((t) => names.includes(t.s.toLowerCase())), 'a staff name is drawn');
+});
+
+test('SleekPages: the feed changes on reload, the search finds people, fifty to a page', () => {
+  const state = playState();
+  const g = state.game;
+  openPortal(state, DESK, 'sleekpages');
+  const a = buildPage(g, 'sleekpages', { tabs: [{ at: 1 }], active: 0 });
+  const b = buildPage(g, 'sleekpages', { tabs: [{ at: 2 }], active: 0 });
+  assert.notDeepEqual(postOf(g, 'feed1:0'), postOf(g, 'feed2:0'));
+  assert.ok(a.controls.length > 5 && b.controls.length > 5);
+  const target = g.world.people[1234];
+  assert.ok(matches(g, target, target.name.toLowerCase()));
+  handleEvents(state, [{ type: 'edit', id: 'sp.q', value: target.name.split(' ')[1] }], DESK);
+  assert.equal(state.win.dsn.spQuery, target.name.split(' ')[1]);
+  const page = buildPage(g, 'sleekpages/people', state.win.dsn);
+  assert.ok(page.controls.length >= 4, 'the search field, the button and the rows');
 });

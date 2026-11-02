@@ -38,11 +38,11 @@ $have = if ($ready) { Installed-Build } else { $null }
 # nothing is happening
 Add-Type -AssemblyName System.Windows.Forms, System.IO.Compression.FileSystem
 $form = New-Object Windows.Forms.Form -Property @{
-  Text = 'BLACKGATE'; Width = 440; Height = 130; FormBorderStyle = 'FixedDialog'
+  Text = 'BLACKGATE'; Width = 480; Height = 150; FormBorderStyle = 'FixedDialog'
   StartPosition = 'CenterScreen'; MaximizeBox = $false; MinimizeBox = $false; TopMost = $true
 }
-$label = New-Object Windows.Forms.Label -Property @{ Left = 14; Top = 14; Width = 400; Text = 'Checking for updates...' }
-$bar = New-Object Windows.Forms.ProgressBar -Property @{ Left = 14; Top = 42; Width = 396; Height = 22; Style = 'Marquee' }
+$label = New-Object Windows.Forms.Label -Property @{ Left = 14; Top = 14; Width = 440; Height = 28; Text = 'Checking for updates...'; Font = New-Object Drawing.Font('Segoe UI', 11) }
+$bar = New-Object Windows.Forms.ProgressBar -Property @{ Left = 14; Top = 52; Width = 436; Height = 24; Style = 'Marquee' }
 $form.Controls.AddRange(@($label, $bar))
 $form.Show()
 [Windows.Forms.Application]::DoEvents()
@@ -70,7 +70,7 @@ if ($ready -and $have -eq $latest.build) {
 # 2. download it, with a progress bar that says from which version to which
 $zip = Join-Path $env:TEMP "blackgate-$([guid]::NewGuid()).zip"
 $from = Installed-Version
-$what = if ($ready -and $from) { "Updating BLACKGATE $from -> $($latest.version)" } else { "Installing BLACKGATE $($latest.version)" }
+$what = if ($ready -and $from) { "Updating to version $($latest.version)" } else { "Installing version $($latest.version)" }
 $bar.Style = 'Continuous'
 Say "$what..."
 $size = [double]$latest.size
@@ -82,18 +82,19 @@ try {
     if ($size -gt 0 -and (Test-Path $zip)) {
       $got = (Get-Item $zip).Length
       $bar.Value = [Math]::Min(100, [int](100 * $got / $size))
-      $label.Text = '{0}...  {1:N0} / {2:N0} MB' -f $what, ($got / 1MB), ($size / 1MB)
+      $label.Text = '{0}... {1}%' -f $what, $bar.Value
     }
     [Windows.Forms.Application]::DoEvents()
     Start-Sleep -Milliseconds 100
   }
 
   # 3. check it, unpack it next to app\, then swap
-  $label.Text = 'Checking the download...'; [Windows.Forms.Application]::DoEvents()
+  $bar.Value = 100
+  $label.Text = "$what... 100% // checking the download"; [Windows.Forms.Application]::DoEvents()
   if (-not (Test-Path $zip) -or (Get-FileHash $zip -Algorithm SHA256).Hash -ne $latest.sha256.ToUpper()) {
     throw 'the download is damaged (checksum mismatch)'
   }
-  $label.Text = 'Installing...'; $bar.Style = 'Marquee'; [Windows.Forms.Application]::DoEvents()
+  $label.Text = "$what... installing"; $bar.Style = 'Marquee'; [Windows.Forms.Application]::DoEvents()
   $new = "$App.new"
   $old = "$App.old"
   foreach ($d in @($new, $old)) { if (Test-Path $d) { Remove-Item $d -Recurse -Force } }
@@ -119,6 +120,6 @@ try {
   if (Test-Path $zip) { Remove-Item $zip -Force -ErrorAction SilentlyContinue }
 }
 $bar.Value = 100
-Say "Updated to BLACKGATE $($latest.version). Starting..."
+Say "Updated to version $($latest.version). Starting..."
 Start-Sleep -Milliseconds 900
 Start-Game

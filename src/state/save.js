@@ -272,3 +272,14 @@ export function slotInfo(handle = current) {
   };
 }
 
+
+/// The most saved profiles a terminal keeps.
+export const MAX_PROFILES = 4;
+
+/// Whether a new run under this handle needs a fifth profile. A handle that
+/// is already saved replaces its own profile, so it never does.
+export function profilesFull(slots, handle) {
+  const name = safeName((handle ?? '').trim() || 'OPERATOR');
+  if (slots.some((s) => safeName(s.handle) === name)) return false;
+  return slots.length >= MAX_PROFILES;
+}

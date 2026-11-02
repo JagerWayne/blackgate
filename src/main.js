@@ -8,13 +8,14 @@ import { theme } from './core/theme.js';
 import { frameKeys } from './systems/hotkeys.js';
 import { makeBoot, tickBoot, drawBoot } from './render/boot.js';
 import { drawOff } from './render/off.js';
+import { makeSetup, tickSetup, drawSetup } from './render/setup.js';
 import { makeLogin, drawLogin } from './render/login.js';
 import { makeUiState } from './ui/kit.js';
 import { tick } from './systems/tick.js';
 import { makeWindows } from './state/windows.js';
 import { drawPlay, desktop } from './render/play.js';
 import { handleEvents } from './systems/events.js';
-import { saveRun, listSlots, saveOnLeave, deleteRun } from './state/save.js';
+import { saveRun, listSlots, saveOnLeave, deleteRun, profilesFull, MAX_PROFILES } from './state/save.js';
 import { startRun } from './state/startRun.js';
 import { toast } from './state/gameState.js';
 import { VERSION, justUpdated } from './version.js';
@@ -87,6 +88,12 @@ function step(dt) {
     state.mode = 'login';
     refreshSlots();
   }
+  if (state.mode === 'setup' && tickSetup(state.setup, dt, state.input)) {
+    saveRun(state.game);
+    state.setup = null;
+    state.mode = 'play';
+    state.ui.focus = null;
+  }
   if (state.mode === 'play') {
     tick(state.game, dt);
     // an ended run is never saved over the last good one
@@ -114,15 +121,28 @@ function render() {
     drawOff(ctx, w, h);
     return;
   }
+  if (state.mode === 'setup') {
+    drawSetup(ctx, state.setup, sk, w, h);
+    return;
+  }
   if (state.mode === 'login') {
     const events = [];
     drawLogin(ctx, state.login, sk, w, h, state.input, state.ui, events);
     events.forEach((e) => {
       if (e.type === 'click' && e.id === 'login.go') {
         const fresh = state.login.sel === 0;
+        // four profiles at most: a new handle needs a free one
+        if (fresh && profilesFull(state.login.slots, state.login.handle)) {
+          state.login.notice = `${MAX_PROFILES} profiles in use // delete one to make a new profile`;
+          return;
+        }
         state.game = startRun(state, w, h);
-        // a new operator gets their save file at once
-        if (fresh) saveRun(state.game);
+        // a new operator watches their world being made, then gets their save file
+        if (fresh) {
+          state.setup = makeSetup(state.game);
+          state.mode = 'setup';
+          return;
+        }
         // Electron only: data files in Documents that were missing or broken
         (globalThis.blackgate?.dataFallbacks() ?? []).forEach((f) =>
           toast(state.game, `${f} unreadable // using the built-in copy`, 'bad'),

@@ -13,7 +13,18 @@ const COMPANY_PLAN = [
   'retail', 'health', 'aiLab', 'gov', 'media', 'telecom', 'tech', 'bank',
   'crypto', 'retail', 'security', 'logistics', 'aiLab', 'energy', 'university',
   'tech', 'gov', 'health', 'media', 'retail',
+  'telecom', 'security', 'energy', 'crypto',
 ];
+
+/// Everyone in a new world: the staff, then civilians up to this many.
+export const POPULATION = 2000;
+
+/// What a civilian does, and where their mail lives.
+const CIVILIAN_JOBS = [
+  'FREELANCER', 'STUDENT', 'RETIREE', 'NURSE', 'TEACHER', 'DRIVER', 'CHEF', 'ARTIST', 'MECHANIC',
+  'SHOP ASSISTANT', 'ELECTRICIAN', 'PHOTOGRAPHER', 'BARISTA', 'ACCOUNTANT', 'PLUMBER', 'WRITER',
+];
+const MAIL_HOSTS = ['mailbox.nx', 'netpost.nx', 'quickmail.nx', 'inbox.nx'];
 
 /// Builds every company, its hosts, its staff and the bank accounts.
 export function buildCompanies(rng, hosts, companies, people, accounts, usedIps, mkHost) {
@@ -61,7 +72,7 @@ export function buildCompanies(rng, hosts, companies, people, accounts, usedIps,
     }
 
     // the staff
-    const nPeople = 3 + range(rng, 0, 4);
+    const nPeople = 15 + range(rng, 0, 16);
     for (let p = 0; p < nPeople; p += 1) {
       const { name: first, sex } = pick(rng, firstNames());
       const last = pick(rng, lastNames());
@@ -71,6 +82,7 @@ export function buildCompanies(rng, hosts, companies, people, accounts, usedIps,
         sex,
         ...personRecord(`${first} ${last}`, people.length),
         company: idx,
+        city,
         role,
         email: `${first.toLowerCase()}.${last.toLowerCase()}@${short.toLowerCase()}.nx`,
         social: `@${last.toLowerCase()}${range(rng, 10, 99)}`,
@@ -79,6 +91,25 @@ export function buildCompanies(rng, hosts, companies, people, accounts, usedIps,
       });
     }
   });
+
+  // the civilians: no company, a job of their own, mail at a public provider.
+  // Most of them never matter; the world is fuller for them.
+  while (people.length < POPULATION) {
+    const { name: first, sex } = pick(rng, firstNames());
+    const last = pick(rng, lastNames());
+    people.push({
+      name: `${first} ${last}`,
+      sex,
+      ...personRecord(`${first} ${last}`, people.length),
+      company: null,
+      city: range(rng, 0, cities().length),
+      role: pick(rng, CIVILIAN_JOBS),
+      email: `${first.toLowerCase()}.${last.toLowerCase()}${range(rng, 1, 99)}@${pick(rng, MAIL_HOSTS)}`,
+      social: `@${first.toLowerCase()}${last.toLowerCase().slice(0, 3)}${range(rng, 10, 99)}`,
+      clearance: 0,
+      leak: `${last.toLowerCase()}${range(rng, 1960, 2006)}${['!', '?', '1', '#'][range(rng, 0, 4)]}`,
+    });
+  }
 
   // the bank accounts
   companies.forEach((c) => {

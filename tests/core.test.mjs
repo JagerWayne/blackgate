@@ -10,6 +10,7 @@ import { placeControls, placeButtons } from '../src/ui/layout.js';
 import { section, label, keyValue, buttons, ghost, CONTROL_H } from '../src/ui/controls.js';
 import { initContent } from '../src/data/content.js';
 import { generateWorld } from '../src/data/world.js';
+import { makeGame } from '../src/state/gameState.js';
 
 await initContent();
 
@@ -157,9 +158,9 @@ test('a row of buttons wraps when it runs out of room', () => {
 
 test('a seed always builds the same world', () => {
   const w = generateWorld(7);
-  assert.equal(w.hosts.length, 129);
-  assert.equal(w.companies.length, 36);
-  assert.equal(w.people.length, 158);
+  assert.equal(w.hosts.length, 149);
+  assert.equal(w.companies.length, 40);
+  assert.equal(w.people.length, 2000);
   assert.equal(w.accounts.length, 42);
   assert.equal(w.nic, 0);
   assert.equal(w.news, 1);
@@ -180,6 +181,54 @@ test('a seed always builds the same world', () => {
   assert.equal(w.hosts[14].files.length, 7);
   assert.equal(w.people[0].name, 'PAVEL JOHNSON');
   assert.equal(w.people[0].email, 'pavel.johnson@van10.nx');
-  assert.equal(w.accounts[0].number, 'NX00464844');
+  assert.equal(w.accounts[0].number, 'NX00517558');
   assert.equal(w.accounts[0].bank, 'HALCYON CREDIT UNION');
+});
+
+import { profilesFull, MAX_PROFILES } from '../src/state/save.js';
+import { makeSetup, tickSetup, setupAt, drawSetup, STAGES } from '../src/render/setup.js';
+import { stubCtx } from './stubCanvas.mjs';
+
+test('four profiles: a fifth handle is refused, a saved handle replaces its own', () => {
+  const four = ['A', 'B', 'C', 'D'].map((handle) => ({ handle }));
+  assert.equal(MAX_PROFILES, 4);
+  assert.equal(profilesFull(four.slice(0, 3), 'E'), false);
+  assert.equal(profilesFull(four, 'E'), true);
+  assert.equal(profilesFull(four, 'b'), false, 'B already has a profile: it is replaced');
+});
+
+test('a new world: 2,000 people, civilians among them, and every SSN unique', () => {
+  const w = generateWorld(11);
+  assert.equal(w.people.length, 2000);
+  assert.equal(w.companies.length, 40);
+  const civ = w.people.filter((p) => p.company === null);
+  assert.ok(civ.length > 500 && civ.length < 1500, `${civ.length} civilians`);
+  assert.equal(new Set(w.people.map((p) => p.ssn)).size, 2000);
+  assert.ok(w.people.every((p) => p.email && p.role && p.social && p.leak));
+});
+
+test('the setup screen counts companies, then citizens, then finishes; a key speeds it', () => {
+  const g = makeGame('SETUP', 5);
+  const s = makeSetup(g);
+  tickSetup(s, STAGES[0].secs / 2, {});
+  let at = setupAt(s);
+  assert.equal(at.stage, 0);
+  assert.ok(at.n > 0 && at.n < 40);
+  tickSetup(s, STAGES[0].secs, {});
+  at = setupAt(s);
+  assert.equal(at.stage, 1);
+  const ctx = stubCtx();
+  drawSetup(ctx, s, theme(), 1600, 900);
+  assert.ok(ctx.texts.some((t) => /CREATING CITIZENS/.test(t.s)));
+  assert.ok(ctx.texts.some((t) => /^\+ /.test(t.s)), 'the log shows records');
+  assert.equal(tickSetup(s, 1, { anyKey: true }), true, 'fast-forward finishes it');
+});
+
+import { voiceAdmin } from '../src/state/voice.js';
+
+test('an independent host has no voice admin, even with civilians (no company) in the world', () => {
+  const g = makeGame('VOICE', 5);
+  const indie = g.world.hosts.find((h) => h.company === null);
+  assert.ok(indie);
+  assert.equal(voiceAdmin(g, indie), null);
 });
