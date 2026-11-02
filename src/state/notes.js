@@ -21,7 +21,7 @@ function stash(game) {
 
 export function openPad(game, i) {
   stash(game);
-  if (i < 0 || i >= game.notepads.length) return false;
+  if (!Number.isInteger(i) || i < 0 || i >= game.notepads.length) return false;
   game.notepad = i;
   game.notes = game.notepads[i].text;
   return true;
@@ -37,7 +37,7 @@ export function newPad(game, name) {
 /// Deletes a pad; the last one left is emptied instead.
 export function deletePad(game, i) {
   stash(game);
-  if (i < 0 || i >= game.notepads.length) return false;
+  if (!Number.isInteger(i) || i < 0 || i >= game.notepads.length) return false;
   if (game.notepads.length === 1) game.notepads[0] = { name: 'UNTITLED', text: '' };
   else {
     game.notepads.splice(i, 1);

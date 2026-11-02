@@ -195,3 +195,35 @@ test('the window queues typed lines and runs them after the frame', () => {
   assert.ok(lines.includes('> whoami'));
   assert.ok(lines.some((t) => t.startsWith('CMD //')));
 });
+
+test('notepad open and delete refuse a number that is not a whole pad number', () => {
+  const { say, game } = setup();
+  say('notepad new SECOND');
+  const count = game.notepads.length;
+  say('notepad open abc');
+  assert.ok(Number.isInteger(game.notepad), 'the open pad is still a real index');
+  say('notepad delete abc --yes');
+  say('notepad delete 1.5 --yes');
+  assert.equal(game.notepads.length, count, 'no pad was deleted');
+});
+
+test('mail accept and decline say so when the job cannot be taken', () => {
+  const { say, last, game } = setup();
+  const c = game.contracts.find((x) => x.state === 'offered');
+  game.mail.push({ id: 9001, from: 'broker', subject: 'a job', body: '', minute: game.clock.minutes + 1, read: false, contract: c.id });
+  say('mail list');
+  assert.match(last('mail accept #1').text, /accepted/);
+  say('mail list');
+  assert.doesNotMatch(last('mail accept #1').text, /accepted/, 'already taken');
+  assert.doesNotMatch(last('mail decline #1').text, /declined/, 'no longer on offer');
+});
+
+test('reading a message does not change what #n means in the mail list', () => {
+  const { say, game } = setup();
+  game.mail.push({ id: 9101, from: 'a', subject: 'FIRST-ROW', body: '', minute: game.clock.minutes + 2, read: false });
+  game.mail.push({ id: 9102, from: 'b', subject: 'SECOND-ROW', body: '', minute: game.clock.minutes + 1, read: false });
+  say('mail list');
+  say('mail read #2');
+  const out = say('mail read #1').map((l) => l.text).join('\n');
+  assert.match(out, /FIRST-ROW/);
+});
