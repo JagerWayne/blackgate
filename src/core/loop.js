@@ -12,6 +12,7 @@ export function startLoop({ step, render, stepSeconds = STEP }) {
   let last = performance.now();
   let carry = 0;
   let running = true;
+  let lastError = '';
 
   function frame(now) {
     if (!running) return;
@@ -30,7 +31,12 @@ export function startLoop({ step, render, stepSeconds = STEP }) {
       if (steps >= MAX_CATCHUP) carry = 0;
       render(carry / stepSeconds);
     } catch (err) {
-      console.error(err);
+      // a render error repeats every frame: say each new one once
+      const msg = String(err?.stack ?? err);
+      if (msg !== lastError) {
+        lastError = msg;
+        console.error(err);
+      }
     }
   }
 

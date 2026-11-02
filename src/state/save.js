@@ -43,7 +43,7 @@ function migrate() {
     if (typeof handle !== 'string') return;
     if (!store().getItem(keyOf(handle))) store().setItem(keyOf(handle), text);
     store().removeItem(LEGACY);
-  } catch {}
+  } catch (e) { console.warn('save: old save not moved', e); }
 }
 
 /// The keys of every saved operator.
@@ -70,10 +70,11 @@ export function saveRun(game) {
     // the desktop app keeps a readable report of the visited hosts beside it
     try {
       globalThis.blackgate?.writeReport?.(safeName(game.player.handle), JSON.stringify(hostReport(game), null, 2));
-    } catch {} // the report is a convenience: a failure never fails the save
+    } catch (e) { console.warn('save: host report not written', e); } // the report is a convenience: a failure never fails the save
     current = game.player.handle;
     return true;
-  } catch {
+  } catch (e) {
+    console.error('save: could not write the run', e);
     return false;
   }
 }
@@ -94,7 +95,8 @@ export function loadRun(handle = current) {
   let text = null;
   try {
     text = store().getItem(keyOf(handle));
-  } catch {
+  } catch (e) {
+    console.error('save: could not read the store', e);
     return null;
   }
   if (!text) return null;
@@ -115,7 +117,8 @@ export function loadRun(handle = current) {
     revealLiveTargets(g);
     repairLiveJobs(g);
     return g;
-  } catch {
+  } catch (e) {
+    console.error('save: could not load the run', e);
     return null;
   }
 }
@@ -245,7 +248,8 @@ export function saveOnLeave(win, state) {
 export function hasRun() {
   try {
     return saveKeys().length > 0 || !!store().getItem(LEGACY);
-  } catch {
+  } catch (e) {
+    console.error('save: could not delete', e);
     return false;
   }
 }

@@ -45,7 +45,8 @@ function userJson(rel) {
     const text = fs.readFileSync(path.join(USER, rel), 'utf8');
     JSON.parse(text);
     return text;
-  } catch {
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.warn('main: data file unreadable', rel, err.message);
     return null;
   }
 }
@@ -69,7 +70,8 @@ const saveFile = (key) => saveIn(USER, key);
 ipcMain.on('save:get', (e, key) => {
   try {
     e.returnValue = fs.readFileSync(saveFile(key), 'utf8');
-  } catch {
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.error('main: could not read a save', err);
     e.returnValue = null;
   }
 });
@@ -80,7 +82,8 @@ ipcMain.on('save:set', (e, key, value) => {
     fs.writeFileSync(`${f}.tmp`, value);
     fs.renameSync(`${f}.tmp`, f);
     e.returnValue = true;
-  } catch {
+  } catch (err) {
+    console.error('main: could not write a save', err);
     e.returnValue = false;
   }
 });
@@ -88,7 +91,8 @@ ipcMain.on('save:remove', (e, key) => {
   try {
     fs.rmSync(saveFile(key), { force: true });
     e.returnValue = true;
-  } catch {
+  } catch (err) {
+    console.error('main: could not remove a save', err);
     e.returnValue = false;
   }
 });
@@ -102,7 +106,8 @@ ipcMain.on('report:write', (e, name, text) => {
     fs.mkdirSync(path.join(USER, 'hosts'), { recursive: true });
     fs.writeFileSync(reportFile(name), text);
     e.returnValue = true;
-  } catch {
+  } catch (err) {
+    console.error('main: could not write the host report', err);
     e.returnValue = false;
   }
 });
@@ -117,7 +122,8 @@ ipcMain.on('report:remove', (e, name) => {
 ipcMain.on('save:list', (e) => {
   try {
     e.returnValue = fs.readdirSync(path.join(USER, 'saves')).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5));
-  } catch {
+  } catch (err) {
+    console.error('main: could not list saves', err);
     e.returnValue = [];
   }
 });
