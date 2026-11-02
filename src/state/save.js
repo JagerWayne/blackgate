@@ -2,7 +2,7 @@ import { padsOf } from './notes.js';
 // The save file: the whole run, kept in the browser's local store, or in a
 // file under Documents/Games/Blackgate/saves when the Electron app provides one.
 
-import { rngToJson, rngFromJson } from '../core/rng.js';
+import { rngFromJson } from '../core/rng.js';
 import { SAVE_VERSION } from './gameState.js';
 import { cheatsOf } from './cheats.js';
 import { componentsOf, firstNames } from '../data/content.js';
@@ -59,14 +59,13 @@ function saveKeys() {
 /// Writes the run. The generator state is kept as strings, because a BigInt
 /// cannot go through JSON.
 export function saveRun(game) {
-  const plain = JSON.parse(JSON.stringify(game, (k, v) => (typeof v === 'bigint' ? v.toString() : v)));
-  plain.rng = rngToJson(game.rng);
   try {
+    const text = JSON.stringify(game, (k, v) => (typeof v === 'bigint' ? v.toString() : v));
     const key = keyOf(game.player.handle);
     // a save this build cannot read is kept as .bak before a new run takes its place
     const old = store().getItem(key);
     if (old && !readable(old)) store().setItem(`${key}.bak`, old);
-    store().setItem(key, JSON.stringify(plain));
+    store().setItem(key, text);
     // the desktop app keeps a readable report of the visited hosts beside it
     try {
       globalThis.blackgate?.writeReport?.(safeName(game.player.handle), JSON.stringify(hostReport(game), null, 2));

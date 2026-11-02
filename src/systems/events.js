@@ -12,9 +12,7 @@ import {
 import { toast, toggleBounce, toggleFavorite, discover } from '../state/gameState.js';
 import { saveRoute, loadRoute, deleteRoute, clearRoute, MAX_HOPS, moveHop } from '../state/routes.js';
 import { mapHosts } from '../state/mapQuery.js';
-import {
-  acceptContract, declineContract, dropContract, submitContract, contractItems, contractLabel,
-} from '../state/contracts.js';
+import { acceptContract, declineContract, dropContract, submitContract, contractLabel } from '../state/contracts.js';
 import { generateCustomContract } from '../state/contractSpawn.js';
 import { parseRecord, validRecord, RECORD_LABEL } from '../state/gameState.js';
 import { buyComponent, buyChassis, sellPart, buyTool, sellStock, fitStock } from '../state/economy.js';

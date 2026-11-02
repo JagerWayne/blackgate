@@ -4,9 +4,8 @@
 import { draw as drawText, ellipsize, paragraph } from '../core/text.js';
 import { color, cssA } from '../core/theme.js';
 import { placeButtons, placeChips } from './layout.js';
-import { drawButton, drawCheck, hit } from './widgets.js';
+import { drawButton, drawCheck } from './widgets.js';
 import { drawField, drawMeter } from './field.js';
-import { LINE_H } from './controls.js';
 
 /// Draws a form. `placed` comes from `placeControls`; the events are pushed
 /// onto the array as the operator works the controls.

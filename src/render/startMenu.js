@@ -1,7 +1,7 @@
 // The Start menu: the banner on the side, the operator, the installed
 // software and the way out.
 
-import { draw as drawText, ellipsize, measure, FONT } from '../core/text.js';
+import { draw as drawText, ellipsize, FONT } from '../core/text.js';
 import { color, cssA } from '../core/theme.js';
 import { hit } from '../ui/kit.js';
 import { WINDOWS } from '../state/windows.js';

@@ -42,6 +42,7 @@ export function measure(ctx, text, size, family = MONO) {
   if (w === undefined) {
     if (ctx.font !== font) ctx.font = font;
     w = ctx.measureText(text).width;
+    if (cache.size > 4000) cache.clear(); // typed and dynamic text would grow it for ever
     cache.set(text, w);
   }
   return w;
