@@ -238,6 +238,8 @@ test('the map: the tabs switch, and every hop and route button does its job', ()
 
   click(`map.show.${found[0]}`);
   assert.equal(state.win.map.sel, found[0]);
+  assert.equal(state.win.map.tab, 'HOSTS', 'SHOW brings up the host in the list too');
+  click('map.tab.ROUTE');
   assert.ok(frame(state).texts.some((t) => t.s === 'REMOVE'), 'each hop has its buttons');
 
   click('map.route.save');

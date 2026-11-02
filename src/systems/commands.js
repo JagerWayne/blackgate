@@ -1,3 +1,4 @@
+import { routeLines } from '../state/session.js';
 import { padsOf, newPad, openPad, deletePad, MAX_PADS } from '../state/notes.js';
 // The command prompt's commands: `<app> <action> [what]`, plus a few general
 // ones. Commands that change the game send the same event the matching
@@ -378,7 +379,7 @@ const APPS = {
           const s = game.session;
           if (!s) return [...out, { text: 'not connected' }];
           const h = game.world.hosts[s.target];
-          if (s.phase !== 'online') return [...out, { text: `LINK ${h.name} // negotiating ${Math.round((s.connectT / s.connectDur) * 100)}%` }];
+          if (s.phase !== 'online') return [...out, { text: `LINK ${h.name} // negotiating ${Math.round((s.connectT / s.connectDur) * 100)}%` }, ...routeLines(game, s).map((l) => ({ text: `  ${l.text}`, tone: l.done ? 'ok' : undefined }))];
           out.push({ text: `LINK ${h.name} (${h.ip}) // trace ${Math.round(s.trace * 100)}%`, tone: s.trace > 0.7 ? 'err' : 'head' });
           if (!s.tasks.length) out.push({ text: 'no tasks running' });
           s.tasks.forEach((t) => out.push({ text: `  ${pad(t.label, 32)}${Math.round(Math.min(t.progress, 1) * 100)}%` }));

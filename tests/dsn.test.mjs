@@ -164,3 +164,60 @@ test('the CONTRACTS app is gone', async () => {
   assert.ok(!WINDOWS.some((w) => w.key === 'contracts'));
   assert.ok(WINDOWS.some((w) => w.key === 'dsn'));
 });
+
+import { declineDeal, counterAsk } from '../src/state/haggle.js';
+import { routeLines, makeSession } from '../src/state/session.js';
+
+test('decline: the listing goes and the chat says so', () => {
+  const state = playState();
+  const g = state.game;
+  const c = offered(g)[0];
+  handleEvents(state, [{ type: 'click', id: `dsn.decline.${c.id}` }], DESK);
+  assert.equal(c.state, 'offered', 'the first press only arms it');
+  handleEvents(state, [{ type: 'click', id: `dsn.decline.${c.id}` }], DESK);
+  assert.equal(c.state, 'expired');
+  assert.equal(haggleOf(g, c.id).log.at(-1).who, 'you');
+  assert.ok(declineDeal(g, c.id), 'a closed listing cannot be declined again');
+});
+
+test('counter: answer a counter-offer once, between their figure and your ask', () => {
+  const state = playState();
+  const g = state.game;
+  const c = offered(g)[0];
+  askFee(g, c.id, c.reward * 1.5);
+  const hg = haggleOf(g, c.id);
+  Object.assign(hg, { state: 'counter', counter: Math.round(c.reward * 1.25) });
+  assert.ok(counterAsk(g, c.id, hg.counter), 'not at or below their counter');
+  assert.ok(counterAsk(g, c.id, hg.ask), 'not at or above your own ask');
+  assert.equal(counterAsk(g, c.id, hg.counter + 10), null);
+  assert.equal(hg.state, 'waiting');
+  assert.equal(hg.round, 2);
+  g.clock.minutes = hg.replyAt;
+  haggleTick(g);
+  assert.ok(['yes', 'no'].includes(hg.state), 'the second round ends in yes or no, never another counter');
+});
+
+test('the link log routes through each hop before it reaches the target', () => {
+  const state = playState();
+  const g = state.game;
+  const ids = g.world.hosts.slice(1, 4).map((h) => h.id);
+  const s = makeSession(ids[2], ids.slice(0, 2), 10);
+  s.connectT = 0;
+  assert.equal(routeLines(g, s).length, 1);
+  assert.match(routeLines(g, s)[0].text, /^Routing via /);
+  s.connectT = 10;
+  const lines = routeLines(g, s);
+  assert.equal(lines.length, 3);
+  assert.match(lines[2].text, /^Reaching .*connected$/);
+  assert.ok(lines.every((l) => l.done));
+});
+
+test('the map kind dropdown opens, picks a kind and closes', () => {
+  const state = playState();
+  openWindow(state.windows, 'map', DESK);
+  handleEvents(state, [{ type: 'click', id: 'map.kmenu' }], DESK);
+  assert.equal(state.win.map.kindOpen, true);
+  handleEvents(state, [{ type: 'click', id: 'map.k.relay' }], DESK);
+  assert.equal(state.win.map.kind, 'relay');
+  assert.equal(state.win.map.kindOpen, false);
+});

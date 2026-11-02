@@ -41,3 +41,20 @@ export function freeLane(session, lanes) {
   }
   return null;
 }
+
+/// The routing lines while a link comes up: one per hop, then the target.
+/// A step shows once the handshake reaches it, and says OK once it is past.
+export function routeLines(game, s) {
+  const frac = Math.min(s.connectT / s.connectDur, 1);
+  const steps = [...s.route, s.target];
+  const out = [];
+  steps.forEach((id, i) => {
+    if (frac < i / steps.length) return;
+    const h = game.world.hosts[id];
+    const last = i === steps.length - 1;
+    const done = frac >= (i + 1) / steps.length;
+    const what = last ? `Reaching ${h?.ip} (${h?.name})` : `Routing via ${h?.ip} (${h?.name})`;
+    out.push({ text: `${what}... ${done ? (last ? 'connected' : 'OK') : ''}`, done });
+  });
+  return out;
+}

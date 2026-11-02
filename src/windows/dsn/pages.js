@@ -10,7 +10,8 @@ import { darknet, hint } from '../../data/content.js';
 import { MISSION_LABEL, CO_LABEL, HOST_LABEL } from '../../data/enums.js';
 import { contractLabel } from '../../state/contracts.js';
 import { RECORD_LABEL, recordText } from '../../state/gameState.js';
-import { broker, haggleOf, haggleOdds, snubbed, INSULT } from '../../state/haggle.js';
+import { broker, haggleOf, haggleOdds, snubbed, INSULT, MAX_ROUNDS } from '../../state/haggle.js';
+import { wrapRow } from '../notepad.js';
 import { jobCards } from './cards.js';
 import { KIND_COLOR, hexOf, netPrimary, netSolid, netDanger } from './theme.js';
 
@@ -153,17 +154,7 @@ function dealPanel(game, c, b, view) {
     out.push(links([[MY_JOBS, 'this job is yours → MY JOBS']]));
   }
   out.push(heading(`CHANNEL // ${c.client}`));
-  const log = hg?.log ?? [];
-  if (log.length) {
-    out.push(custom(log.length * 18 + 12, (ctx, sk, r) => {
-      ctx.fillStyle = '#05070d';
-      ctx.fillRect(r.x, r.y, r.w, r.h);
-      log.forEach((m, i) => {
-        const mine = m.who === 'you';
-        drawText(ctx, `${mine ? '>' : '<'} ${m.who.toUpperCase()}: ${m.text}`, r.x + 8, r.y + 6 + i * 18, 11, mine ? '#7fd4ff' : b.accent);
-      });
-    }));
-  }
+  out.push(chatConsole(c, b, hg));
   if (c.state !== 'offered') return [...out, label('the listing is closed', 10)];
   if (snubbed(game, c.client)) return [...out, label(`${c.client} is not taking your calls`, 10, 0xff6b6b)];
   if (!hg) {
@@ -177,10 +168,19 @@ function dealPanel(game, c, b, view) {
     let odds = '';
     if (typed > c.reward) odds = typed / c.reward > INSULT ? 'an insult' : `${Math.round(haggleOdds(game, c, typed) * 100)}% chance`;
     out.push(buttons([{ id: `dsn.askexact.${c.id}`, text: `ASK${odds ? ` // ${odds}` : ''}`, style: ghost() }]));
-  } else if (hg.state === 'waiting') {
-    out.push(label(`${c.client} is typing…`, 11, accent));
   } else if (hg.state === 'counter') {
     out.push(buttons([{ id: `dsn.take.${c.id}`, text: `TAKE ${money(hg.counter)} AND ACCEPT`, style: netPrimary() }]));
+    if ((hg.round ?? 1) < MAX_ROUNDS) {
+      out.push(field('dsn.askfield', view.ask ?? '', `counter: between ${hg.counter} and ${hg.ask}`));
+      const typed = Number(view.ask);
+      const ok = typed > hg.counter && typed < hg.ask;
+      const odds = ok ? ` // ${Math.round(haggleOdds(game, c, typed) * 70)}% chance` : '';
+      out.push(buttons([{ id: `dsn.counter.${c.id}`, text: `COUNTER${odds}`, style: { ...ghost(), disabled: !ok } }]));
+    } else out.push(label('last offer: take it or walk away', FONT.body, 0xffc857));
+  }
+  if (hg?.state !== 'waiting') {
+    const sure = view.armed === `dsn.decline.${c.id}`;
+    out.push(buttons([{ id: `dsn.decline.${c.id}`, text: sure ? 'CONFIRM: WALK AWAY' : 'DECLINE THE JOB', style: sure ? netDanger() : flat() }]));
   }
   return out;
 }
@@ -362,4 +362,60 @@ export function buildPage(game, url, view = {}) {
     accent: 0xff6b6b,
     controls: [banner(['404'], '#ff6b6b'), para(lines[u.length % lines.length]), links([[HOME, 'back to the hub']])],
   };
+}
+
+const CHAT_PAD = 10;
+const CHAT_LH = 18;
+let lastCtx = null;
+
+/// The chat with the client, laid out to a width: a header line per message
+/// (who and when), then its text wrapped to the bubble.
+function chatRows(ctx, log, w) {
+  const rows = [];
+  log.forEach((m) => {
+    const mine = m.who === 'you';
+    const t = `${String(Math.floor(m.minute / 60) % 24).padStart(2, '0')}:${String(m.minute % 60).padStart(2, '0')}`;
+    rows.push({ head: true, mine, text: `${mine ? 'YOU' : m.who.toUpperCase()}  ${t}` });
+    wrapRow(ctx, m.text, w * 0.75 - 16).forEach((line) => rows.push({ mine, text: line }));
+    rows.push({ gap: true });
+  });
+  return rows;
+}
+
+/// A chat console: a dark framed box, the client on the left in their colour,
+/// you on the right in blue, a status line along the bottom.
+function chatConsole(c, b, hg) {
+  const log = hg?.log ?? [];
+  const status = !hg ? 'channel open // make your ask below'
+    : hg.state === 'waiting' ? `${c.client} is typing…`
+      : hg.state === 'counter' ? 'counter-offer on the table'
+        : c.state === 'offered' ? 'talks over' : 'channel closed';
+  // the height needs a context to measure with: the last one drawn with
+  const measure = (w) => (lastCtx ? chatRows(lastCtx, log, w).length : log.length * 4);
+  return custom((w) => Math.max(measure(w) * CHAT_LH, 30) + CHAT_PAD * 2 + 26, (ctx, sk, r) => {
+    lastCtx = ctx;
+    ctx.fillStyle = '#05070d';
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.strokeStyle = b.accent;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(r.x + 0.5, r.y + 0.5, r.w - 1, r.h - 1);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+    ctx.clip();
+    let y = r.y + CHAT_PAD;
+    if (!log.length) drawText(ctx, '-- no messages yet --', r.x + r.w / 2, y + 6, FONT.body, '#55607a', { align: 'center' });
+    chatRows(ctx, log, r.w).forEach((row) => {
+      if (row.gap) { y += CHAT_LH / 2; return; }
+      const x = row.mine ? r.x + r.w - CHAT_PAD : r.x + CHAT_PAD;
+      const col = row.head ? '#55607a' : row.mine ? '#7fd4ff' : b.accent;
+      drawText(ctx, row.text, x, y, FONT.body, col, { align: row.mine ? 'right' : 'left' });
+      y += CHAT_LH;
+    });
+    ctx.restore();
+    // the status line
+    ctx.fillStyle = '#0b1020';
+    ctx.fillRect(r.x + 1, r.y + r.h - 24, r.w - 2, 23);
+    drawText(ctx, `● ${status}`, r.x + CHAT_PAD, r.y + r.h - 12, FONT.body, hg?.state === 'waiting' ? '#ffc857' : '#55607a', { baseline: 'middle' });
+  });
 }

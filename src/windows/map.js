@@ -7,7 +7,6 @@
 import { drawFrame, splitPanel, detailPane, emptyNote } from '../ui/panel.js';
 import { drawTable, flex } from '../ui/table.js';
 import { drawField } from '../ui/field.js';
-import { placeButtons } from '../ui/layout.js';
 import { drawButton } from '../ui/widgets.js';
 import { drawScrolled } from '../ui/scroll.js';
 import { label, keyValue, chips, spacer, custom, meter, buttons as buttonRow } from '../ui/controls.js';
@@ -29,6 +28,7 @@ const TABS = ['HOSTS', 'ROUTE', 'SAVED'];
 
 /// Draws the map window.
 export function drawMap(ctx, sk, r, game, ui, input, events, view) {
+  input = kindMenuInput(view, input, events);
   const hosts = mapHosts(game, view);
   const found = game.world.hosts.filter((h) => h.discovered).length;
   const route = game.player.bounce;
@@ -52,6 +52,7 @@ export function drawMap(ctx, sk, r, game, ui, input, events, view) {
   if (tab === 'ROUTE') drawScrolled(ctx, sk, detailPane(ctx, sk, pane), routeControls(sk, game, view), 'map.route', ui, input, events);
   else if (tab === 'SAVED') drawSaved(ctx, sk, pane, game, saved, ui, input, events);
   else drawHosts(ctx, sk, pane, game, hosts, ui, input, events, view);
+  drawKindMenu(ctx, sk, game, view);
 }
 
 /// The HOSTS tab: the list, then the picked host's card.
@@ -134,22 +135,58 @@ function drawToolbar(ctx, sk, body, game, ui, input, events, view) {
     view.query = '';
     ui.focus = null;
   }
+  // the kinds: one dropdown, its list drawn over the rest by drawKindMenu
   const active = view.kind ?? 'all';
-  const items = MAP_FILTERS.map(([kind, name]) => {
+  const name = MAP_FILTERS.find(([k]) => k === active)?.[1] ?? 'ALL';
+  const btn = { x: field.x + field.w + 10, y: body.y, w: 200, h: 26 };
+  view.kindBtn = btn;
+  if (drawButton(ctx, ui, sk, 'map.kmenu', btn, `KIND: ${name} ${filterCount(game, active)}  ${view.kindOpen ? '▴' : '▾'}`, view.kindOpen ? primary() : ghost(), input)) {
+    events.push({ type: 'click', id: 'map.kmenu' });
+  }
+  return field.h;
+}
+
+/// The open kind list: one row a kind with its count. Drawn last, over the map.
+function drawKindMenu(ctx, sk, game, view) {
+  if (!view.kindOpen || !view.kindBtn) return;
+  const b = view.kindBtn;
+  const active = view.kind ?? 'all';
+  view.kindRows = MAP_FILTERS.map(([kind, name], i) => ({ kind, name, r: { x: b.x, y: b.y + b.h + 2 + i * 26, w: b.w, h: 26 } }));
+  const all = { x: b.x, y: b.y + b.h + 2, w: b.w, h: view.kindRows.length * 26 };
+  ctx.fillStyle = color(sk.panel);
+  ctx.fillRect(all.x, all.y, all.w, all.h);
+  ctx.strokeStyle = color(sk.accent);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(all.x + 0.5, all.y + 0.5, all.w - 1, all.h - 1);
+  view.kindRows.forEach(({ kind, name, r }) => {
     const n = filterCount(game, kind);
     const on = kind === active;
-    const style = on ? ghost() : { ...flat(), disabled: n === 0 && kind !== 'all' };
-    return { id: `map.k.${kind}`, text: `${name} ${n}`, style: { ...style, size: FONT.body, pad: 8 } };
-  });
-  const x0 = field.x + field.w + 10;
-  const { placed, height } = placeButtons(ctx, x0, body.y, Math.max(body.x + body.w - x0, 60), items);
-  placed.forEach((spot) => {
-    const br = { x: spot.x, y: spot.y, w: spot.w, h: spot.h };
-    if (drawButton(ctx, ui, sk, spot.item.id, br, spot.item.text, spot.item.style, input)) {
-      events.push({ type: 'click', id: spot.item.id });
+    if (on) {
+      ctx.fillStyle = color(sk.raised);
+      ctx.fillRect(r.x + 1, r.y, r.w - 2, r.h);
     }
+    const tint = n === 0 && kind !== 'all' ? sk.dim : on ? sk.accent : sk.text;
+    drawText(ctx, `${on ? '● ' : '  '}${name}`, r.x + 10, r.y + r.h / 2, FONT.body, color(tint), { baseline: 'middle' });
+    drawText(ctx, String(n), r.x + r.w - 10, r.y + r.h / 2, FONT.body, color(sk.dim), { align: 'right', baseline: 'middle' });
   });
-  return Math.max(height, field.h);
+}
+
+/// While the kind list is open it takes the press: a row picks its kind, a
+/// press anywhere else (or Esc) closes it. Returns the input the rest sees.
+function kindMenuInput(view, input, events) {
+  if (!view.kindOpen) return input;
+  if (input.esc) {
+    view.kindOpen = false;
+    return { ...input, esc: false };
+  }
+  if (!input.pressed) return input;
+  const m = input.mouse;
+  const row = (view.kindRows ?? []).find(({ r }) => m && m.x >= r.x && m.x <= r.x + r.w && m.y >= r.y && m.y <= r.y + r.h);
+  const onBtn = view.kindBtn && m && m.x >= view.kindBtn.x && m.x <= view.kindBtn.x + view.kindBtn.w && m.y >= view.kindBtn.y && m.y <= view.kindBtn.y + view.kindBtn.h;
+  if (onBtn) return input;
+  view.kindOpen = false;
+  if (row) events.push({ type: 'click', id: `map.k.${row.kind}` });
+  return { ...input, pressed: false };
 }
 
 /// The route panel: the hops in order, what they buy, and the buttons that

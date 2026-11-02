@@ -69,6 +69,40 @@ export function askFee(game, id, ask) {
   return null;
 }
 
+/// Walks away from a listing: the talks end and the listing goes. Returns an
+/// error or null.
+export function declineDeal(game, id) {
+  const c = game.contracts.find((x) => x.id === id);
+  if (!c || c.state !== 'offered') return 'that listing is not open';
+  const minute = game.clock.minutes;
+  game.haggle ??= {};
+  const hg = (game.haggle[id] ??= { ask: c.reward, was: c.reward, state: 'declined', log: [] });
+  hg.state = 'declined';
+  hg.log.push({ who: 'you', text: 'Not for me. Pass.', minute });
+  c.state = 'expired';
+  return null;
+}
+
+/// The most rounds of asking on one job: the first ask, then one counter.
+export const MAX_ROUNDS = 2;
+
+/// Answers a client's counter-offer with an amount of your own, between their
+/// counter and your last ask. Returns an error or null.
+export function counterAsk(game, id, ask) {
+  const c = game.contracts.find((x) => x.id === id);
+  const hg = haggleOf(game, id);
+  if (!c || c.state !== 'offered') return 'that listing is not open';
+  if (hg?.state !== 'counter') return 'there is no counter-offer to answer';
+  if ((hg.round ?? 1) >= MAX_ROUNDS) return 'they said take it or leave it';
+  ask = Math.round(ask);
+  if (!(ask > hg.counter)) return `ask for more than their ${hg.counter} cr`;
+  if (ask >= hg.ask) return `ask for less than your last ${hg.ask} cr`;
+  const minute = game.clock.minutes;
+  Object.assign(hg, { ask, state: 'waiting', round: (hg.round ?? 1) + 1, replyAt: minute + 5 + (id % 7) });
+  hg.log.push({ who: 'you', text: `Meet me at ${ask} cr.`, minute });
+  return null;
+}
+
 /// Takes a counter-offer, or the posted fee. Returns an error or null.
 export function takeOffer(game, id) {
   const c = game.contracts.find((x) => x.id === id);
@@ -105,14 +139,16 @@ export function haggleTick(game) {
       toast(game, `${c.client} pulled the listing`, 'bad');
       return;
     }
-    const p = haggleOdds(game, c, hg.ask);
+    // a second round is harder, and ends in yes or no
+    const last = (hg.round ?? 1) >= MAX_ROUNDS;
+    const p = haggleOdds(game, c, hg.ask) * (last ? 0.7 : 1);
     const r = roll(id, hg.ask);
     if (r < p) {
       hg.state = 'yes';
       c.reward = hg.ask;
       say(`Fine. ${hg.ask} cr. Do not make us regret it.`);
       toast(game, `${c.client} agreed to ${hg.ask} cr`, 'money');
-    } else if (r < p + 0.3) {
+    } else if (!last && r < p + 0.3) {
       hg.state = 'counter';
       hg.counter = Math.round((hg.was + hg.ask) / 2);
       say(`Too rich. We can meet you at ${hg.counter} cr. Take it or leave it.`);

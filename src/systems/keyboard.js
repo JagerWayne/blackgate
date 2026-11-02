@@ -27,6 +27,8 @@ export function attachKeys(win, input) {
     if (e.key === 'ArrowDown') input.downKey = true;
     if (e.key === 'ArrowLeft') input.left = true;
     if (e.key === 'ArrowRight') input.right = true;
+    if (e.key === 'Home') input.home = true;
+    if (e.key === 'End') input.end = true;
     if (e.key?.length === 1 && !e.ctrlKey && !e.metaKey) input.text += e.key;
     // the same keys in the order they came, for a text that takes more than
     // one line: a new line is \n, a deleted character \b

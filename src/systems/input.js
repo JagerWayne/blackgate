@@ -24,6 +24,8 @@ export function makeInput() {
     downKey: false,
     left: false,
     right: false,
+    home: false,
+    end: false,
     anyKey: false,
     text: '',
     typed: '',
@@ -96,6 +98,8 @@ export function endFrame(input) {
   input.downKey = false;
   input.left = false;
   input.right = false;
+  input.home = false;
+  input.end = false;
   input.anyKey = false;
   input.text = '';
   input.typed = '';

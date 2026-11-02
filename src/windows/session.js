@@ -1,13 +1,14 @@
 // Bl@ckG@te: the remote-control client. The link, the target, the tasks that
 // run on it and the trace that comes with them.
 
-import { draw as drawText, ellipsize } from '../core/text.js';
+import { draw as drawText, ellipsize, FONT } from '../core/text.js';
 import { color, cssA } from '../core/theme.js';
 import { drawFrame, splitPanel, detailPane, emptyNote } from '../ui/panel.js';
 import { ghost } from '../ui/styles.js';
 import { drawButton } from '../ui/widgets.js';
 import { drawScrolled } from '../ui/scroll.js';
 import { section, label, keyValue, meter } from '../ui/controls.js';
+import { routeLines } from '../state/session.js';
 import { guardTint } from '../ui/guard.js';
 import { HOST_LABEL } from '../data/enums.js';
 import { drawAccess, drawFiles, drawLogs, drawRecords } from './sessionTabs.js';
@@ -100,6 +101,8 @@ export function drawSession(ctx, sk, r, game, ui, input, events, view) {
     drawScrolled(ctx, sk, pane, [
       section('NEGOTIATING LINK'),
       meter(`HANDSHAKE ${Math.round(Math.min(s.connectT / s.connectDur, 1) * 100)}%`, Math.min(s.connectT / s.connectDur, 1), sk.accent),
+      section(s.route.length ? `ROUTE // ${s.route.length} hops` : 'ROUTE // direct, no hops'),
+      ...routeLines(game, s).map((l) => label(l.text, FONT.body, l.done ? sk.ok : sk.warn)),
     ], 'sess.wait', ui, input, events);
   } else {
     const tab = view.tab ?? 0;

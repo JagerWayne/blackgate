@@ -139,7 +139,7 @@ test('with wrap on there is nothing to scroll across', () => {
 
 // -- typing follows the caret ----------------------------------------------------------
 
-test('typing brings the end of the page back into view', () => {
+test('typing brings the caret back into view', () => {
   const state = noteState(many(80));
   const p = page(state);
   // click into the page, scroll to the top, then type
@@ -152,7 +152,7 @@ test('typing brings the end of the page back into view', () => {
   state.input.text = '!';
   state.input.typed = '!';
   const ctx = frame(state);
-  assert.ok(ctx.texts.some((t) => t.s === 'line 80!'), 'the typed line is on screen');
+  assert.ok(ctx.texts.some((t) => t.s.endsWith('!')), 'the line typed into, at the clicked caret, is on screen');
   assert.ok(state.ui.scroll.get('note.v') > 0);
 });
 
@@ -231,6 +231,29 @@ test('notepads: an old save becomes one pad, new pads switch and keep their text
   deletePad(g, 0);
   assert.equal(g.notes, 'phone 555');
   deletePad(g, 0);
-  assert.deepEqual(g.notepads, [{ name: 'NOTES', text: '' }]);
+  assert.deepEqual(g.notepads, [{ name: 'UNTITLED', text: '' }]);
   assert.equal(g.notes, '');
+});
+
+import { edit } from '../src/windows/notepad.js';
+
+test('notepad: the arrows, Home and End move the caret, and typing goes in at it', () => {
+  const k = (o) => ({ typed: '', ...o });
+  let e = edit('abc\ndef', 7, k({ up: true }));
+  assert.equal(e.caret, 3, 'up keeps the column');
+  e = edit('abc\ndef', e.caret, k({ left: true, typed: 'X' }));
+  assert.deepEqual(e, { text: 'abXc\ndef', caret: 3 });
+  e = edit(e.text, e.caret, k({ home: true }));
+  assert.equal(e.caret, 0);
+  e = edit(e.text, e.caret, k({ downKey: true, end: true }));
+  assert.equal(e.caret, 8, 'down, then End: the end of the second line');
+  e = edit('abc', 1, k({ typed: '\b', delete: true }));
+  assert.deepEqual(e, { text: 'c', caret: 0 });
+});
+
+test('notepads: new ones are UNTITLED, then UNTITLED 2', () => {
+  const g = { notes: '' };
+  assert.equal(padsOf(g)[0].name, 'UNTITLED');
+  newPad(g);
+  assert.equal(g.notepads[1].name, 'UNTITLED 2');
 });

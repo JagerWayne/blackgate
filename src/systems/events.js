@@ -2,7 +2,7 @@ import { newPad, openPad, deletePad } from '../state/notes.js';
 // The events the operator made, applied to the game state.
 
 import { handleDsnClick } from '../windows/dsn/browser.js';
-import { askFee, takeOffer } from '../state/haggle.js';
+import { askFee, takeOffer, declineDeal, counterAsk } from '../state/haggle.js';
 import { setDark } from '../core/theme.js';
 import {
   openWindow, closeWindow, makeWindows, minimizeWindow, toggleMax, taskWindow,
@@ -147,13 +147,16 @@ function handleMapClick(state, id) {
   const game = state.game;
   const view = state.win.map ?? (state.win.map = {});
   const tail = (prefix) => id.slice(prefix.length);
-  if (id.startsWith('map.k.')) view.kind = tail('map.k.');
+  if (id.startsWith('map.k.')) {
+    view.kind = tail('map.k.');
+    view.kindOpen = false;
+  } else if (id === 'map.kmenu') view.kindOpen = !view.kindOpen;
   else if (id.startsWith('map.tab.')) view.tab = tail('map.tab.');
   else if (id.startsWith('map.up.')) moveHop(game, Number(tail('map.up.')), -1);
   else if (id.startsWith('map.down.')) moveHop(game, Number(tail('map.down.')), 1);
   else if (id === 'map.addsel') {
     if (view.sel !== undefined && view.sel !== null && !game.player.bounce.includes(view.sel)) handleMapClick(state, `map.hop.${view.sel}`);
-  } else if (id.startsWith('map.show.')) Object.assign(view, { sel: Number(tail('map.show.')), glide: true, follow: true });
+  } else if (id.startsWith('map.show.')) Object.assign(view, { sel: Number(tail('map.show.')), glide: true, follow: true, tab: 'HOSTS', kind: 'all', query: '' });
   else if (id.startsWith('map.hop.')) {
     const host = Number(tail('map.hop.'));
     if (!game.player.bounce.includes(host) && game.player.bounce.length >= MAX_HOPS) {
@@ -183,6 +186,7 @@ function trackTarget(state, contractId, desk) {
   view.query = '';
   view.follow = true;
   view.glide = true;
+  view.tab = 'HOSTS';
   openWindow(state.windows, 'map', desk);
 }
 
@@ -366,6 +370,16 @@ function handleDsn(state, id, desk) {
   const say = (err) => { if (err) toast(game, err, 'bad'); };
   if (id.startsWith('dsn.accept.')) say(takeOffer(game, num('dsn.accept.')));
   else if (id.startsWith('dsn.take.')) say(takeOffer(game, num('dsn.take.')));
+  else if (id.startsWith('dsn.decline.')) {
+    const v = (state.win.dsn ??= {});
+    if (v.armed === id) {
+      say(declineDeal(game, num('dsn.decline.')));
+      v.armed = null;
+    } else v.armed = id;
+  } else if (id.startsWith('dsn.counter.')) {
+    say(counterAsk(game, num('dsn.counter.'), Number(view.ask)));
+    view.ask = '';
+  }
   else if (id.startsWith('dsn.askexact.')) {
     say(askFee(game, num('dsn.askexact.'), Number(view.ask)));
     view.ask = '';
@@ -376,8 +390,7 @@ function handleDsn(state, id, desk) {
   } else if (id.startsWith('dsn.map.')) {
     openWindow(state.windows, 'map', desk);
     const map = (state.win.map ??= {});
-    map.sel = Number(id.slice(8));
-    map.glide = true;
+    Object.assign(map, { sel: Number(id.slice(8)), glide: true, follow: true, tab: 'HOSTS', kind: 'all', query: '' });
   } else if (id.startsWith('dsn.drop.')) {
     // DROP asks twice: the first press arms it
     const cid = num('dsn.drop.');

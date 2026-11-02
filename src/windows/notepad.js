@@ -26,9 +26,17 @@ export function drawNotepad(ctx, sk, r, game, ui, input, events, view = {}) {
   // the keys go in first, so the counts and the page show the same text
   if (hit(r, input) && input.pressed) ui.focus = 'notepad';
   const focused = ui.focus === 'notepad';
+  // a different pad, or a page changed from outside, puts the caret at the end
+  if (view.padAt !== game.notepad || view.caret > game.notes.length) view.caret = null;
+  view.padAt = game.notepad;
   const before = game.notes;
-  if (focused) game.notes = typed(game.notes, input);
-  const changed = game.notes !== before;
+  const caretBefore = view.caret;
+  if (focused) {
+    const ed = edit(game.notes, view.caret ?? game.notes.length, input);
+    game.notes = ed.text;
+    view.caret = ed.caret;
+  }
+  const changed = game.notes !== before || view.caret !== caretBefore;
   // typing again puts an armed CLEAR down
   if (focused && input.typed) view.armed = null;
   const wrap = game.settings.noteWrap !== false;
@@ -87,11 +95,19 @@ export function drawNotepad(ctx, sk, r, game, ui, input, events, view = {}) {
   // a new page, or one just typed into, shows its end and the caret
   let v = ui.scroll.get('note.v');
   let h = ui.scroll.get('note.h') ?? 0;
-  if (v === undefined || changed) v = maxV;
-  if (changed && !wrap) {
-    const caret = measure(ctx, lines[lines.length - 1], SIZE);
-    if (caret - h > fullW - 12) h = caret - fullW + 24;
-    if (caret < h) h = Math.max(caret - 24, 0);
+  // the caret's row and where along it the caret sits
+  const at = view.caret ?? game.notes.length;
+  const cRow = caretRow(rows, at);
+  const caretPx = measure(ctx, rows[cRow].text.slice(0, at - rows[cRow].start), SIZE);
+  if (v === undefined) v = maxV;
+  if (changed) {
+    // typing or moving keeps the caret in view
+    if (cRow * lh < v) v = cRow * lh;
+    if ((cRow + 1) * lh > v + textH) v = (cRow + 1) * lh - textH;
+    if (!wrap) {
+      if (caretPx - h > fullW - 12) h = caretPx - fullW + 24;
+      if (caretPx < h) h = Math.max(caretPx - 24, 0);
+    }
   }
   // the wheel: down the page, or across it with Shift held
   if (hit(page, input) && Math.abs(input.scroll) > 0.1) {
@@ -121,6 +137,16 @@ export function drawNotepad(ctx, sk, r, game, ui, input, events, view = {}) {
   if (view.drag === 'h') h = fromTrack(input.mouse.x - hTrack.x, hTrack.w, hThumb, view.grab) * maxH;
   v = clamp(v, 0, maxV);
   h = clamp(h, 0, maxH);
+  // a press on the text puts the caret there
+  const textBox = { x: textX - 2, y: page.y + 8, w: fullW + 4, h: textH };
+  if (input.pressed && !view.drag && hit(textBox, input) && rows.length) {
+    const ri = clamp(Math.floor((input.mouse.y - textBox.y + v) / lh), 0, rows.length - 1);
+    const row = rows[ri];
+    const x = input.mouse.x - (textX - h);
+    let k = 0;
+    while (k < row.text.length && measure(ctx, row.text.slice(0, k + 1), SIZE) - measure(ctx, row.text[k], SIZE) / 2 < x) k += 1;
+    view.caret = row.start + k;
+  }
   ui.scroll.set('note.v', v);
   ui.scroll.set('note.h', h);
 
@@ -154,10 +180,11 @@ export function drawNotepad(ctx, sk, r, game, ui, input, events, view = {}) {
     drawText(ctx, rows[i].text, textX - h, top + i * lh - v, SIZE, color(sk.text));
   }
   if (focused) {
-    const end = rows[rows.length - 1];
-    const caretX = textX - h + measure(ctx, end.text, SIZE);
+    const ci = caretRow(rows, view.caret ?? game.notes.length);
+    const cr = rows[ci];
+    const caretX = textX - h + measure(ctx, cr.text.slice(0, (view.caret ?? game.notes.length) - cr.start), SIZE);
     ctx.fillStyle = color(sk.text);
-    ctx.fillRect(caretX + 1, top + (rows.length - 1) * lh - v, 1, SIZE + 2);
+    ctx.fillRect(caretX + 1, top + ci * lh - v, 1, SIZE + 2);
   }
   ctx.restore();
 
@@ -171,11 +198,24 @@ export function drawNotepad(ctx, sk, r, game, ui, input, events, view = {}) {
 /// the width when it is on. Only the first row of a line carries its number.
 function layoutRows(ctx, lines, wrap, width) {
   const rows = [];
+  let start = 0;
   lines.forEach((line, i) => {
     const parts = wrap ? wrapRow(ctx, line, width) : [line];
-    parts.forEach((text, k) => rows.push({ text, num: k === 0 ? i + 1 : null }));
+    let at = start;
+    parts.forEach((text, k) => {
+      rows.push({ text, num: k === 0 ? i + 1 : null, start: at });
+      at += text.length;
+    });
+    start += line.length + 1;
   });
   return rows;
+}
+
+/// The row a caret offset sits on: the last row that starts at or before it.
+function caretRow(rows, at) {
+  let i = 0;
+  while (i + 1 < rows.length && rows[i + 1].start <= at) i += 1;
+  return i;
 }
 
 /// One line broken to a width, keeping every character: the rows put back
@@ -242,17 +282,47 @@ function clamp(n, lo, hi) {
   return Math.min(Math.max(n, lo), hi);
 }
 
-/// The notes after this frame's keys, played back in the order they came.
-function typed(notes, input) {
-  let next = notes;
-  for (const ch of input.typed ?? '') {
-    next = ch === '\b' ? next.slice(0, -1) : next + ch;
+/// The text and caret after this frame's keys: the arrows, Home and End move
+/// the caret; typing, Backspace and Delete work at it, in the order they came.
+export function edit(text, caret, input) {
+  let t = text;
+  let c = clamp(caret, 0, t.length);
+  const lineStart = (i) => t.lastIndexOf('\n', i - 1) + 1;
+  const lineEnd = (i) => (t.indexOf('\n', i) < 0 ? t.length : t.indexOf('\n', i));
+  if (input.left) c = Math.max(c - 1, 0);
+  if (input.right) c = Math.min(c + 1, t.length);
+  if (input.home) c = lineStart(c);
+  if (input.end) c = lineEnd(c);
+  if (input.up && lineStart(c) > 0) {
+    const col = c - lineStart(c);
+    const prev = lineStart(lineStart(c) - 1);
+    c = Math.min(prev + col, lineStart(c) - 1);
+  } else if (input.downKey && lineEnd(c) < t.length) {
+    const col = c - lineStart(c);
+    const next = lineEnd(c) + 1;
+    c = Math.min(next + col, lineEnd(next));
   }
-  if (input.paste) next += input.paste.replace(/\r\n?/g, '\n');
-  return next.slice(0, MAX_CHARS);
+  for (const ch of input.typed ?? '') {
+    if (ch === '\b') {
+      if (c > 0) {
+        t = t.slice(0, c - 1) + t.slice(c);
+        c -= 1;
+      }
+    } else if (t.length < MAX_CHARS) {
+      t = t.slice(0, c) + ch + t.slice(c);
+      c += 1;
+    }
+  }
+  if (input.delete && c < t.length) t = t.slice(0, c) + t.slice(c + 1);
+  if (input.paste) {
+    const p = input.paste.replace(/\r\n?/g, '\n').slice(0, Math.max(MAX_CHARS - t.length, 0));
+    t = t.slice(0, c) + p + t.slice(c);
+    c += p.length;
+  }
+  return { text: t, caret: c };
 }
 
-/// The notepad tabs: one per pad (× deletes, pressed twice), and + NEW.
+/// The notepad tabs: one per pad (Ã— deletes, pressed twice), and + NEW.
 /// Returns the body below them.
 function drawPadTabs(ctx, sk, body, game, ui, input, events, view) {
   const pads = padsOf(game);
