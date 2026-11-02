@@ -66,7 +66,7 @@ export function onMinutes(game, minutes) {
     const id = spawnContract(game, false);
     if (id === null) break;
     const c = game.contracts.find((x) => x.id === id);
-    toast(game, `New listing #${id} // ${c?.reward ?? 0} cr // on DeepSpaceN3T`, 'money');
+    toast(game, `New listing #${id} // ${c?.reward ?? 0} cr // on DSNET`, 'money');
     guard += 1;
   }
 

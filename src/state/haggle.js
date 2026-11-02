@@ -1,4 +1,4 @@
-// Haggling on DeepSpaceN3T: the operator asks a client for a bigger fee. The
+// Haggling on DSNET: the operator asks a client for a bigger fee. The
 // client answers a few minutes later: yes, a counter-offer halfway, or no.
 // Asking for more than double is an insult: the listing is pulled and the
 // client will not deal for a day. One ask per job.

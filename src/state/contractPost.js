@@ -71,7 +71,7 @@ CHANGE   ${subject}`;
       id: 0,
       from: `${client} <broker@blackgate.onion>`,
       subject: `CONTRACT ${id} // ${MISSION_LABEL[kind]}`,
-      body: `${brief}\n\nTARGET   ${co}\nHOST     ${hostName}\nWINDOW   ${Math.floor((deadline - game.clock.minutes) / 60)} hours\nFEE      ${reward} cr\n\nListed on DeepSpaceN3T at dsn://job/${id}: talk the fee up or accept it there.`,
+      body: `${brief}\n\nTARGET   ${co}\nHOST     ${hostName}\nWINDOW   ${Math.floor((deadline - game.clock.minutes) / 60)} hours\nFEE      ${reward} cr\n\nListed on DSNET at dsn://job/${id}: talk the fee up or accept it there.`,
       minute: game.clock.minutes,
       read: false,
       contract: id,

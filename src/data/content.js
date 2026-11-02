@@ -19,6 +19,10 @@ export function content() {
 /// The portrait files, by folder: { male: [...], female: [...] }.
 export function portraits() { return tables.portraits; }
 
+/// The SleekPages photos and captions, by topic: { cars: [...], ... }.
+export function socialImages() { return tables.socialImages ?? {}; }
+export function socialText() { return tables.socialText ?? {}; }
+
 export function cities() { return tables.cities.cities; }
 
 /// The country outlines: { code, name, rings: [[x, y, x, y, ...]] } in map fractions.

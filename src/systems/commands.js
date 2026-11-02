@@ -239,7 +239,7 @@ const APPS = {
   contracts: {
     alias: ['ct'],
     window: 'dsn',
-    about: 'your jobs and the offers (the same as DeepSpaceN3T)',
+    about: 'your jobs and the offers (the same as DSNET)',
     commands: {
       list: {
         args: '[offered|accepted|ready|done|all]', help: 'the jobs with id, kind, payout and deadline',
@@ -722,7 +722,7 @@ const APPS = {
   dsn: {
     alias: ['web', 'deppspacenet'],
     window: 'dsn',
-    about: 'DeepSpaceN3T: browse the hidden job market and haggle with clients',
+    about: 'DSNET: browse the hidden job market and haggle with clients',
     commands: {
       open: {
         args: '[address]', help: 'open a page (dsn://hub by default)',

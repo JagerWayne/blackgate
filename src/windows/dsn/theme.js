@@ -1,4 +1,4 @@
-// The look of DeepSpaceN3T: one dark "night-net" skin inside the browser,
+// The look of DSNET: one dark "night-net" skin inside the browser,
 // whatever the desktop skin is, and a colour for each kind of work.
 
 /// The browser's palette: the same tokens as the shell's skins, so every

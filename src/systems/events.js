@@ -1,3 +1,4 @@
+import { fileLead } from '../windows/dsn/sleek.js';
 import { newPad, openPad, deletePad } from '../state/notes.js';
 // The events the operator made, applied to the game state.
 
@@ -288,7 +289,7 @@ function handleClick(state, e, desk) {
   else if (id === 'hdr.contracts') openPortal(state, desk, 'jobs');
   else if (id === 'hdr.mail') openWindow(state.windows, 'mail', desk);
   else if (id === 'mail.readAll') game.mail.forEach((m) => { m.read = true; });
-  else if (id.startsWith('dsn.')) handleDsn(state, id, desk);
+  else if (id.startsWith('dsn.') || id.startsWith('sp.')) handleDsn(state, id, desk);
   else if (id === 'hdr.cheat') openWindow(state.windows, 'cheats', desk);
   else if (id === 'cheat.missions') openWindow(state.windows, 'missions', desk);
   else if (id.startsWith('mg.')) handleBuilderClick(state, id);
@@ -362,7 +363,7 @@ function handleClick(state, e, desk) {
   }
 }
 
-/// DeepSpaceN3T: the job buttons and the haggling here, the browsing in the browser.
+/// DSNET: the job buttons and the haggling here, the browsing in the browser.
 function handleDsn(state, id, desk) {
   const game = state.game;
   const view = (state.win.dsn ??= {});
@@ -399,10 +400,14 @@ function handleDsn(state, id, desk) {
       view.dropArm = null;
     } else view.dropArm = cid;
   } else if (id === 'dsn.dossiers') openWindow(state.windows, 'dossiers', desk);
+  else if (id.startsWith('sp.dossier.')) {
+    fileLead(game, Number(id.slice(11)));
+    openWindow(state.windows, 'dossiers', desk);
+  }
   else handleDsnClick(view, id, game.uiTime ?? 0);
 }
 
-/// Opens DeepSpaceN3T at an address.
+/// Opens DSNET at an address.
 export function openPortal(state, desk, url = 'hub') {
   openWindow(state.windows, 'dsn', desk);
   handleDsnClick((state.win.dsn ??= {}), `dsn.go.${url}`, state.game?.uiTime ?? 0);

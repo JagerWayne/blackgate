@@ -19,6 +19,8 @@ export const TOPIC_FILES = {
   hardware: 'hardware.json',
   unlocks: 'unlocks.json',
   portraits: 'images/people/index.json',
+  socialImages: 'images/socialmedia/images.json',
+  socialText: 'images/socialmedia/text.json',
 };
 
 export const TOPICS = Object.keys(TOPIC_FILES);

@@ -1,4 +1,4 @@
-// DeepSpaceN3T: every page builds, links go somewhere, and the haggling
+// DSNET: every page builds, links go somewhere, and the haggling
 // follows its rules.
 // Run with: node --test tests/*.mjs
 import test from 'node:test';
@@ -7,9 +7,9 @@ import { initContent, darknet } from '../src/data/content.js';
 import { makeGame } from '../src/state/gameState.js';
 import { makeInput } from '../src/systems/input.js';
 import { makeUiState } from '../src/ui/kit.js';
-import { makeWindows, openWindow } from '../src/state/windows.js';
+import { makeWindows, openWindow, findWindow } from '../src/state/windows.js';
 import { drawPlay, desktop } from '../src/render/play.js';
-import { handleEvents } from '../src/systems/events.js';
+import { handleEvents, openPortal } from '../src/systems/events.js';
 import { theme } from '../src/core/theme.js';
 import { buildPage, normalize } from '../src/windows/dsn/pages.js';
 import { haggleOdds, askFee, haggleTick, haggleOf, takeOffer, snubbed } from '../src/state/haggle.js';
@@ -39,7 +39,7 @@ test('every page the hub links to builds, and none of them is a 404', () => {
     if (seen.has(url)) continue;
     seen.add(url);
     const page = buildPage(g, url);
-    assert.notEqual(page.title, '404 // DeepSpaceN3T', `dsn://${url}`);
+    assert.notEqual(page.title, '404 // DSNET', `dsn://${url}`);
     ids(page).filter((id) => id.startsWith('dsn.go.')).forEach((id) => queue.push(normalize(id.slice(7))));
   }
   for (const want of ['hub', 'jobs', 'board', 'about']) assert.ok(seen.has(want), want);
@@ -128,7 +128,7 @@ test('asking for more than double pulls the listing and the client stops dealing
 
 test('the browser draws, navigates, goes back and accepts a job', () => {
   const state = playState();
-  openWindow(state.windows, 'dsn', DESK);
+  openPortal(state, DESK);
   const frame = () => { const ctx = stubCtx(); state.game.uiTime += 1; drawPlay(ctx, theme(), 1600, 900, state, []); return ctx; };
   let ctx = frame();
   assert.ok(ctx.texts.some((t) => /ON THE MARKET/.test(t.s)), 'the hub');
@@ -153,7 +153,7 @@ test('tabs close with their own button, and the last tab stays', async () => {
   handleDsnClick(view, 'dsn.newtab', 0);
   assert.equal(view.tabs.length, 3);
   handleDsnClick(view, 'dsn.closetab.1', 0);
-  assert.deepEqual(view.tabs.map((t) => t.url), ['hub', 'hub']);
+  assert.deepEqual(view.tabs.map((t) => t.url), ['start', 'start']);
   handleDsnClick(view, 'dsn.closetab.0', 0);
   handleDsnClick(view, 'dsn.closetab.0', 0);
   assert.equal(view.tabs.length, 1, 'the last tab cannot be closed');
@@ -226,7 +226,7 @@ test('the hub link "manage your jobs" opens MY JOBS when clicked', () => {
   const state = playState();
   const g = state.game;
   takeOffer(g, offered(g)[0].id);
-  openWindow(state.windows, 'dsn', DESK);
+  openPortal(state, DESK);
   const draw = () => {
     const ctx = stubCtx();
     const ev = [];
@@ -245,4 +245,55 @@ test('the hub link "manage your jobs" opens MY JOBS when clicked', () => {
   draw();
   const v = state.win.dsn;
   assert.equal(v.tabs[v.active].url, 'jobs');
+});
+
+import { parseText } from '../tools/socialmedia.mjs';
+import { postOf, isPublic } from '../src/windows/dsn/sleek.js';
+import { socialImages, socialText } from '../src/data/content.js';
+import { readFileSync } from 'node:fs';
+
+test('populate: text.txt splits into its topics, numbers stripped', () => {
+  const t = parseText(readFileSync(new URL('../data/images/socialmedia/text.txt', import.meta.url), 'utf8'));
+  assert.deepEqual(Object.keys(t).sort(), ['cars', 'city', 'food', 'pets']);
+  assert.ok(t.cars.length > 10);
+  assert.ok(t.cars.every((line) => !/^\d+\./.test(line)));
+  assert.deepEqual(Object.keys(socialImages()).sort(), Object.keys(socialText()).sort(), 'a photo folder for every topic');
+});
+
+test('SleekPages: the start page, the feed, profiles and the directory build and link', () => {
+  const g = makeGame('SP', 7);
+  for (const url of ['start', 'sleekpages', 'sleekpages.com', 'sleekpages/people', 'sleekpages/person/0', 'dsnet']) {
+    assert.notEqual(buildPage(g, url).title, '404', url);
+  }
+  assert.equal(normalize('dsnet'), 'hub');
+  assert.deepEqual(ids(buildPage(g, 'start')).sort(), ['dsn.go.hub', 'dsn.go.sleekpages']);
+  assert.equal(buildPage(g, 'sleekpages/person/9999').title, '404');
+});
+
+test('SleekPages: posts pair a topic photo with a caption from that topic, the same every time', () => {
+  const g = makeGame('SP', 7);
+  const a = postOf(g, 'feed3');
+  assert.deepEqual(postOf(g, 'feed3'), a);
+  assert.ok(a.image.includes(`/socialmedia/${a.topic}/`));
+  assert.ok(socialText()[a.topic].includes(a.text));
+  const open = g.world.people.filter((_, i) => isPublic(g, i)).length;
+  assert.ok(open > 0 && open < g.world.people.length, 'some profiles are public, not all');
+});
+
+test('SleekPages: VIEW DOSSIER puts the person on file and opens DOSSIERS', () => {
+  const state = playState();
+  handleEvents(state, [{ type: 'click', id: 'sp.dossier.5' }], DESK);
+  assert.ok(state.game.intel?.[5], 'on file as a lead');
+  assert.ok(findWindow(state.windows, 'dossiers'), 'DOSSIERS is open');
+});
+
+test('SleekPages pages draw without throwing', () => {
+  for (const url of ['start', 'sleekpages', 'sleekpages/people', 'sleekpages/person/3']) {
+    const state = playState();
+    openPortal(state, DESK, url);
+    state.game.uiTime = 99;
+    const ctx = stubCtx();
+    assert.doesNotThrow(() => drawPlay(ctx, theme(), 1600, 900, state, []), url);
+    assert.ok(ctx.texts.length > 5, url);
+  }
 });

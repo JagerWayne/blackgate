@@ -5,7 +5,7 @@
 export const WINDOWS = [
   { key: 'blackgate', title: 'Bl@ckG@te', w: 1180, h: 720, minW: 760, minH: 460 },
   { key: 'mail', title: 'MAIL', w: 800, h: 560, minW: 320, minH: 240 },
-  { key: 'dsn', title: 'DeepSpaceN3T', w: 1060, h: 720, minW: 600, minH: 400 },
+  { key: 'dsn', title: 'Internet XPlorer', w: 1060, h: 720, minW: 600, minH: 400 },
   { key: 'map', title: 'NEXUS MAP', w: 1040, h: 690, minW: 520, minH: 380 },
   { key: 'gateway', title: 'GATEWAY', w: 780, h: 620, minW: 320, minH: 240 },
   { key: 'software', title: 'SOFTWARE', w: 900, h: 640, minW: 320, minH: 240 },

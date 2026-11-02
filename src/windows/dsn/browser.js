@@ -1,4 +1,4 @@
-// DeepSpaceN3T: the browser of the hidden network. Tabs that close, back and
+// Internet XPlorer: the desktop's web browser (the DSNET market, SleekPages). Tabs that close, back and
 // forward, an address bar, a relay circuit, a sidebar that is always there,
 // and a status bar. It draws in its own dark skin (theme.js) whatever the
 // desktop skin; the pages themselves are built in pages.js.
@@ -11,7 +11,7 @@ import { section, buttons } from '../../ui/controls.js';
 import { draw as drawText, ellipsize } from '../../core/text.js';
 import { color, cssA } from '../../core/theme.js';
 import { darknet } from '../../data/content.js';
-import { buildPage, normalize, listings, myJobs, HOME, MY_JOBS } from './pages.js';
+import { buildPage, normalize, listings, myJobs, HOME, MY_JOBS, START } from './pages.js';
 import { haggleOf } from '../../state/haggle.js';
 import { NET, KIND_COLOR, netPrimary } from './theme.js';
 
@@ -25,7 +25,7 @@ const RELAYS = ['NL', 'IS', 'SG', 'RO', 'CH', 'PA', 'SE', 'MD', 'HK', 'EE', 'CA'
 
 /// The browser's state: its tabs and the circuit, made on first use.
 export function browserOf(view) {
-  view.tabs ??= [{ url: HOME, back: [], fwd: [], at: -1 }];
+  view.tabs ??= [{ url: START, back: [], fwd: [], at: -1 }];
   view.active = Math.min(view.active ?? 0, view.tabs.length - 1);
   view.circuit ??= [0, 4, 2];
   return view;
@@ -68,7 +68,7 @@ export function handleDsnClick(view, id, now) {
   else if (id.startsWith('dsn.side.')) navigate(view, id.slice(9), now);
   else if (id === 'dsn.addr.go') navigate(view, view.addr ?? tab.url, now);
   else if (id === 'dsn.search.go') navigate(view, `search/${encodeURIComponent((view.query ?? '').trim() || ' ')}`, now);
-  else if (id === 'dsn.home') navigate(view, HOME, now);
+  else if (id === 'dsn.home') navigate(view, START, now);
   else if (id === 'dsn.reload') tab.at = now;
   else if (id === 'dsn.back' && tab.back.length) {
     tab.fwd.push(tab.url);
@@ -79,7 +79,7 @@ export function handleDsnClick(view, id, now) {
     tab.url = tab.fwd.pop();
     tab.at = now;
   } else if (id === 'dsn.newtab' && view.tabs.length < MAX_TABS) {
-    view.tabs.push({ url: HOME, back: [], fwd: [], at: now });
+    view.tabs.push({ url: START, back: [], fwd: [], at: now });
     view.active = view.tabs.length - 1;
   } else if (id.startsWith('dsn.closetab.')) closeTab(view, Number(id.slice(13)));
   else if (id.startsWith('dsn.tab.')) view.active = Math.min(Number(id.slice(8)), view.tabs.length - 1);
@@ -204,11 +204,16 @@ export function drawDsn(ctx, shellSk, r, game, ui, input, events, view) {
   ctx.fillRect(r.x, top - 3, r.w, 2);
 
   // the sidebar, when there is room for it
-  const side = r.w >= 640;
+  // the market's sidebar, on the market's pages only
+  const side = r.w >= 640 && page.site !== 'web';
   if (side) {
     ctx.fillStyle = color(sk.deep);
     ctx.fillRect(r.x, top, SIDE_W, bottom - top);
     drawScrolled(ctx, sk, { x: r.x + 8, y: top + 8, w: SIDE_W - 12, h: bottom - top - 12 }, sidebar(game, tab.url), 'dsn.side', ui, input, events);
+  }
+  if (page.bg) {
+    ctx.fillStyle = page.bg;
+    ctx.fillRect(r.x, top, r.w, bottom - top);
   }
   const pageR = { x: r.x + (side ? SIDE_W : 0) + 18, y: top + 12, w: r.w - (side ? SIDE_W : 0) - 30, h: bottom - top - 16 };
 

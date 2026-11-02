@@ -1,4 +1,4 @@
-// The pages of DeepSpaceN3T, built from the game each frame. A page is a title,
+// The pages of DSNET, built from the game each frame. A page is a title,
 // an accent colour and a list of the shell's own form controls (a link is a
 // flat button whose id carries the address it goes to). A page may also give
 // two columns, which a wide browser shows side by side.
@@ -13,16 +13,22 @@ import { RECORD_LABEL, recordText } from '../../state/gameState.js';
 import { broker, haggleOf, haggleOdds, snubbed, INSULT, MAX_ROUNDS } from '../../state/haggle.js';
 import { wrapRow } from '../notepad.js';
 import { jobCards } from './cards.js';
+import { sleekPage } from './sleek.js';
 import { KIND_COLOR, hexOf, netPrimary, netSolid, netDanger } from './theme.js';
 
 export const HOME = 'hub';
 export const MY_JOBS = 'jobs';
+/// The browser's own start page: where a new tab opens.
+export const START = 'start';
 const ASKS = [10, 25, 50];
 const MAX_JOBS = 4;
 
 /// An address without its scheme, trimmed and lower case.
 export function normalize(url) {
-  return String(url ?? '').trim().replace(/^dsn:\/\//i, '').replace(/\/+$/, '').toLowerCase() || HOME;
+  const u = String(url ?? '').trim().replace(/^(dsn|https?):\/\//i, '').replace(/^www\./i, '').replace(/\/+$/, '').toLowerCase() || START;
+  // the friendly names of the two sites
+  if (u === 'dsnet' || u === 'dsnet.onion') return HOME;
+  return u.replace(/^sleekpages\.com/, 'sleekpages');
 }
 
 /// A link: a flat button in the accent colour that goes to an address.
@@ -324,7 +330,7 @@ function about() {
     title: 'about',
     accent: 0x7fd4ff,
     controls: [
-      heading('ABOUT DeepSpaceN3T'),
+      heading('ABOUT DSNET'),
       para('A hidden network of hidden services. Every page you load is routed through three relays that know only their neighbours. The brokers here post the work; you pick it up, talk them up, and get it done.'),
       para('Rules of the house: no names, no logs, no asking for double.'),
     ],
@@ -343,7 +349,9 @@ export function buildPage(game, url, view = {}) {
   const head = u.split('/')[0];
   const rest = u.split('/').slice(1).join('/');
   let page = null;
-  if (u === HOME) page = hub(game, view);
+  if (u === START) page = startPage();
+  else if (head === 'sleekpages') page = sleekPage(game, rest);
+  else if (u === HOME) page = hub(game, view);
   else if (u === MY_JOBS) page = jobsPage(game, view);
   else if (head === 'cat') page = category(game, rest);
   else if (head === 'job') page = job(game, Number(rest), view);
@@ -419,4 +427,21 @@ function chatConsole(c, b, hg) {
     ctx.fillRect(r.x + 1, r.y + r.h - 24, r.w - 2, 23);
     drawText(ctx, `● ${status}`, r.x + CHAT_PAD, r.y + r.h - 12, FONT.body, hg?.state === 'waiting' ? '#ffc857' : '#55607a', { baseline: 'middle' });
   });
+}
+
+/// The start page: the two sites this machine knows.
+function startPage() {
+  return {
+    title: 'start',
+    accent: 0x7fd4ff,
+    site: 'web',
+    controls: [
+      banner(['INTERNET XPLORER', '   where do you want to go today?'], '#7fd4ff'),
+      heading('BOOKMARKS'),
+      links([[HOME, 'DSNET  //  the market for the anonymous: jobs, brokers, fees']]),
+      label('the hidden market where clients post work', 10),
+      links([['sleekpages', 'SleekPages  //  the social network: who works where, who posts what']]),
+      label('people put their lives online. some of them leave the door open.', 10),
+    ],
+  };
 }
