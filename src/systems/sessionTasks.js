@@ -43,10 +43,14 @@ export function taskError(game, s, kind, arg) {
   return spec.error ?? null;
 }
 
+/// The tasks that make no sense twice on the same target at once.
+const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'CrackPassword', 'DeleteFile']);
+
 /// Works out what a task needs and how long it takes.
 function planTask(game, s, h, kind, arg) {
   const need = toolFor(kind);
   if (need && toolLevel(game, need) === 0) return { error: `no ${need} installed` };
+  if (ONE_AT_A_TIME.has(kind) && s.tasks.some((t) => t.kind === kind && t.arg === arg)) return { error: 'already running' };
   switch (kind) {
     case 'BypassFirewall': {
       const lvl = toolLevel(game, 'FirewallBypass');
@@ -59,6 +63,7 @@ function planTask(game, s, h, kind, arg) {
       return { label: 'blind monitor', dur: 3.5 + h.monitor * 1.2, loud: false };
     case 'BypassProxy': {
       if (h.proxy === 0) return { error: 'no proxy on this host' };
+      if (s.proxyBypassed) return { error: 'proxy already scrubbed' };
       const lvl = toolLevel(game, 'ProxyBypass');
       if (lvl < h.proxy) return { error: 'proxy bypass too weak' };
       return { label: 'scrub proxy trail', dur: 2.5 + h.proxy * 0.9, loud: false };
@@ -167,8 +172,9 @@ function planTask(game, s, h, kind, arg) {
 function planPeople(game, s, h, kind, i) {
   const p = game.world.people[i];
   if (!p) return { error: 'no such person' };
-  if (p.company !== h.company) return { error: `link to a host of ${game.world.companies[p.company]?.name ?? 'their company'} first` };
-  const it = intelOf(game, i);
+  if (h.company == null || p.company !== h.company) return { error: `link to a host of ${game.world.companies[p.company]?.name ?? 'their company'} first` };
+  // a read: asking whether a task can run must not put the person on file
+  const it = game.intel?.[i] ?? { level: 0 };
   const busy = s.tasks.some((t) => t.kind === kind && t.arg === i);
   if (busy) return { error: 'already running on this person' };
   const phone = knows(game, i, 'phone');

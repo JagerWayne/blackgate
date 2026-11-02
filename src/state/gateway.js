@@ -73,7 +73,7 @@ export function partsOf(gw, kind) { return gw.parts.filter((p) => p.kind === kin
 /// The catalogue entry of the best fitted component of a kind.
 function best(gw, kind) {
   const fitted = partsOf(gw, kind).map((p) => componentDef(kind, p.level)).filter(Boolean);
-  return fitted.length ? fitted[fitted.length - 1] : null;
+  return fitted.reduce((top, d) => (!top || d.tier >= top.tier ? d : top), null);
 }
 
 /// How many heavy processes run at once.

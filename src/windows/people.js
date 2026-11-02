@@ -77,7 +77,8 @@ function drawDossier(ctx, sk, r, game, i, s, ui, input, events, scrollId, view =
   const tags = status(game, i, sk);
   if (tags.length) controls.push(chips(tags));
   controls.push(section('OPERATIONS'));
-  const here = s?.phase === 'online' && game.world.hosts[s.target].company === p.company;
+  const hostCo = s?.phase === 'online' ? game.world.hosts[s.target]?.company : null;
+  const here = hostCo != null && hostCo === p.company;
   if (!here) controls.push(label(`link to a host of ${co} to work on them`, 9.5, sk.warn));
   PEOPLE_ACTIONS.forEach((a) => {
     const why = here ? taskError(game, s, a.kind, i) : 'not linked';

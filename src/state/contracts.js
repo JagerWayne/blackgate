@@ -10,6 +10,7 @@ export function acceptContract(game, id) {
   if (game.contracts.filter((x) => x.state === 'accepted' || x.state === 'ready').length >= 4) return false;
   c.state = 'accepted';
   note(game, `contract ${id} accepted`);
+  evaluateMissions(game); // the work may already be done
   return true;
 }
 

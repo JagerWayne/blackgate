@@ -70,7 +70,8 @@ export function onMinutes(game, minutes) {
   }
 
   // the wire keeps running
-  if (now % 97 === 0) {
+  // a batch of minutes may step over a multiple of 97
+  if (Math.floor(now / 97) !== Math.floor((now - minutes) / 97)) {
     const [headline, body] = randomHeadline(game);
     game.news.push({ minute: now, headline, body });
     if (game.news.length > 40) game.news.shift();

@@ -81,7 +81,7 @@ export function sessionTick(game, dt) {
       pushLine(s, `connected // ${h.ip}`);
       // the link leaves a log on every machine it passes through; it stays
       // until the operator scrubs or wipes it, and counts as heat on leaving
-      [...s.route, s.target].forEach((id) => {
+      new Set([...s.route, s.target]).forEach((id) => {
         const host = game.world.hosts[id];
         host.logs.push({ minute: game.clock.minutes, ip: game.player.gateway.ip, text: 'session open', loud: false });
         host.firstVisit ??= game.clock.minutes;
