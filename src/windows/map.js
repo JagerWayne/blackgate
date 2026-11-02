@@ -1,16 +1,18 @@
 // NEXUS MAP: the world, the hosts on it and the route through them.
 //
-// Along the top: the search and the kind filters. On the left: the world, the
-// bounce route, and the routes kept for later. On the right: the hosts the
-// filters let through, and the one that is picked.
+// Along the top: the search and the kind filters. On the left: the world. On
+// the right, three tabs: HOSTS (the list and the picked host), ROUTE (the hop
+// chain, each hop movable and removable) and SAVED (the kept routes).
 
 import { drawFrame, splitPanel, detailPane, emptyNote } from '../ui/panel.js';
 import { drawTable, flex } from '../ui/table.js';
 import { drawField } from '../ui/field.js';
-import { placeButtons, measureControls } from '../ui/layout.js';
+import { placeButtons } from '../ui/layout.js';
 import { drawButton } from '../ui/widgets.js';
 import { drawScrolled } from '../ui/scroll.js';
-import { label, keyValue, chips, section, spacer, buttons as buttonRow } from '../ui/controls.js';
+import { label, keyValue, chips, spacer, custom, meter, buttons as buttonRow } from '../ui/controls.js';
+import { draw as drawText, ellipsize } from '../core/text.js';
+import { color } from '../core/theme.js';
 import { ghost, flat, primary, solid } from '../ui/styles.js';
 import { guardTint } from '../ui/guard.js';
 import { HOST_LABEL } from '../data/enums.js';
@@ -22,6 +24,9 @@ import { MAP_FILTERS, mapHosts, filterCount } from '../state/mapQuery.js';
 import { savedRoutes, hopNumber, MAX_HOPS, MAX_ROUTES } from '../state/routes.js';
 import { drawMapWorld, mapBtn } from './mapWorld.js';
 
+/// The tabs on the right.
+const TABS = ['HOSTS', 'ROUTE', 'SAVED'];
+
 /// Draws the map window.
 export function drawMap(ctx, sk, r, game, ui, input, events, view) {
   const hosts = mapHosts(game, view);
@@ -31,42 +36,27 @@ export function drawMap(ctx, sk, r, game, ui, input, events, view) {
 
   const barH = drawToolbar(ctx, sk, body, game, ui, input, events, view);
   const rest = { x: body.x, y: body.y + barH + 8, w: body.w, h: Math.max(body.h - barH - 8, 60) };
-  const [left, right] = splitPanel(rest, 0.58, 320);
+  const [left, right] = splitPanel(rest, 0.58, 340);
+  drawMapWorld(ctx, sk, left, game, view, input, new Set(hosts.map((h) => h.id)));
 
-  // -- the left: the world, the route on it, and the routes kept for later ----
-  // the route panel is as tall as what it holds, so its buttons never scroll
-  const routeList = routeControls(sk, game);
-  const routeH = Math.min(measureControls(ctx, routeList, Math.max(left.w - 18, 40)) + 20, Math.max(left.h * 0.45, 140));
-  const savedH = Math.min(Math.max(left.h * 0.24, 120), 200);
-  const world = { x: left.x, y: left.y, w: left.w, h: Math.max(left.h - routeH - savedH - 20, 80) };
-  drawMapWorld(ctx, sk, world, game, view, input, new Set(hosts.map((h) => h.id)));
-  const routeBox = detailPane(ctx, sk, { x: left.x, y: world.y + world.h + 10, w: left.w, h: routeH });
-  drawScrolled(ctx, sk, routeBox, routeList, 'map.route', ui, input, events);
-
-  // the routes kept for later, one line each with their own buttons
-  const savedBox = detailPane(ctx, sk, { x: left.x, y: routeBox.y + routeH + 10, w: left.w, h: savedH });
+  // -- the tabs ------------------------------------------------------------------
+  const tab = TABS.includes(view.tab) ? view.tab : 'HOSTS';
+  const tw = Math.floor((right.w - 8) / 3);
   const saved = savedRoutes(game);
-  const savedRows = saved.map((s, i) => ({
-    grid: true,
-    cells: [
-      { text: s.name, size: FONT.emphasis, color: sk.text_hi, col: 0, line: 0 },
-      { text: `${s.hops.length} hops`, size: FONT.body, color: sk.dim, align: 'right', col: 1, line: 0 },
-      { text: s.hops.map((id) => game.world.hosts[id]?.name ?? '?').join(' > '), size: FONT.body, color: sk.dim, col: 0, line: 1 },
-    ],
-    actions: [
-      { id: `map.route.load.${i}`, text: 'USE', style: ghost() },
-      { id: `map.route.del.${i}`, text: 'DELETE', style: flat() },
-    ],
-  }));
-  drawTable(ctx, sk, savedBox, {
-    id: 'map.routes',
-    columns: [flex('SAVED ROUTE', 0.62), flex('HOPS', 0.38, 'right')],
-    rows: savedRows,
-    rowH: 40,
-    empty: 'no routes kept yet',
-  }, ui, input, events);
+  const count = { HOSTS: hosts.length, ROUTE: route.length, SAVED: saved.length };
+  TABS.forEach((t, i) => {
+    const rr = { x: right.x + i * (tw + 4), y: right.y, w: tw, h: 28 };
+    if (drawButton(ctx, ui, sk, `map.tab.${t}`, rr, `${t} ${count[t]}`, t === tab ? primary() : ghost(), input)) events.push({ type: 'click', id: `map.tab.${t}` });
+  });
+  const pane = { x: right.x, y: right.y + 36, w: right.w, h: Math.max(right.h - 36, 60) };
+  if (tab === 'ROUTE') drawScrolled(ctx, sk, detailPane(ctx, sk, pane), routeControls(sk, game, view), 'map.route', ui, input, events);
+  else if (tab === 'SAVED') drawSaved(ctx, sk, pane, game, saved, ui, input, events);
+  else drawHosts(ctx, sk, pane, game, hosts, ui, input, events, view);
+}
 
-  // -- the right: the list over the picked host --------------------------------
+/// The HOSTS tab: the list, then the picked host's card.
+function drawHosts(ctx, sk, right, game, hosts, ui, input, events, view) {
+  const full = game.player.bounce.length >= MAX_HOPS;
   const detailH = Math.min(Math.max(right.h * 0.42, 170), 260);
   const list = { x: right.x, y: right.y, w: right.w, h: Math.max(right.h - detailH - 10, 60) };
   const rows = hosts.map((h) => {
@@ -81,7 +71,10 @@ export function drawMap(ctx, sk, r, game, ui, input, events, view) {
       grid: true,
       cells,
       marker: game.favorites.includes(h.id) ? sk.warn : null,
-      actions: [{ id: `map.go.${h.id}`, text: 'LINK', style: mapBtn() }],
+      actions: [
+        hop ? { id: `map.hop.${h.id}`, text: '-HOP', style: ghost() } : { id: `map.hop.${h.id}`, text: '+HOP', style: { ...ghost(), disabled: full } },
+        { id: `map.go.${h.id}`, text: 'LINK', style: mapBtn() },
+      ],
     };
   });
   // a host picked from elsewhere (SHOW TARGET, a pin) is scrolled into view
@@ -106,6 +99,29 @@ export function drawMap(ctx, sk, r, game, ui, input, events, view) {
     return;
   }
   drawScrolled(ctx, sk, pane, hostControls(sk, game, picked), 'map.host', ui, input, events);
+}
+
+/// The SAVED tab: each kept route with USE and DELETE.
+function drawSaved(ctx, sk, box, game, saved, ui, input, events) {
+  const rows = saved.map((s, i) => ({
+    grid: true,
+    cells: [
+      { text: s.name, size: FONT.emphasis, color: sk.text_hi, col: 0, line: 0 },
+      { text: `${s.hops.length} hops`, size: FONT.body, color: sk.dim, align: 'right', col: 1, line: 0 },
+      { text: s.hops.map((id) => game.world.hosts[id]?.name ?? '?').join(' > '), size: FONT.body, color: sk.dim, col: 0, line: 1 },
+    ],
+    actions: [
+      { id: `map.route.load.${i}`, text: 'USE', style: primary() },
+      { id: `map.route.del.${i}`, text: 'DELETE', style: flat() },
+    ],
+  }));
+  drawTable(ctx, sk, box, {
+    id: 'map.routes',
+    columns: [flex('SAVED ROUTE', 0.62), flex('HOPS', 0.38, 'right')],
+    rows,
+    rowH: 46,
+    empty: `no routes kept yet // build one on the ROUTE tab and SAVE it (up to ${MAX_ROUTES})`,
+  }, ui, input, events);
 }
 
 /// The search field and the filter buttons. Returns the height they took.
@@ -138,24 +154,48 @@ function drawToolbar(ctx, sk, body, game, ui, input, events, view) {
 
 /// The route panel: the hops in order, what they buy, and the buttons that
 /// keep the route for later.
-function routeControls(sk, game) {
+function routeControls(sk, game, view) {
   const route = game.player.bounce;
   const clean = cleanHops(game.player.gateway);
-  const controls = [label(`BOUNCE ROUTE // ${route.length} of ${MAX_HOPS} hops`, FONT.emphasis, sk.text_hi)];
-  if (!route.length) {
-    controls.push(label('no hops: links go straight from your gateway', FONT.body, sk.dim));
-  } else {
-    // a hop past the gateway's clean hops slows the link down
-    controls.push(chips(route.map((id, i) => [`${i + 1} ${game.world.hosts[id]?.name ?? '?'}`, i < clean ? sk.warn : sk.danger])));
-  }
-  controls.push(keyValue('CLEAN HOPS', `${clean} on this gateway`, route.length > clean ? sk.danger : sk.text));
+  const pick = view.sel !== undefined && view.sel !== null ? game.world.hosts[view.sel] : null;
+  const canAdd = pick?.discovered && !route.includes(pick.id) && route.length < MAX_HOPS;
+  const controls = [
+    label(`BOUNCE ROUTE // ${route.length} of ${MAX_HOPS} hops`, FONT.emphasis, sk.text_hi),
+    label('each hop hides you behind another machine: a trace has to walk back through every one', FONT.body, sk.dim),
+    spacer(6),
+    keyValue('START', 'YOUR GATEWAY', sk.accent),
+  ];
+  route.forEach((id, i) => {
+    const h = game.world.hosts[id];
+    const ok = i < clean;
+    controls.push(custom(46, (c, s, rr) => {
+      c.fillStyle = color(s.panel2);
+      c.fillRect(rr.x + 14, rr.y, rr.w - 14, 40);
+      c.fillStyle = color(ok ? s.ok : s.danger);
+      c.fillRect(rr.x + 14, rr.y, 4, 40);
+      c.fillRect(rr.x + 5, rr.y - 6, 2, 52);
+      drawText(c, `${i + 1}`, rr.x + 28, rr.y + 6, FONT.emphasis, color(ok ? s.ok : s.danger));
+      drawText(c, ellipsize(c, h?.name ?? '?', FONT.emphasis, rr.w - 70), rr.x + 50, rr.y + 4, FONT.emphasis, color(s.text_hi));
+      drawText(c, ellipsize(c, ok ? (h?.ip ?? '') : `${h?.ip ?? ''} // past your clean hops: slows the link`, FONT.body, rr.w - 70), rr.x + 50, rr.y + 22, FONT.body, color(ok ? s.dim : s.danger));
+    }));
+    controls.push(buttonRow([
+      { id: `map.up.${i}`, text: 'UP', style: { ...flat(), disabled: i === 0 } },
+      { id: `map.down.${i}`, text: 'DOWN', style: { ...flat(), disabled: i === route.length - 1 } },
+      { id: `map.show.${id}`, text: 'SHOW', style: ghost() },
+      { id: `map.hop.${id}`, text: 'REMOVE', style: flat() },
+    ]));
+  });
+  if (!route.length) controls.push(label('no hops yet: links go straight from your gateway. Press +HOP on a host.', FONT.body, sk.warn));
+  controls.push(keyValue('END', 'THE HOST YOU LINK TO', sk.accent));
+  controls.push(spacer(6));
+  controls.push(meter(`CLEAN HOPS ${Math.min(route.length, clean)} / ${clean}`, clean ? Math.min(route.length / clean, 1) : 1, route.length > clean ? sk.danger : sk.ok));
   controls.push(keyValue('TRACE SPEED', `${Math.round(routeFactor(game) * 100)}%`, sk.ok));
   controls.push(spacer(4));
   controls.push(buttonRow([
+    { id: 'map.addsel', text: pick?.discovered ? `ADD ${pick.name}` : 'ADD PICKED HOST', style: { ...primary(), disabled: !canAdd } },
     { id: 'map.route.save', text: 'SAVE ROUTE', style: { ...primary(), disabled: !route.length || savedRoutes(game).length >= MAX_ROUTES } },
     { id: 'map.route.clear', text: 'CLEAR', style: { ...ghost(), disabled: !route.length } },
   ]));
-  // a full book of routes says so, instead of a button that does nothing
   if (route.length && savedRoutes(game).length >= MAX_ROUTES) controls.push(label(hint('routesFull'), FONT.body, sk.warn));
   return controls;
 }

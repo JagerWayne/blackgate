@@ -55,3 +55,12 @@ export function hopNumber(game, id) {
 function sameHops(a, b) {
   return a.length === b.length && a.every((id, i) => id === b[i]);
 }
+
+/// Moves the hop at `index` one place up (-1) or down (+1). False when it cannot.
+export function moveHop(game, index, dir) {
+  const b = game.player.bounce;
+  const to = index + dir;
+  if (index < 0 || index >= b.length || to < 0 || to >= b.length) return false;
+  [b[index], b[to]] = [b[to], b[index]];
+  return true;
+}

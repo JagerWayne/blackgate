@@ -8,7 +8,7 @@ import {
   openWindow, closeWindow, makeWindows, minimizeWindow, toggleMax, taskWindow,
 } from '../state/windows.js';
 import { toast, toggleBounce, toggleFavorite, discover } from '../state/gameState.js';
-import { saveRoute, loadRoute, deleteRoute, clearRoute, MAX_HOPS } from '../state/routes.js';
+import { saveRoute, loadRoute, deleteRoute, clearRoute, MAX_HOPS, moveHop } from '../state/routes.js';
 import { mapHosts } from '../state/mapQuery.js';
 import {
   acceptContract, declineContract, dropContract, submitContract, contractItems, contractLabel,
@@ -148,6 +148,12 @@ function handleMapClick(state, id) {
   const view = state.win.map ?? (state.win.map = {});
   const tail = (prefix) => id.slice(prefix.length);
   if (id.startsWith('map.k.')) view.kind = tail('map.k.');
+  else if (id.startsWith('map.tab.')) view.tab = tail('map.tab.');
+  else if (id.startsWith('map.up.')) moveHop(game, Number(tail('map.up.')), -1);
+  else if (id.startsWith('map.down.')) moveHop(game, Number(tail('map.down.')), 1);
+  else if (id === 'map.addsel') {
+    if (view.sel !== undefined && view.sel !== null && !game.player.bounce.includes(view.sel)) handleMapClick(state, `map.hop.${view.sel}`);
+  } else if (id.startsWith('map.show.')) Object.assign(view, { sel: Number(tail('map.show.')), glide: true, follow: true });
   else if (id.startsWith('map.hop.')) {
     const host = Number(tail('map.hop.'));
     if (!game.player.bounce.includes(host) && game.player.bounce.length >= MAX_HOPS) {

@@ -207,14 +207,57 @@ test('GATEWAY shows every machine number without a scroll', () => {
   assert.ok(ctx.texts.some((t) => / of \d+ slots$/.test(t.s)), 'a fitted part names the slots it fills');
 });
 
-test('the map route panel holds its buttons without a scroll', () => {
+test('the map: the tabs switch, and every hop and route button does its job', () => {
   const state = playState();
+  const g = state.game;
   openWindow(state.windows, 'map', DESK);
-  const ctx = frame(state);
-  const save = ctx.texts.find((t) => t.s === 'SAVE ROUTE');
-  const kept = ctx.texts.find((t) => /^SAVED ROUTE/.test(t.s));
-  assert.ok(save && kept, 'both are drawn');
-  assert.ok(save.y + 20 <= kept.y, 'SAVE ROUTE sits above the kept routes');
+  const click = (id) => handleEvents(state, [{ type: 'click', id }], DESK);
+  const found = g.world.hosts.filter((h) => h.discovered).slice(0, 3).map((h) => h.id);
+  assert.equal(found.length, 3, 'three known hosts');
+  g.player.bounce.length = 0;
+  g.routes = [];
+
+  click('map.tab.ROUTE');
+  assert.equal(state.win.map.tab, 'ROUTE');
+  assert.ok(frame(state).texts.some((t) => t.s === 'SAVE ROUTE'), 'the ROUTE tab shows its buttons');
+
+  click(`map.hop.${found[0]}`);
+  click(`map.hop.${found[1]}`);
+  state.win.map.sel = found[2];
+  click('map.addsel');
+  assert.deepEqual(g.player.bounce, found, '+HOP and ADD PICKED add in order');
+  click('map.addsel');
+  assert.equal(g.player.bounce.length, 3, 'adding the same host twice does nothing');
+
+  click('map.down.0');
+  assert.deepEqual(g.player.bounce, [found[1], found[0], found[2]]);
+  click('map.up.2');
+  assert.deepEqual(g.player.bounce, [found[1], found[2], found[0]]);
+  click('map.up.0');
+  assert.deepEqual(g.player.bounce, [found[1], found[2], found[0]], 'the first hop cannot go up');
+
+  click(`map.show.${found[0]}`);
+  assert.equal(state.win.map.sel, found[0]);
+  assert.ok(frame(state).texts.some((t) => t.s === 'REMOVE'), 'each hop has its buttons');
+
+  click('map.route.save');
+  assert.equal(g.routes.length, 1);
+  click(`map.hop.${found[2]}`);
+  assert.deepEqual(g.player.bounce, [found[1], found[0]], 'REMOVE takes the hop out');
+  click('map.route.clear');
+  assert.equal(g.player.bounce.length, 0);
+
+  click('map.tab.SAVED');
+  assert.ok(frame(state).texts.some((t) => t.s === 'USE'));
+  click('map.route.load.0');
+  assert.deepEqual(g.player.bounce, [found[1], found[2], found[0]], 'USE brings the route back');
+  click('map.route.del.0');
+  assert.equal(g.routes.length, 0);
+
+  click('map.tab.HOSTS');
+  assert.ok(frame(state).texts.some((t) => t.s === '-HOP'), 'hosts on the route say -HOP');
+  click(`map.fav.${found[0]}`);
+  assert.ok(g.favorites.includes(found[0]));
 });
 
 test('a mail subject runs the width of its row', () => {
