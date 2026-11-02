@@ -5,7 +5,7 @@ import { toolLevel, storageUsed, keepsRecord, validRecord } from '../state/gameS
 import { bandwidth, crypt, storage, ram, lanes } from '../state/gateway.js';
 import { software } from '../data/content.js';
 import { voiceAdmin, hasSample } from '../state/voice.js';
-import { knows, intelOf, spammed } from '../state/intel.js';
+import { knows, spammed } from '../state/intel.js';
 
 /// What a task says while the link is still being negotiated.
 export const LINK_DOWN = 'link not up yet';
