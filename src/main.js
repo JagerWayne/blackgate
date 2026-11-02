@@ -17,6 +17,7 @@ import { handleEvents } from './systems/events.js';
 import { saveRun, listSlots, saveOnLeave, deleteRun } from './state/save.js';
 import { startRun } from './state/startRun.js';
 import { toast } from './state/gameState.js';
+import { VERSION, justUpdated } from './version.js';
 import { drawFx } from './render/fx.js';
 
 const canvas = document.getElementById('screen');
@@ -67,6 +68,9 @@ saveOnLeave(window, state);
 canvas.focus?.();
 
 state.login.slots = listSlots();
+// the first start after an update says so on the welcome screen
+const was = justUpdated();
+if (was) state.login.notice = `Updated to v${VERSION} (was v${was})`;
 let autosaveT = 0;
 let saveWarned = false;
 

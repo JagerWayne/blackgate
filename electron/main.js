@@ -131,6 +131,10 @@ ipcMain.on('save:list', (e) => {
     e.returnValue = [];
   }
 });
+ipcMain.on('app:build', (e) => {
+  e.returnValue = readBuild(process.resourcesPath, app.getVersion());
+});
+
 ipcMain.on('data:fallbacks', (e) => {
   e.returnValue = [...fallbacks];
 });

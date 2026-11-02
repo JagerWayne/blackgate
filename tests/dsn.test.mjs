@@ -32,7 +32,8 @@ function playState() {
 test('every page the hub links to builds, and none of them is a 404', () => {
   const g = makeGame('DSN', 7);
   const seen = new Set();
-  const queue = ['hub'];
+  // the sidebar and the job cards link to these
+  const queue = ['hub', 'jobs', ...Object.keys(darknet().categories).map((k) => `cat/${k}`), ...offered(g).map((c) => `job/${c.id}`)];
   while (queue.length && seen.size < 80) {
     const url = queue.shift();
     if (seen.has(url)) continue;
@@ -41,7 +42,7 @@ test('every page the hub links to builds, and none of them is a 404', () => {
     assert.notEqual(page.title, '404 // DeppSpaceNET', `dsn://${url}`);
     ids(page).filter((id) => id.startsWith('dsn.go.')).forEach((id) => queue.push(normalize(id.slice(7))));
   }
-  for (const want of ['hub', 'board', 'about']) assert.ok(seen.has(want), want);
+  for (const want of ['hub', 'jobs', 'board', 'about']) assert.ok(seen.has(want), want);
   assert.ok([...seen].some((u) => u.startsWith('cat/')), 'categories');
   assert.ok([...seen].some((u) => u.startsWith('job/')), 'listings');
   assert.ok([...seen].some((u) => u.endsWith('.dsn')), 'broker sites');
@@ -130,7 +131,7 @@ test('the browser draws, navigates, goes back and accepts a job', () => {
   openWindow(state.windows, 'dsn', DESK);
   const frame = () => { const ctx = stubCtx(); state.game.uiTime += 1; drawPlay(ctx, theme(), 1600, 900, state, []); return ctx; };
   let ctx = frame();
-  assert.ok(ctx.texts.some((t) => /CATEGORIES/.test(t.s)), 'the hub');
+  assert.ok(ctx.texts.some((t) => /ON THE MARKET/.test(t.s)), 'the hub');
   const c = offered(state.game)[0];
   handleEvents(state, [{ type: 'click', id: `dsn.go.job/${c.id}` }], DESK);
   ctx = frame();
@@ -142,4 +143,24 @@ test('the browser draws, navigates, goes back and accepts a job', () => {
   handleEvents(state, [{ type: 'click', id: 'dsn.newtab' }], DESK);
   assert.equal(state.win.dsn.tabs.length, 2);
   assert.doesNotThrow(frame);
+});
+
+test('tabs close with their own button, and the last tab stays', async () => {
+  const { handleDsnClick } = await import('../src/windows/dsn/browser.js');
+  const view = {};
+  handleDsnClick(view, 'dsn.newtab', 0);
+  handleDsnClick(view, 'dsn.go.board', 0);
+  handleDsnClick(view, 'dsn.newtab', 0);
+  assert.equal(view.tabs.length, 3);
+  handleDsnClick(view, 'dsn.closetab.1', 0);
+  assert.deepEqual(view.tabs.map((t) => t.url), ['hub', 'hub']);
+  handleDsnClick(view, 'dsn.closetab.0', 0);
+  handleDsnClick(view, 'dsn.closetab.0', 0);
+  assert.equal(view.tabs.length, 1, 'the last tab cannot be closed');
+});
+
+test('the CONTRACTS app is gone', async () => {
+  const { WINDOWS } = await import('../src/state/windows.js');
+  assert.ok(!WINDOWS.some((w) => w.key === 'contracts'));
+  assert.ok(WINDOWS.some((w) => w.key === 'dsn'));
 });

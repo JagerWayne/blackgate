@@ -36,7 +36,7 @@ function press(state, x, y) {
 test('a click on the front window does not reach the window behind it', () => {
   const state = playState();
   const back = openWindow(state.windows, 'mail', desktop(W, H));
-  const front = openWindow(state.windows, 'contracts', desktop(W, H));
+  const front = openWindow(state.windows, 'notepad', desktop(W, H));
   Object.assign(back, { x: 100, y: 100, w: 600, h: 400 });
   Object.assign(front, { x: 400, y: 80, w: 600, h: 400 });
   const backZ = back.z;

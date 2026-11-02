@@ -28,6 +28,6 @@ export function startRun(state, w, h) {
 function openShell(windows, w, h) {
   const desk = desktop(w, h);
   openWindow(windows, 'mail', desk);
-  openWindow(windows, 'contracts', desk);
+  openWindow(windows, 'dsn', desk);
 }
 

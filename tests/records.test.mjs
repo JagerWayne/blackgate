@@ -277,11 +277,12 @@ test('ACCESS tags the records service of a host with a job', async () => {
   assert.ok(texts.includes('OBJECTIVE'));
 });
 
-test('the contract detail shows the change under TARGET', async () => {
-  const { drawContracts } = await import('../src/windows/contracts.js');
+test('the listing shows the change under TARGET', async () => {
+  const { buildPage } = await import('../src/windows/dsn/pages.js');
   const { g, job } = withAlteration();
-  const texts = await drawn((ctx, sk, ui, input) => drawContracts(ctx, sk, BIG, g, ui, input, [], { ctTab: 0, ctSel: job.id }));
-  assert.ok(texts.some((t) => t.includes('→') && t.includes(recordText(g, job.record.field, job.record.value))));
+  const page = buildPage(g, `job/${job.id}`);
+  const change = page.controls.find((c) => c.kind === 'keyValue' && c.key === 'CHANGE');
+  assert.ok(change && change.value.includes('→') && change.value.includes(recordText(g, job.record.field, job.record.value)));
 });
 
 // -- every person detail can be altered ----------------------------------------------------

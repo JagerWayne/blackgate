@@ -10,7 +10,6 @@ import { drawOver } from './over.js';
 import { blind, hit } from '../ui/kit.js';
 import { ordered, clampWindows, openWindow, windowDef, windowAt } from '../state/windows.js';
 import { drawMail } from '../windows/mail.js';
-import { drawContracts } from '../windows/contracts.js';
 import { drawGateway } from '../windows/gateway.js';
 import { drawSoftware } from '../windows/software.js';
 import { drawFiles } from '../windows/files.js';
@@ -31,7 +30,6 @@ import { saveRun } from '../state/save.js';
 /// The applications, by window key.
 const APPS = {
   mail: drawMail,
-  contracts: drawContracts,
   gateway: drawGateway,
   software: drawSoftware,
   files: drawFiles,

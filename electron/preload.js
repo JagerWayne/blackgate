@@ -28,6 +28,8 @@ try {
 contextBridge.exposeInMainWorld('blackgate', {
   store,
   dataFallbacks: () => ipcRenderer.sendSync('data:fallbacks'),
+  // the full build id, for the login screen
+  build: () => ipcRenderer.sendSync('app:build'),
   // hosts/<NAME>.json: the visited hosts of an operator's run
   writeReport: (name, text) => ipcRenderer.sendSync('report:write', name, text),
   removeReport: (name) => ipcRenderer.sendSync('report:remove', name),

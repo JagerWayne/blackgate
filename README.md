@@ -135,7 +135,7 @@ file it could not read.
      already has a save replaces it; the login screen warns you in red first.
    - **DELETE SAVE** removes the selected operator's save. Press it twice to
      confirm.
-3. **Take a job.** Open **CONTRACTS**, read the brief and press **ACCEPT**.
+3. **Take a job.** Open **DeppSpaceNET**, pick a listing, read the brief and press **ACCEPT** (or haggle first).
 4. **Find the target.** **SHOW TARGET** reveals the machine on the
    **NEXUS MAP** and selects it, and the map glides to it.
 5. **Plan a route.** Add relay hops to your bounce route on the map. More hops
@@ -147,7 +147,7 @@ file it could not read.
    record, and so on.
 8. **Clean up.** Delete or edit the logs your visit left, then disconnect
    before the trace reaches you.
-9. **Get paid.** Press **SUBMIT WORK** on the contract board. The fee goes to
+9. **Get paid.** Press **SUBMIT WORK** in **MY JOBS** on DeppSpaceNET. The fee goes to
    your bank account, and your rating rises.
 10. **Upgrade.** Spend the money in **GATEWAY** (hardware) and **SOFTWARE**
     (tools) to take on harder jobs.
@@ -201,8 +201,7 @@ All are opened from the Start menu and appear on the taskbar while open.
 |---|---|
 | **Bl@ckG@te** | The hacking client. Shows the live connection and, once the link is up, the target's services, files, logs, records and staff (PEOPLE), and the actions you can run on the host, such as **BYPASS FIREWALL**, **BLIND MONITOR**, **SCRUB PROXY** and **WIPE LOGS**. An action that cannot run says why. |
 | **MAIL** | Messages from the broker, clients and contacts. **MARK ALL READ** clears the unread count. |
-| **DeppSpaceNET** | A browser for the hidden network: the job market, broker sites, leak profiles of companies and a rumour board. Contact a client to haggle the fee. See [DeppSpaceNET](#deppspacenet). |
-| **CONTRACTS** | The job board: open jobs, your accepted jobs and their deadlines. Accept jobs, show their targets and submit work here. |
+| **DeppSpaceNET** | Where all jobs live: the market, broker sites, leak profiles and a rumour board, plus **MY JOBS** to submit, link to, show or drop the work you hold. Haggle the fee with the client. The header's ACTIVE button opens MY JOBS. See [DeppSpaceNET](#deppspacenet). |
 | **NEXUS MAP** | The world map with every machine you have discovered, search and filters by kind, your bounce route, and saved routes. |
 | **GATEWAY** | Your own computer: the chassis and the parts in it, a shop for new parts, and a stock of parts you have taken out. |
 | **SOFTWARE** | The tool shop. Buy and upgrade the tools the jobs need. |
@@ -412,8 +411,8 @@ phone, record them (the voice lock's **RECORD**, or a call from PEOPLE), then
 
 ## DeppSpaceNET
 
-Open jobs are listed on **DeppSpaceNET**, a browser for a TOR-like hidden
-network, as well as on the CONTRACTS board. The board keeps 6 open offers,
+All jobs live on **DeppSpaceNET**, a browser for a TOR-like hidden network.
+(It replaced the old CONTRACTS app.) The board keeps 6 open offers,
 one more for every 30 rating, up to 10.
 
 | Address | Page |
@@ -421,12 +420,19 @@ one more for every 30 rating, up to 10.
 | `dsn://hub` | The portal: search, the six categories, the biggest fees, the brokers |
 | `dsn://cat/<kind>` | DATA HEISTS, SCRUBBERS, PAPERWORK, MONEY MOVES, BURN BOOK, MIND THEFT |
 | `dsn://<broker>.dsn` | Each client's own site, with its banner, tagline, listings and an about page |
-| `dsn://job/<id>` | A listing: brief, fee, window, target, and the channel to the client |
+| `dsn://job/<id>` | A listing: brief and target on the left, the deal and the client channel on the right |
+| `dsn://jobs` | MY JOBS: the work you hold (SUBMIT, LINK NOW, SHOW ON MAP, DROP asks twice), deals waiting on a reply, and your history |
 | `dsn://lookup/<company>` | LEAKBASE: what is known about a target company, its hosts and its staff |
 | `dsn://board` | The undernet board: rumours that change every day |
 
-The browser has back, forward, reload and home, an address bar, up to three
-tabs, and a three-relay circuit: click it to route through new relays.
+The browser is always dark, whatever the desktop skin. It has tabs that
+close with their own **×** (up to six; the last stays open), back, forward,
+reload, home, an address bar, and a three-relay circuit: click it to route
+through new relays. A sidebar is always there: HUB, MY JOBS, the six
+categories with their counts, the brokers, the board. Listings show as cards
+with the fee, the time left as a bar, the stars, the broker and VIEW and
+ACCEPT. A status bar at the bottom counts open listings, your jobs, replies
+waiting and your money.
 
 **Haggling.** On a listing, ask for +10%, +25%, +50% or an exact amount.
 The client answers a few game minutes later:

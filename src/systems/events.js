@@ -71,9 +71,6 @@ function handleSelect(state, e) {
   } else if (e.id === 'mail.list') {
     const mails = game.mail.slice().sort((a, b) => b.minute - a.minute);
     if (mails[e.index]) state.win.mail.mailSel = mails[e.index].id;
-  } else if (e.id.startsWith('ct.list.')) {
-    const items = contractItems(game, state.win.contracts.ctTab ?? 0);
-    if (items[e.index]) state.win.contracts.ctSel = items[e.index].id;
   } else if (e.id === 'map.list') {
     const view = state.win.map ?? (state.win.map = {});
     const host = mapHosts(game, view)[e.index];
@@ -277,7 +274,7 @@ function handleClick(state, e, desk) {
   else if (id.startsWith('win.close.')) closeWindow(state.windows, id.slice(10));
   else if (id.startsWith('win.min.')) minimizeWindow(state.windows, id.slice(8));
   else if (id.startsWith('win.max.')) toggleMax(state.windows, id.slice(8));
-  else if (id === 'hdr.contracts') openWindow(state.windows, 'contracts', desk);
+  else if (id === 'hdr.contracts') openPortal(state, desk, 'jobs');
   else if (id === 'hdr.mail') openWindow(state.windows, 'mail', desk);
   else if (id === 'mail.readAll') game.mail.forEach((m) => { m.read = true; });
   else if (id.startsWith('dsn.')) handleDsn(state, id, desk);
@@ -287,7 +284,6 @@ function handleClick(state, e, desk) {
   else if (id === 'hdr.speed') cheat.setTimeScale(game, cheat.nextSpeed(game));
   else if (id.startsWith('cheat.tab.')) (state.win.cheats ??= {}).tab = Number(id.slice(10));
   else if (id.startsWith('cheat.')) handleCheatClick(state, id);
-  else if (id.startsWith('ct.tab.')) state.win.contracts.ctTab = Number(id.slice(7));
   else if (id.startsWith('ct.accept.')) acceptContract(game, Number(id.slice(10)));
   else if (id.startsWith('ct.decline.')) declineContract(game, Number(id.slice(11)));
   else if (id.startsWith('ct.drop.')) dropContract(game, Number(id.slice(8)));
@@ -366,6 +362,19 @@ function handleDsn(state, id, desk) {
     const map = (state.win.map ??= {});
     map.sel = Number(id.slice(8));
     map.glide = true;
+  } else if (id.startsWith('dsn.drop.')) {
+    // DROP asks twice: the first press arms it
+    const cid = num('dsn.drop.');
+    if (view.dropArm === cid) {
+      dropContract(game, cid);
+      view.dropArm = null;
+    } else view.dropArm = cid;
   } else if (id === 'dsn.dossiers') openWindow(state.windows, 'dossiers', desk);
   else handleDsnClick(view, id, game.uiTime ?? 0);
+}
+
+/// Opens DeppSpaceNET at an address.
+export function openPortal(state, desk, url = 'hub') {
+  openWindow(state.windows, 'dsn', desk);
+  handleDsnClick((state.win.dsn ??= {}), `dsn.go.${url}`, state.game?.uiTime ?? 0);
 }

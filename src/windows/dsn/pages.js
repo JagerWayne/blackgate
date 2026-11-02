@@ -1,42 +1,57 @@
 // The pages of DeppSpaceNET, built from the game each frame. A page is a title,
-// an accent colour and a list of the shell's own form controls: a link is a
-// flat button whose id carries the address it goes to.
+// an accent colour and a list of the shell's own form controls (a link is a
+// flat button whose id carries the address it goes to). A page may also give
+// two columns, which a wide browser shows side by side.
 
-import { section, label, para, keyValue, buttons, field, chips, divider, custom, spacer } from '../../ui/controls.js';
-import { flat, ghost, primary, solid } from '../../ui/styles.js';
+import { section, label, para, keyValue, buttons, field, chips, custom, spacer } from '../../ui/controls.js';
+import { flat, ghost } from '../../ui/styles.js';
 import { draw as drawText, FONT } from '../../core/text.js';
-import { darknet } from '../../data/content.js';
+import { darknet, hint } from '../../data/content.js';
 import { MISSION_LABEL, CO_LABEL, HOST_LABEL } from '../../data/enums.js';
 import { contractLabel } from '../../state/contracts.js';
+import { RECORD_LABEL, recordText } from '../../state/gameState.js';
 import { broker, haggleOf, haggleOdds, snubbed, INSULT } from '../../state/haggle.js';
+import { jobCards } from './cards.js';
+import { KIND_COLOR, hexOf, netPrimary, netSolid, netDanger } from './theme.js';
 
 export const HOME = 'hub';
+export const MY_JOBS = 'jobs';
 const ASKS = [10, 25, 50];
+const MAX_JOBS = 4;
 
 /// An address without its scheme, trimmed and lower case.
 export function normalize(url) {
   return String(url ?? '').trim().replace(/^dsn:\/\//i, '').replace(/\/+$/, '').toLowerCase() || HOME;
 }
 
-/// A link: a flat button that goes to an address.
-const link = (url, text) => ({ id: `dsn.go.${url}`, text, style: { ...flat(), dark: { ...flat().dark, text: 'accent' }, light: { ...flat().light, text: 'accent' } } });
+/// A link: a flat button in the accent colour that goes to an address.
+const linkStyle = () => ({ ...flat(), dark: { ...flat().dark, text: 'accent' }, light: { ...flat().light, text: 'accent' } });
+const link = (url, text) => ({ id: `dsn.go.${url}`, text, style: linkStyle() });
 const links = (items) => buttons(items.map(([url, text]) => link(url, text)));
 const money = (n) => `${n.toLocaleString('en-US')} cr`;
-const hex = (s) => parseInt(String(s).replace('#', ''), 16);
 
-/// Lines of text art in a colour: a site's banner.
+/// Lines of text art in a colour, on a dark strip: a site's banner.
 function banner(lines, accent) {
-  return custom(lines.length * 15 + 10, (ctx, sk, r) => {
-    // a dark strip, so the art reads the same in both skins
-    ctx.fillStyle = '#0d1117';
+  return custom(lines.length * 15 + 14, (ctx, sk, r) => {
+    ctx.fillStyle = '#05070d';
     ctx.fillRect(r.x, r.y, r.w, r.h);
-    lines.forEach((l, i) => drawText(ctx, l, r.x + 8, r.y + 5 + i * 15, 12, accent));
+    ctx.fillStyle = typeof accent === 'number' ? `#${accent.toString(16).padStart(6, '0')}` : accent;
+    ctx.fillRect(r.x, r.y + r.h - 2, r.w, 2);
+    lines.forEach((l, i) => drawText(ctx, l, r.x + 10, r.y + 6 + i * 15, 12, accent));
   });
 }
 
+/// A heading with a count, in the page's colour.
+const heading = (text) => section(text);
+
 /// The jobs on the open market: offered, from clients still dealing.
-function listings(game) {
+export function listings(game) {
   return game.contracts.filter((c) => c.state === 'offered' && !c.story && !snubbed(game, c.client));
+}
+
+/// The jobs the operator holds.
+export function myJobs(game) {
+  return game.contracts.filter((c) => c.state === 'accepted' || c.state === 'ready');
 }
 
 /// The company a job hits.
@@ -44,32 +59,16 @@ function companyOf(game, c) {
   return game.world.hosts[c.target]?.company ?? null;
 }
 
-/// Difficulty as five stars.
-function stars(d) {
-  const n = Math.max(1, Math.min(d ?? 1, 5));
-  return '★'.repeat(n) + '☆'.repeat(5 - n);
-}
+/// A list of jobs as cards, or a line saying there are none.
+const cardsOr = (game, jobs, none) => (jobs.length ? jobCards(game, jobs) : label(none, 10.5));
 
-/// One listing as a card: what, for how much, by when, by whom.
-function card(game, c) {
-  const hours = Math.max(Math.floor((c.deadline - game.clock.minutes) / 60), 0);
-  const co = game.world.companies[companyOf(game, c)]?.name ?? 'unknown';
-  const hg = haggleOf(game, c.id);
-  return [
-    links([[`job/${c.id}`, `#${c.id}  ${(c.title || contractLabel(c)).toUpperCase()}`]]),
-    label(`${MISSION_LABEL[c.kind]} // ${co} // ${money(c.reward)} // ${hours}h left // ${stars(c.difficulty)}${hg ? ` // ${hg.state.toUpperCase()}` : ''}`, 9.5),
-    links([[broker(c.client).domain, `posted by ${c.client}`]]),
-    spacer(4),
-  ];
-}
-
-/// The portal: search, categories, featured work, the brokers.
+/// The portal: search, the newest and biggest work, the brokers.
 function hub(game, view) {
   const all = listings(game);
-  const cats = darknet().categories;
-  const top = [...all].sort((a, b) => b.reward - a.reward).slice(0, 3);
+  const top = [...all].sort((a, b) => b.reward - a.reward);
+  const mine = myJobs(game);
   return {
-    title: 'DeppSpaceNET // hub',
+    title: 'hub',
     accent: 0x7fd4ff,
     controls: [
       banner([
@@ -80,23 +79,18 @@ function hub(game, view) {
         '         |_|  |_|      |_|   the hidden market for quiet work',
       ], '#7fd4ff'),
       field('dsn.search', view.query ?? '', 'search listings, brokers, companies'),
-      buttons([{ id: 'dsn.search.go', text: 'SEARCH', style: primary() }]),
-      section(`CATEGORIES // ${all.length} OPEN LISTINGS`),
-      ...Object.entries(cats).flatMap(([kind, cat]) => [
-        links([[`cat/${kind}`, `${cat.name} (${all.filter((c) => c.kind === kind).length})`]]),
-        label(cat.blurb, 9.5),
-      ]),
-      section('FEATURED // THE BIGGEST FEES'),
-      ...(top.length ? top.flatMap((c) => card(game, c)) : [label('the market is quiet. come back in an hour.', 9.5)]),
-      section('BROKERS'),
+      buttons([{ id: 'dsn.search.go', text: 'SEARCH', style: netPrimary() }]),
+      ...(mine.length ? [heading(`YOUR JOBS // ${mine.length} OF ${MAX_JOBS}`), links([[MY_JOBS, `manage your ${mine.length} job${mine.length > 1 ? 's' : ''} → MY JOBS`]])] : []),
+      heading(`ON THE MARKET // ${all.length} OPEN`),
+      cardsOr(game, top, 'the market is quiet. come back in an hour.'),
+      heading('BROKERS'),
       ...Object.entries(darknet().brokers).flatMap(([name, b]) => [
         links([[b.domain, `${b.domain}  // ${name}`]]),
-        label(b.tagline, 9.5),
+        label(b.tagline, 10, hexOf(b.accent)),
       ]),
-      section('ELSEWHERE'),
+      heading('ELSEWHERE'),
       links([['board', 'the undernet board // rumours'], ['about', 'about this network']]),
-      divider(),
-      label('stay anonymous. bounce your route. never haggle for double.', 9.5),
+      label('stay anonymous. bounce your route. never haggle for double.', 9.5, 0x5d6b88),
     ],
   };
 }
@@ -107,13 +101,12 @@ function category(game, kind) {
   if (!cat) return null;
   const jobs = listings(game).filter((c) => c.kind === kind);
   return {
-    title: `${cat.name} // DeppSpaceNET`,
-    accent: 0x7fd4ff,
+    title: cat.name.toLowerCase(),
+    accent: KIND_COLOR[kind],
     controls: [
-      section(cat.name),
-      para(cat.blurb),
-      ...(jobs.length ? jobs.flatMap((c) => card(game, c)) : [label('no listings in this category right now', 9.5)]),
-      links([[HOME, '< back to the hub']]),
+      banner([`// ${cat.name}`, `   ${cat.blurb}`], KIND_COLOR[kind]),
+      heading(`${jobs.length} OPEN`),
+      cardsOr(game, jobs, 'no listings in this category right now'),
     ],
   };
 }
@@ -121,42 +114,49 @@ function category(game, kind) {
 /// A broker's own site: their banner, their pitch, their listings.
 function brokerSite(game, name, about) {
   const b = broker(name);
+  const accent = hexOf(b.accent);
   const jobs = listings(game).filter((c) => c.client === name);
   const off = snubbed(game, name);
-  const base = [banner(b.banner, b.accent), label(b.tagline, 10.5, hex(b.accent))];
+  const footer = label(`SIGNED // PGP 4096 // ESCROW 72H // ${b.domain}`, 9, 0x5d6b88);
+  const base = [banner(b.banner, b.accent), label(b.tagline, 11, accent)];
   if (about) {
     const temper = b.temper > 1.1 ? 'STUBBORN' : b.temper < 0.95 ? 'FLEXIBLE' : 'FIRM';
     return {
       title: `${b.domain}/about`,
-      accent: hex(b.accent),
-      controls: [...base, section('ABOUT'), para(b.about), keyValue('HAGGLING', temper), links([[b.domain, '< listings']])],
+      accent,
+      controls: [...base, heading('ABOUT'), para(b.about), keyValue('HAGGLING', temper), links([[b.domain, '< their listings']]), footer],
     };
   }
-  let body;
-  if (off) body = [para('You asked for too much. This broker is not dealing with you today.')];
-  else if (jobs.length) body = jobs.flatMap((c) => card(game, c));
-  else body = [label('nothing posted right now', 9.5)];
   return {
     title: b.domain,
-    accent: hex(b.accent),
+    accent,
     controls: [
       ...base,
-      section(off ? 'CLOSED TO YOU' : `LISTINGS // ${jobs.length}`),
-      ...body,
-      links([[`${b.domain}/about`, 'about us'], [HOME, 'hub']]),
+      heading(off ? 'CLOSED TO YOU' : `LISTINGS // ${jobs.length}`),
+      off ? para('You asked for too much. This broker is not dealing with you today.') : cardsOr(game, jobs, 'nothing posted right now'),
+      links([[`${b.domain}/about`, 'about us']]),
+      footer,
     ],
   };
 }
 
-/// The negotiation part of a listing: the channel with the client.
-function channel(game, c, b, view) {
+/// The deal panel of a listing: the fee, the asks, the chat with the client.
+function dealPanel(game, c, b, view) {
   const hg = haggleOf(game, c.id);
-  const out = [section(`CHANNEL // ${c.client}`)];
-  // the chat, on a dark strip like a terminal, so it reads in both skins
+  const accent = hexOf(b.accent);
+  const out = [heading('THE DEAL'), keyValue('FEE', money(c.reward), 0xffc857)];
+  if (c.state === 'offered') {
+    const full = game.contracts.filter((x) => x.state === 'accepted' || x.state === 'ready').length >= MAX_JOBS;
+    out.push(buttons([{ id: `dsn.accept.${c.id}`, text: `ACCEPT AT ${money(c.reward)}`, style: { ...netSolid(), disabled: full, isDefault: true } }]));
+    if (full) out.push(label(hint('contractCapacity'), 10, 0xffc857));
+  } else if (c.state === 'accepted' || c.state === 'ready') {
+    out.push(links([[MY_JOBS, 'this job is yours → MY JOBS']]));
+  }
+  out.push(heading(`CHANNEL // ${c.client}`));
   const log = hg?.log ?? [];
   if (log.length) {
     out.push(custom(log.length * 18 + 12, (ctx, sk, r) => {
-      ctx.fillStyle = '#0d1117';
+      ctx.fillStyle = '#05070d';
       ctx.fillRect(r.x, r.y, r.w, r.h);
       log.forEach((m, i) => {
         const mine = m.who === 'you';
@@ -164,50 +164,89 @@ function channel(game, c, b, view) {
       });
     }));
   }
-  if (c.state !== 'offered') return [...out, label('this listing is closed', 9.5)];
-  if (snubbed(game, c.client)) return [...out, label(`${c.client} is not taking your calls`, 9.5, 0xe06c75)];
+  if (c.state !== 'offered') return [...out, label('the listing is closed', 10)];
+  if (snubbed(game, c.client)) return [...out, label(`${c.client} is not taking your calls`, 10, 0xff6b6b)];
   if (!hg) {
-    out.push(para('Contact the client to ask for a bigger fee. The higher your rating, the likelier a yes; the bigger the ask, the likelier a no. One ask per job. Ask for more than double and they pull the listing.', FONT.body));
-    out.push(buttons(ASKS.map((pct) => {
+    out.push(para('Ask for a bigger fee. Your rating raises the odds; a bigger ask lowers them. One ask per job; more than double and they pull the listing.', FONT.body));
+    ASKS.forEach((pct) => {
       const ask = Math.round(c.reward * (1 + pct / 100));
-      return { id: `dsn.ask.${c.id}.${pct}`, text: `+${pct}% → ${money(ask)} (${Math.round(haggleOdds(game, c, ask) * 100)}%)`, style: ghost() };
-    })));
+      out.push(buttons([{ id: `dsn.ask.${c.id}.${pct}`, text: `ASK +${pct}% → ${money(ask)} // ${Math.round(haggleOdds(game, c, ask) * 100)}% chance`, style: ghost() }]));
+    });
     out.push(field('dsn.askfield', view.ask ?? '', `or an exact amount, more than ${c.reward}`));
     const typed = Number(view.ask);
     let odds = '';
     if (typed > c.reward) odds = typed / c.reward > INSULT ? 'an insult' : `${Math.round(haggleOdds(game, c, typed) * 100)}% chance`;
     out.push(buttons([{ id: `dsn.askexact.${c.id}`, text: `ASK${odds ? ` // ${odds}` : ''}`, style: ghost() }]));
   } else if (hg.state === 'waiting') {
-    out.push(label(`${c.client} is typing…`, 10, hex(b.accent)));
+    out.push(label(`${c.client} is typing…`, 11, accent));
   } else if (hg.state === 'counter') {
-    out.push(buttons([{ id: `dsn.take.${c.id}`, text: `TAKE ${money(hg.counter)} AND ACCEPT`, style: primary() }]));
+    out.push(buttons([{ id: `dsn.take.${c.id}`, text: `TAKE ${money(hg.counter)} AND ACCEPT`, style: netPrimary() }]));
   }
   return out;
 }
 
-/// A listing: the brief, the terms, the target, and the chat with the client.
+/// A listing: the brief and the target on the left, the deal on the right.
 function job(game, id, view) {
   const c = game.contracts.find((x) => x.id === id);
   if (!c || c.story) return null;
   const b = broker(c.client);
   const coIdx = companyOf(game, c);
   const co = game.world.companies[coIdx];
+  const h = game.world.hosts[c.target];
   const hours = Math.max(Math.floor((c.deadline - game.clock.minutes) / 60), 0);
-  const open = c.state === 'offered';
-  const controls = [
-    section(`#${c.id} // ${(c.title || contractLabel(c)).toUpperCase()}`),
-    chips([[MISSION_LABEL[c.kind], hex(b.accent)], [stars(c.difficulty), 0xe5c07b], [open ? 'OPEN' : c.state.toUpperCase(), open ? 0x9be564 : 0xe06c75]]),
+  const kind = KIND_COLOR[c.kind];
+  const left = [
+    banner([`#${c.id} // ${(c.title || contractLabel(c)).toUpperCase()}`], kind),
+    chips([[MISSION_LABEL[c.kind], kind], [`${hours}h LEFT`, hours < 6 ? 0xff6b6b : 0x8c9cb8], [c.state === 'offered' ? 'OPEN' : c.state.toUpperCase(), c.state === 'offered' ? 0x5be49b : 0xffc857]]),
     para(c.brief.replace(/[{}]/g, '')),
-    keyValue('FEE', money(c.reward)),
-    keyValue('WINDOW', `${hours} hours`),
-    keyValue('TARGET', `${co?.name ?? 'unknown'} // ${game.world.hosts[c.target]?.name ?? ''}`),
-    links([[`lookup/${coIdx}`, `leak profile of ${co?.name ?? 'the target'}`], [b.domain, `client: ${c.client}`]]),
+    heading('TARGET'),
+    keyValue('COMPANY', co?.name ?? 'unknown'),
+    keyValue('HOST', `${h?.name ?? ''} // ${h?.ip ?? ''}`),
+    keyValue('SECURITY', `FW ${h?.firewall ?? 0} / MON ${h?.monitor ?? 0} / PX ${h?.proxy ?? 0}`),
+    ...(c.file ? [keyValue('FILE', c.file)] : []),
+    ...(c.record ? [keyValue('CHANGE', `${RECORD_LABEL[c.record.field]} → ${recordText(game, c.record.field, c.record.value)}`, 0xffc857)] : []),
+    buttons([{ id: `ct.track.${c.id}`, text: 'SHOW ON MAP', style: ghost() }]),
+    links([[`lookup/${coIdx}`, `LEAKBASE profile of ${co?.name ?? 'the target'}`], [b.domain, `more from ${c.client}`]]),
   ];
-  if (open) controls.push(buttons([{ id: `dsn.accept.${c.id}`, text: `ACCEPT AT ${money(c.reward)}`, style: solid() }]));
-  controls.push(...channel(game, c, b, view));
-  controls.push(links([[`cat/${c.kind}`, `< ${darknet().categories[c.kind]?.name ?? 'category'}`], [HOME, 'hub']]));
-  return { title: `job/${c.id} // ${b.domain}`, accent: hex(b.accent), controls };
+  const right = dealPanel(game, c, b, view);
+  return { title: `job/${c.id}`, accent: kind, controls: [...left, ...right], columns: [left, right] };
 }
+
+/// MY JOBS: the work in hand, the deals being talked over, and the history.
+function jobsPage(game, view) {
+  const mine = myJobs(game);
+  const talking = game.contracts.filter((c) => c.state === 'offered' && haggleOf(game, c.id) && ['waiting', 'counter'].includes(haggleOf(game, c.id).state));
+  const past = game.contracts.filter((c) => ['done', 'paid', 'failed', 'expired'].includes(c.state)).slice(-12).reverse();
+  const out = [heading(`IN PROGRESS // ${mine.length} OF ${MAX_JOBS}`)];
+  if (!mine.length) out.push(label('no jobs in hand // pick one from the market', 10.5), links([[HOME, 'browse the market']]));
+  mine.forEach((c) => {
+    const h = game.world.hosts[c.target];
+    const linked = game.session?.target === c.target;
+    const ready = c.state === 'ready';
+    const hours = Math.max(Math.floor((c.deadline - game.clock.minutes) / 60), 0);
+    out.push(
+      links([[`job/${c.id}`, `#${c.id}  ${(c.title || contractLabel(c)).toUpperCase()}`]]),
+      label(`${money(c.reward)} // ${h?.name ?? ''} (${h?.ip ?? ''}) // ${hours}h left // ${c.client}`, 10),
+      chips([[ready ? 'READY TO SUBMIT' : 'WORK NOT DONE', ready ? 0x5be49b : 0xffc857]]),
+      buttons([
+        { id: `ct.submit.${c.id}`, text: 'SUBMIT WORK', style: { ...netSolid(), disabled: !ready } },
+        { id: `ct.link.${c.id}`, text: linked ? 'LINK IS OPEN' : 'LINK NOW', style: { ...netPrimary(), disabled: linked || !!game.session } },
+        { id: `ct.track.${c.id}`, text: 'SHOW ON MAP', style: ghost() },
+        { id: `dsn.drop.${c.id}`, text: view.dropArm === c.id ? 'SURE? DROP IT' : 'DROP', style: netDanger() },
+      ]),
+      spacer(8),
+    );
+  });
+  out.push(heading(`NEGOTIATING // ${talking.length}`));
+  if (!talking.length) out.push(label('no deals waiting on a reply', 10));
+  talking.forEach((c) => out.push(links([[`job/${c.id}`, `#${c.id} ${c.client} // ${haggleOf(game, c.id).state === 'counter' ? `counter-offer ${money(haggleOf(game, c.id).counter)}` : 'waiting for a reply'}`]])));
+  out.push(heading('HISTORY'));
+  if (!past.length) out.push(label('nothing yet', 10));
+  past.forEach((c) => out.push(label(`#${c.id}  ${pad(c.state.toUpperCase(), 9)} ${money(c.reward)} // ${contractLabel(c)} // ${c.client}`, 10, c.state === 'failed' || c.state === 'expired' ? 0xff6b6b : 0x8c9cb8)));
+  return { title: 'my jobs', accent: 0x5be49b, controls: [banner(['// MY JOBS', '   your work, your deals, your record'], '#5be49b'), ...out] };
+}
+
+const pad = (s, n) => String(s).padEnd(n);
 
 /// A leak site's profile of a company: what the network knows about it.
 function lookup(game, idx) {
@@ -218,21 +257,20 @@ function lookup(game, idx) {
   const onFile = game.world.people.filter((p, i) => p.company === idx && game.intel?.[i]).length;
   const work = listings(game).filter((c) => companyOf(game, c) === idx);
   return {
-    title: `leakbase.dsn/${co.short}`,
-    accent: 0xe06c75,
+    title: `leakbase/${co.short}`,
+    accent: 0xff6b6b,
     controls: [
-      banner(['LEAKBASE // everything they wish you did not know'], '#e06c75'),
-      section(co.name.toUpperCase()),
+      banner(['LEAKBASE // everything they wish you did not know'], '#ff6b6b'),
+      heading(co.name.toUpperCase()),
       keyValue('SECTOR', CO_LABEL[co.kind] ?? co.kind),
       para(co.blurb),
       keyValue('STAFF', `${staff} // ${onFile} on your file`),
       buttons([{ id: 'dsn.dossiers', text: 'OPEN DOSSIERS', style: ghost() }]),
-      section(`HOSTS YOU KNOW // ${known.length} OF ${co.hosts.length}`),
+      heading(`HOSTS YOU KNOW // ${known.length} OF ${co.hosts.length}`),
       ...known.map((id) => buttons([{ id: `dsn.map.${id}`, text: `${game.world.hosts[id].name} // ${HOST_LABEL[game.world.hosts[id].kind] ?? ''} // show on map`, style: flat() }])),
-      label(known.length < co.hosts.length ? 'an OSINT sweep on one of their hosts finds the rest' : 'every host is on your map', 9.5),
-      section('WORK AGAINST THEM'),
-      ...(work.length ? work.flatMap((c) => card(game, c)) : [label('no open listings', 9.5)]),
-      links([[HOME, 'hub']]),
+      label(known.length < co.hosts.length ? 'an OSINT sweep on one of their hosts finds the rest' : 'every host is on your map', 10),
+      heading(`WORK AGAINST THEM // ${work.length}`),
+      cardsOr(game, work, 'no open listings'),
     ],
   };
 }
@@ -250,12 +288,11 @@ function board(game) {
   });
   const shown = posts.map((p, i) => [p, (day * 31 + i * 17) % posts.length]).sort((a, b) => a[1] - b[1]).slice(0, 6);
   return {
-    title: 'board.dsn // the undernet board',
-    accent: 0xc792ea,
+    title: 'the undernet board',
+    accent: 0xc39bff,
     controls: [
-      banner(['>>> THE UNDERNET BOARD <<<', '    trust nobody. post anyway.'], '#c792ea'),
-      ...shown.flatMap(([text], i) => [label(`anon_${((day * 97 + i * 31) % 9000) + 1000} // ${i + 1}h ago`, 9, 0x888888), para(text), spacer(4)]),
-      links([[HOME, 'hub']]),
+      banner(['>>> THE UNDERNET BOARD <<<', '    trust nobody. post anyway.'], '#c39bff'),
+      ...shown.flatMap(([text], i) => [label(`anon_${((day * 97 + i * 31) % 9000) + 1000} // ${i + 1}h ago`, 9.5, 0x8c9cb8), para(text), spacer(6)]),
     ],
   };
 }
@@ -267,16 +304,15 @@ function search(game, q) {
   const brokers = Object.entries(darknet().brokers).filter(([n, b]) => `${n} ${b.domain} ${b.tagline}`.toLowerCase().includes(w));
   const cos = game.world.companies.map((c, i) => [c, i]).filter(([c]) => c.name.toLowerCase().includes(w)).slice(0, 8);
   return {
-    title: `search // ${q}`,
+    title: `search: ${q}`,
     accent: 0x7fd4ff,
     controls: [
-      section(`RESULTS FOR "${q}"`),
-      ...(jobs.length ? jobs.flatMap((c) => card(game, c)) : [label('no listings match', 9.5)]),
-      section('BROKERS'),
-      brokers.length ? links(brokers.map(([n, b]) => [b.domain, n])) : label('none', 9.5),
-      section('COMPANIES'),
-      cos.length ? links(cos.map(([c, i]) => [`lookup/${i}`, c.name])) : label('none', 9.5),
-      links([[HOME, 'hub']]),
+      heading(`LISTINGS MATCHING "${q}" // ${jobs.length}`),
+      cardsOr(game, jobs, 'no listings match'),
+      heading('BROKERS'),
+      brokers.length ? links(brokers.map(([n, b]) => [b.domain, n])) : label('none', 10),
+      heading('COMPANIES'),
+      cos.length ? links(cos.map(([c, i]) => [`lookup/${i}`, c.name])) : label('none', 10),
     ],
   };
 }
@@ -284,13 +320,12 @@ function search(game, q) {
 /// About the network.
 function about() {
   return {
-    title: 'about // DeppSpaceNET',
+    title: 'about',
     accent: 0x7fd4ff,
     controls: [
-      section('ABOUT DeppSpaceNET'),
+      heading('ABOUT DeppSpaceNET'),
       para('A hidden network of hidden services. Every page you load is routed through three relays that know only their neighbours. The brokers here post the work; you pick it up, talk them up, and get it done.'),
       para('Rules of the house: no names, no logs, no asking for double.'),
-      links([[HOME, 'hub']]),
     ],
   };
 }
@@ -308,6 +343,7 @@ export function buildPage(game, url, view = {}) {
   const rest = u.split('/').slice(1).join('/');
   let page = null;
   if (u === HOME) page = hub(game, view);
+  else if (u === MY_JOBS) page = jobsPage(game, view);
   else if (head === 'cat') page = category(game, rest);
   else if (head === 'job') page = job(game, Number(rest), view);
   else if (head === 'lookup') page = lookup(game, Number(rest));
@@ -322,8 +358,8 @@ export function buildPage(game, url, view = {}) {
   const lines = darknet().notFound;
   return {
     url: u,
-    title: '404 // DeppSpaceNET',
-    accent: 0xe06c75,
-    controls: [section('404'), para(lines[u.length % lines.length]), links([[HOME, 'back to the hub']])],
+    title: '404',
+    accent: 0xff6b6b,
+    controls: [banner(['404'], '#ff6b6b'), para(lines[u.length % lines.length]), links([[HOME, 'back to the hub']])],
   };
 }

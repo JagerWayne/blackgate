@@ -24,7 +24,7 @@ function playState() {
     windows: makeWindows(), game: makeGame('WIN', 7), win: {}, mode: 'play', time: 0,
   };
   openWindow(state.windows, 'mail', DESK);
-  openWindow(state.windows, 'contracts', DESK);
+  openWindow(state.windows, 'dsn', DESK);
   return state;
 }
 const click = (state, id) => handleEvents(state, [{ type: 'click', id }], DESK);

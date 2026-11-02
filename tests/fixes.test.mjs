@@ -104,30 +104,17 @@ test('the notes take no typing until the page is clicked', () => {
 
 // -- contracts ----------------------------------------------------------------
 
-test('picking another contract in the list shows it', () => {
+test('MY JOBS holds the work in hand, and DROP asks twice', () => {
   const state = playState();
-  openWindow(state.windows, 'contracts', DESK);
-  frame(state);
-  const offered = state.game.contracts
-    .filter((c) => c.state === 'offered')
-    .sort((a, b) => a.deadline - b.deadline);
-  assert.ok(offered.length > 1, 'the run starts with more than one offer');
-  assert.doesNotThrow(() => handleEvents(state, [{ type: 'select', id: 'ct.list.0', index: 1 }], DESK));
-  assert.equal(state.win.contracts.ctSel, offered[1].id);
-});
-
-test('a tab that does not hold the picked contract picks its own first one', () => {
-  const state = playState();
-  openWindow(state.windows, 'contracts', DESK);
-  frame(state);
   const first = state.game.contracts.find((c) => c.state === 'offered');
-  state.win.contracts.ctSel = first.id;
-  handleEvents(state, [{ type: 'click', id: `ct.accept.${first.id}` }], DESK);
+  handleEvents(state, [{ type: 'click', id: `dsn.accept.${first.id}` }], DESK);
   assert.equal(first.state, 'accepted', 'the job was taken');
-  handleEvents(state, [{ type: 'click', id: 'ct.tab.0' }], DESK);
-  frame(state);
-  const shown = state.win.contracts.ctSel;
-  assert.equal(state.game.contracts.find((c) => c.id === shown)?.state, 'offered', 'the offered tab shows an offer');
+  handleEvents(state, [{ type: 'click', id: 'hdr.contracts' }], DESK);
+  assert.equal(state.win.dsn.tabs[state.win.dsn.active].url, 'jobs', 'the header opens MY JOBS');
+  handleEvents(state, [{ type: 'click', id: `dsn.drop.${first.id}` }], DESK);
+  assert.equal(first.state, 'accepted', 'one press only arms DROP');
+  handleEvents(state, [{ type: 'click', id: `dsn.drop.${first.id}` }], DESK);
+  assert.notEqual(first.state, 'accepted', 'the second press drops it');
 });
 
 // -- system -------------------------------------------------------------------

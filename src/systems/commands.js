@@ -236,8 +236,8 @@ const APPS = {
 
   contracts: {
     alias: ['ct'],
-    window: 'contracts',
-    about: 'the job board',
+    window: 'dsn',
+    about: 'your jobs and the offers (the same as DeppSpaceNET)',
     commands: {
       list: {
         args: '[offered|accepted|ready|done|all]', help: 'the jobs with id, kind, payout and deadline',

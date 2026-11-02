@@ -7,6 +7,7 @@ import { logo } from './backdrop.js';
 import { drawButton } from '../ui/widgets.js';
 import { roundRect } from '../ui/kit.js';
 import { drawLoginBody } from './loginBody.js';
+import { buildText } from '../version.js';
 import { drawUsers, SANS, BARE } from './loginUsers.js';
 
 export function makeLogin() {
@@ -33,6 +34,8 @@ export function drawLogin(ctx, st, sk, w, h, input, ui, events) {
   ctx.fillRect(0, 0, w, topH);
   ctx.fillRect(0, h - botH, w, botH);
   band(ctx, topH, w, ['#00309c', '#9bb8f0', '#ffffff', '#9bb8f0', '#00309c']);
+  // the version, top right, where a player looks for it
+  drawText(ctx, `BLACKGATE v${buildText()}`, w - 24, topH / 2, 11, '#c9d8f8', { align: 'right', baseline: 'middle', family: SANS });
   band(ctx, h - botH - 2, w, ['#00309c', '#f8b048', '#fcd28a', '#f8b048', '#00309c']);
 
   // the divider down the middle, faded at both ends

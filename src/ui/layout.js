@@ -85,7 +85,8 @@ export function heightOf(ctx, control, width, top, bottom, rest) {
     case 'spacer':
       return control.height;
     case 'custom':
-      return control.height + GAP - 6;
+      // a height can follow the width, for rows that wrap (a grid of cards)
+      return (typeof control.height === 'function' ? control.height(width) : control.height) + GAP - 6;
     default:
       return 0;
   }

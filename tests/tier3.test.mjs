@@ -244,9 +244,11 @@ test('Tab walks the fields and Escape leaves them', () => {
 test('Enter presses the default button', () => {
   const state = playState();
   const g = state.game;
-  openWindow(state.windows, 'contracts', DESK);
+  const picked = g.contracts.find((c) => c.state === 'offered').id;
+  openWindow(state.windows, 'dsn', DESK);
+  handleEvents(state, [{ type: 'click', id: `dsn.go.job/${picked}` }], DESK);
+  g.uiTime += 2;
   frame(state);
-  const picked = state.win.contracts.ctSel;
   state.input.enter = true;
   frame(state);
   frame(state);
@@ -255,7 +257,7 @@ test('Enter presses the default button', () => {
 
 test('Enter in the notes is a new line, not a button', () => {
   const state = playState();
-  openWindow(state.windows, 'contracts', DESK);
+  openWindow(state.windows, 'dsn', DESK);
   const note = openWindow(state.windows, 'notepad', DESK);
   frame(state);
   Object.assign(state.input, { inside: true, mouse: { x: note.x + note.w / 2, y: note.y + note.h / 2 }, pressed: true, down: true });

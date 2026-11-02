@@ -67,7 +67,7 @@ export function drawControls(ctx, placed, sk, input, st, events) {
         drawMeter(ctx, sk, r, control.label, control.frac, control.color, control.mark);
         break;
       case 'custom':
-        control.draw(ctx, sk, { x, y, w, h: control.height });
+        control.draw(ctx, sk, { x, y, w, h: typeof control.height === 'function' ? control.height(w) : control.height }, input, events, st);
         break;
       case 'chips': {
         const { placed: spots } = placeChips(ctx, x, y, w, control.items);
