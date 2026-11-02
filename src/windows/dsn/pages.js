@@ -1,4 +1,4 @@
-// The pages of DeppSpaceNET, built from the game each frame. A page is a title,
+// The pages of DeepSpaceN3T, built from the game each frame. A page is a title,
 // an accent colour and a list of the shell's own form controls (a link is a
 // flat button whose id carries the address it goes to). A page may also give
 // two columns, which a wide browser shows side by side.
@@ -323,7 +323,7 @@ function about() {
     title: 'about',
     accent: 0x7fd4ff,
     controls: [
-      heading('ABOUT DeppSpaceNET'),
+      heading('ABOUT DeepSpaceN3T'),
       para('A hidden network of hidden services. Every page you load is routed through three relays that know only their neighbours. The brokers here post the work; you pick it up, talk them up, and get it done.'),
       para('Rules of the house: no names, no logs, no asking for double.'),
     ],

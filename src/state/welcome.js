@@ -5,7 +5,7 @@ export function welcomeBody(handle) {
 
 You are in. Blackgate is a broker, not a charity: we route work to operators who deliver, and we forget operators who do not.
 
-Start on DeppSpaceNET, the hidden job market. Read the brief, check the target's security, and do not sit on a connection longer than you must. Every action you take writes a log somewhere, and logs are what get people caught.
+Start on DeepSpaceN3T, the hidden job market. Read the brief, check the target's security, and do not sit on a connection longer than you must. Every action you take writes a log somewhere, and logs are what get people caught.
 
 You have 4,000 credits and a gate that would embarrass a student. Fix that with the money you earn.
 

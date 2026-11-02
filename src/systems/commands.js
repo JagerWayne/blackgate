@@ -1,3 +1,4 @@
+import { padsOf, newPad, openPad, deletePad, MAX_PADS } from '../state/notes.js';
 // The command prompt's commands: `<app> <action> [what]`, plus a few general
 // ones. Commands that change the game send the same event the matching
 // button sends, so the costs, the checks and the messages are the button's.
@@ -237,7 +238,7 @@ const APPS = {
   contracts: {
     alias: ['ct'],
     window: 'dsn',
-    about: 'your jobs and the offers (the same as DeppSpaceNET)',
+    about: 'your jobs and the offers (the same as DeepSpaceN3T)',
     commands: {
       list: {
         args: '[offered|accepted|ready|done|all]', help: 'the jobs with id, kind, payout and deadline',
@@ -720,7 +721,7 @@ const APPS = {
   dsn: {
     alias: ['web', 'deppspacenet'],
     window: 'dsn',
-    about: 'DeppSpaceNET: browse the hidden job market and haggle with clients',
+    about: 'DeepSpaceN3T: browse the hidden job market and haggle with clients',
     commands: {
       open: {
         args: '[address]', help: 'open a page (dsn://hub by default)',
@@ -822,6 +823,37 @@ const APPS = {
     about: 'your notes',
     commands: {
       show: { args: '', help: 'print the notes', run: (ctx) => (ctx.game.notes ? ctx.game.notes.split('\n').map((text, i) => ({ text: `${pad(i + 1, 4)}${text}` })) : [{ text: 'the notepad is empty' }]) },
+      list: { args: '', help: 'every notepad', run: (ctx) => padsOf(ctx.game).map((n, i) => ({ text: `${i === ctx.game.notepad ? '>' : ' '} ${i + 1}  ${n.name}` })) },
+      new: {
+        args: '[name]', help: 'start a new notepad',
+        run(ctx, rest) {
+          if (!newPad(ctx.game, rest.join(' '))) fail(`at most ${MAX_PADS} notepads`);
+          return [{ text: `opened ${ctx.game.notepads[ctx.game.notepad].name}`, tone: 'ok' }];
+        },
+      },
+      open: {
+        args: '<n>', help: 'switch notepad',
+        run(ctx, [n]) {
+          if (!openPad(ctx.game, Number(n) - 1)) fail('no such notepad: `notepad list`');
+          return [{ text: `opened ${ctx.game.notepads[ctx.game.notepad].name}`, tone: 'ok' }];
+        },
+      },
+      rename: {
+        args: '<name>', help: 'rename the open notepad',
+        run(ctx, rest) {
+          if (!rest.length) fail('usage: notepad rename <name>');
+          padsOf(ctx.game)[ctx.game.notepad].name = rest.join(' ').toUpperCase().slice(0, 16);
+          return [{ text: 'renamed', tone: 'ok' }];
+        },
+      },
+      delete: {
+        args: '<n> --yes', help: 'delete a notepad',
+        run(ctx, [n, yes]) {
+          if (yes !== '--yes') fail('this deletes the notepad: `notepad delete <n> --yes`');
+          if (!deletePad(ctx.game, Number(n) - 1)) fail('no such notepad: `notepad list`');
+          return [{ text: 'notepad deleted', tone: 'ok' }];
+        },
+      },
       write: {
         args: '"<text>"', help: 'add a line to the notes',
         run(ctx, rest) {

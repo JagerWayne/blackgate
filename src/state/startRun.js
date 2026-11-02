@@ -27,7 +27,6 @@ export function startRun(state, w, h) {
 /// The windows a fresh run opens with.
 function openShell(windows, w, h) {
   const desk = desktop(w, h);
-  openWindow(windows, 'mail', desk);
   openWindow(windows, 'dsn', desk);
 }
 

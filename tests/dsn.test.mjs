@@ -1,4 +1,4 @@
-// DeppSpaceNET: every page builds, links go somewhere, and the haggling
+// DeepSpaceN3T: every page builds, links go somewhere, and the haggling
 // follows its rules.
 // Run with: node --test tests/*.mjs
 import test from 'node:test';
@@ -39,7 +39,7 @@ test('every page the hub links to builds, and none of them is a 404', () => {
     if (seen.has(url)) continue;
     seen.add(url);
     const page = buildPage(g, url);
-    assert.notEqual(page.title, '404 // DeppSpaceNET', `dsn://${url}`);
+    assert.notEqual(page.title, '404 // DeepSpaceN3T', `dsn://${url}`);
     ids(page).filter((id) => id.startsWith('dsn.go.')).forEach((id) => queue.push(normalize(id.slice(7))));
   }
   for (const want of ['hub', 'jobs', 'board', 'about']) assert.ok(seen.has(want), want);

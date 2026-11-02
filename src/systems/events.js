@@ -1,3 +1,4 @@
+import { newPad, openPad, deletePad } from '../state/notes.js';
 // The events the operator made, applied to the game state.
 
 import { handleDsnClick } from '../windows/dsn/browser.js';
@@ -293,6 +294,15 @@ function handleClick(state, e, desk) {
   else if (id.startsWith('mail.decline.')) declineContract(game, Number(id.slice(13)));
   else if (id.startsWith('mail.track.')) trackTarget(state, Number(id.slice(11)), desk);
   else if (id.startsWith('gw.')) handleGatewayClick(state, id);
+  else if (id === 'note.new') newPad(game);
+  else if (id.startsWith('note.open.')) openPad(game, Number(id.slice(10)));
+  else if (id.startsWith('note.del.')) {
+    const view = state.win.notepad ?? (state.win.notepad = {});
+    if (view.armed === id) {
+      deletePad(game, Number(id.slice(9)));
+      view.armed = null;
+    } else view.armed = id;
+  }
   else if (id === 'note.wrap') game.settings.noteWrap = game.settings.noteWrap === false;
   else if (id === 'note.clear') {
     const view = state.win.notepad ?? (state.win.notepad = {});
@@ -342,7 +352,7 @@ function handleClick(state, e, desk) {
   }
 }
 
-/// DeppSpaceNET: the job buttons and the haggling here, the browsing in the browser.
+/// DeepSpaceN3T: the job buttons and the haggling here, the browsing in the browser.
 function handleDsn(state, id, desk) {
   const game = state.game;
   const view = (state.win.dsn ??= {});
@@ -373,7 +383,7 @@ function handleDsn(state, id, desk) {
   else handleDsnClick(view, id, game.uiTime ?? 0);
 }
 
-/// Opens DeppSpaceNET at an address.
+/// Opens DeepSpaceN3T at an address.
 export function openPortal(state, desk, url = 'hub') {
   openWindow(state.windows, 'dsn', desk);
   handleDsnClick((state.win.dsn ??= {}), `dsn.go.${url}`, state.game?.uiTime ?? 0);

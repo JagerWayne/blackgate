@@ -27,7 +27,7 @@ lives in JSON files you can read and edit.
 - [Command Prompt](#command-prompt)
 - [Jobs](#jobs)
 - [People and OSINT](#people-and-osint)
-- [DeppSpaceNET](#deppspacenet)
+- [DeepSpaceN3T](#deppspacenet)
 - [Traces, heat and raids](#traces-heat-and-raids)
 - [Your machine: the gateway](#your-machine-the-gateway)
 - [Software](#software)
@@ -135,7 +135,7 @@ file it could not read.
      already has a save replaces it; the login screen warns you in red first.
    - **DELETE SAVE** removes the selected operator's save. Press it twice to
      confirm.
-3. **Take a job.** Open **DeppSpaceNET**, pick a listing, read the brief and press **ACCEPT** (or haggle first).
+3. **Take a job.** Open **DeepSpaceN3T**, pick a listing, read the brief and press **ACCEPT** (or haggle first).
 4. **Find the target.** **SHOW TARGET** reveals the machine on the
    **NEXUS MAP** and selects it, and the map glides to it.
 5. **Plan a route.** Add relay hops to your bounce route on the map. More hops
@@ -147,7 +147,7 @@ file it could not read.
    record, and so on.
 8. **Clean up.** Delete or edit the logs your visit left, then disconnect
    before the trace reaches you.
-9. **Get paid.** Press **SUBMIT WORK** in **MY JOBS** on DeppSpaceNET. The fee goes to
+9. **Get paid.** Press **SUBMIT WORK** in **MY JOBS** on DeepSpaceN3T. The fee goes to
    your bank account, and your rating rises.
 10. **Upgrade.** Spend the money in **GATEWAY** (hardware) and **SOFTWARE**
     (tools) to take on harder jobs.
@@ -201,7 +201,7 @@ All are opened from the Start menu and appear on the taskbar while open.
 |---|---|
 | **Bl@ckG@te** | The hacking client. Shows the live connection and, once the link is up, the target's services, files, logs, records and staff (PEOPLE), and the actions you can run on the host, such as **BYPASS FIREWALL**, **BLIND MONITOR**, **SCRUB PROXY** and **WIPE LOGS**. An action that cannot run says why. |
 | **MAIL** | Messages from the broker, clients and contacts. **MARK ALL READ** clears the unread count. |
-| **DeppSpaceNET** | Where all jobs live: the market, broker sites, leak profiles and a rumour board, plus **MY JOBS** to submit, link to, show or drop the work you hold. Haggle the fee with the client. The header's ACTIVE button opens MY JOBS. See [DeppSpaceNET](#deppspacenet). |
+| **DeepSpaceN3T** | Where all jobs live: the market, broker sites, leak profiles and a rumour board, plus **MY JOBS** to submit, link to, show or drop the work you hold. Haggle the fee with the client. The header's ACTIVE button opens MY JOBS. See [DeepSpaceN3T](#deppspacenet). |
 | **NEXUS MAP** | The world map with every machine you have discovered, search and filters by kind, your bounce route, and saved routes. |
 | **GATEWAY** | Your own computer: the chassis and the parts in it, a shop for new parts, and a stock of parts you have taken out. |
 | **SOFTWARE** | The tool shop. Buy and upgrade the tools the jobs need. |
@@ -329,7 +329,7 @@ matching button does, with the same costs, checks and messages.
 | `operator` | Rating, rank and statistics |
 | `sys autosave on\|off` / `sys fast on\|off` / `sys theme light\|dark` | Settings |
 | `sys save` / `sys quit` | Save, or save and log out |
-| `dsn open [address]` / `dsn search <text>` | Open a DeppSpaceNET page (`dsn://hub` by default) or search it |
+| `dsn open [address]` / `dsn search <text>` | Open a DeepSpaceN3T page (`dsn://hub` by default) or search it |
 | `dsn haggle <job> <amount\|+n%>` / `dsn reply <job>` / `dsn take <job>` | Ask for a bigger fee, read the client's answer, take a counter-offer |
 | `ppl list` / `ppl staff` / `ppl show <person>` | Everyone on file, the linked company's staff, one dossier |
 | `ppl profile\|call\|spoofcall\|tap\|inbox\|phish\|spam <person>` | The OSINT, phone and inbox attacks (see [People and OSINT](#people-and-osint)) |
@@ -409,9 +409,9 @@ phone, record them (the voice lock's **RECORD**, or a call from PEOPLE), then
 
 ---
 
-## DeppSpaceNET
+## DeepSpaceN3T
 
-All jobs live on **DeppSpaceNET**, a browser for a TOR-like hidden network.
+All jobs live on **DeepSpaceN3T**, a browser for a TOR-like hidden network.
 (It replaced the old CONTRACTS app.) The board keeps 6 open offers,
 one more for every 30 rating, up to 10.
 

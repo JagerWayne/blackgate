@@ -6,12 +6,13 @@
 // Shift and the wheel across it, and both thumbs drag. Typing brings the end
 // of the page back into view.
 
-import { draw as drawText, lineHeight, measure, FONT } from '../core/text.js';
+import { draw as drawText, lineHeight, measure, ellipsize, FONT } from '../core/text.js';
 import { color } from '../core/theme.js';
 import { drawFrame } from '../ui/panel.js';
 import { hit } from '../ui/kit.js';
 import { drawButton } from '../ui/widgets.js';
-import { ghost, danger } from '../ui/styles.js';
+import { ghost, danger, primary } from '../ui/styles.js';
+import { padsOf, MAX_PADS } from '../state/notes.js';
 
 /// The longest the notes may grow.
 const MAX_CHARS = 8000;
@@ -33,8 +34,9 @@ export function drawNotepad(ctx, sk, r, game, ui, input, events, view = {}) {
   const wrap = game.settings.noteWrap !== false;
   // an empty page is no lines at all, not one blank one
   const count = game.notes ? game.notes.split('\n').length : 0;
-  const body = drawFrame(ctx, sk, r, ui, input, events, '', `${count} ${count === 1 ? 'line' : 'lines'} // ${game.notes.length} chars // click the page to type`);
+  const frame = drawFrame(ctx, sk, r, ui, input, events, '', `${count} ${count === 1 ? 'line' : 'lines'} // ${game.notes.length} chars // click the page to type`);
 
+  const body = drawPadTabs(ctx, sk, frame, game, ui, input, events, view);
   // the switches: wrap, and the page wipe (the first click arms it)
   const sure = view.armed === 'note.clear';
   const clear = { x: body.x + body.w - 170, y: body.y, w: 170, h: 28 };
@@ -248,4 +250,37 @@ function typed(notes, input) {
   }
   if (input.paste) next += input.paste.replace(/\r\n?/g, '\n');
   return next.slice(0, MAX_CHARS);
+}
+
+/// The notepad tabs: one per pad (× deletes, pressed twice), and + NEW.
+/// Returns the body below them.
+function drawPadTabs(ctx, sk, body, game, ui, input, events, view) {
+  const pads = padsOf(game);
+  const h = 26;
+  let x = body.x;
+  const room = body.w - 70;
+  const w = Math.max(Math.min(Math.floor(room / pads.length) - 4, 150), 60);
+  pads.forEach((p, i) => {
+    const open = i === game.notepad;
+    const tab = { x, y: body.y, w, h };
+    const del = { x: x + w - 20, y: body.y + 5, w: 16, h: 16 };
+    const sure = view.armed === `note.del.${i}`;
+    ctx.fillStyle = color(open ? sk.raised : sk.panel2);
+    ctx.fillRect(tab.x, tab.y, tab.w, tab.h);
+    ctx.fillStyle = color(open ? sk.accent : sk.line);
+    ctx.fillRect(tab.x, tab.y + h - 2, tab.w, 2);
+    drawText(ctx, ellipsize(ctx, sure ? 'DELETE?' : p.name, FONT.body, w - 30), x + 8, body.y + h / 2, FONT.body, color(sure ? sk.danger : open ? sk.text_hi : sk.dim), { baseline: 'middle' });
+    ctx.strokeStyle = color(sure ? sk.danger : sk.dim);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(del.x + 4, del.y + 4); ctx.lineTo(del.x + 12, del.y + 12);
+    ctx.moveTo(del.x + 12, del.y + 4); ctx.lineTo(del.x + 4, del.y + 12);
+    ctx.stroke();
+    if (input.pressed && hit(del, input)) events.push({ type: 'click', id: `note.del.${i}` });
+    else if (input.pressed && !open && hit(tab, input)) events.push({ type: 'click', id: `note.open.${i}` });
+    x += w + 4;
+  });
+  const add = { x: Math.min(x, body.x + body.w - 64), y: body.y, w: 64, h };
+  if (drawButton(ctx, ui, sk, 'note.new', add, '+ NEW', { ...primary(), disabled: pads.length >= MAX_PADS }, input)) events.push({ type: 'click', id: 'note.new' });
+  return { x: body.x, y: body.y + h + 8, w: body.w, h: body.h - h - 8 };
 }

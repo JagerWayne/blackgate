@@ -1,3 +1,4 @@
+import { padsOf } from './notes.js';
 // The save file: the whole run, kept in the browser's local store, or in a
 // file under Documents/Games/Blackgate/saves when the Electron app provides one.
 
@@ -95,6 +96,7 @@ export function loadRun(handle = current) {
     g.paused = false;
     g.toasts = [];
     cheatsOf(g);
+    padsOf(g);
     splitMemory(g);
     orderParts(g);
     fillRecords(g);

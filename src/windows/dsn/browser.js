@@ -1,4 +1,4 @@
-// DeppSpaceNET: the browser of the hidden network. Tabs that close, back and
+// DeepSpaceN3T: the browser of the hidden network. Tabs that close, back and
 // forward, an address bar, a relay circuit, a sidebar that is always there,
 // and a status bar. It draws in its own dark skin (theme.js) whatever the
 // desktop skin; the pages themselves are built in pages.js.

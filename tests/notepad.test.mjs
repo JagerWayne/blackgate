@@ -214,3 +214,23 @@ test('grabbing the thumb does not jump the page', () => {
   pointer(state, x, p.y + p.h - 6, { pressed: false, down: false, released: true });
   frame(state);
 });
+
+import { padsOf, newPad, openPad, deletePad } from '../src/state/notes.js';
+
+test('notepads: an old save becomes one pad, new pads switch and keep their text', () => {
+  const g = { notes: 'old text' };
+  assert.deepEqual(padsOf(g), [{ name: 'NOTES', text: 'old text' }]);
+  newPad(g, 'leads');
+  assert.equal(g.notes, '');
+  g.notes = 'phone 555';
+  openPad(g, 0);
+  assert.equal(g.notes, 'old text');
+  openPad(g, 1);
+  assert.equal(g.notes, 'phone 555');
+  assert.equal(g.notepads[1].name, 'LEADS');
+  deletePad(g, 0);
+  assert.equal(g.notes, 'phone 555');
+  deletePad(g, 0);
+  assert.deepEqual(g.notepads, [{ name: 'NOTES', text: '' }]);
+  assert.equal(g.notes, '');
+});
