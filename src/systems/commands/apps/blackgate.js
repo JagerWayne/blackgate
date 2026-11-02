@@ -37,7 +37,7 @@ export const blackgateApp = {
       run(ctx) {
         const { h } = link(ctx);
         const list = h.files.map((f, i) => ({ f, i })).filter(({ f }) => !f.deleted);
-        ctx.term.last = { kind: 'rfile', ids: list.map(({ i }) => i) };
+        ctx.term.last = { kind: 'rfile', host: h.id, ids: list.map(({ i }) => i) };
         if (!list.length) return [{ text: 'no files' }];
         return list.map(({ f }, n) => ({ text: `${pad(`#${n + 1}`, 5)}${pad(f.name, 28)}${pad(`${f.size} GB`, 9)}${f.enc > 0 ? `encrypted v${f.enc}` : ''}` }));
       },

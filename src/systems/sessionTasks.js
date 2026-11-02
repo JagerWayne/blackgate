@@ -46,6 +46,14 @@ export function taskError(game, s, kind, arg) {
 /// The tasks that make no sense twice on the same target at once.
 const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'CrackPassword', 'DeleteFile']);
 
+const VOICE_TASKS = new Set(['RecordVoice', 'CallRecord', 'SpoofCall']);
+
+/// The gateway storage the running tasks will still take: the copies, and one
+/// GB for each voice sample being recorded.
+function pendingStorage(s, h) {
+  return s.tasks.reduce((n, t) => n + (t.kind === 'CopyFile' ? (h.files[t.arg]?.size ?? 0) : VOICE_TASKS.has(t.kind) ? 1 : 0), 0);
+}
+
 /// Works out what a task needs and how long it takes.
 function planTask(game, s, h, kind, arg) {
   const need = toolFor(kind);
@@ -82,11 +90,9 @@ function planTask(game, s, h, kind, arg) {
       const f = h.files[arg];
       if (!f || f.deleted) return { error: 'file no longer exists' };
       if (f.enc > 0) return { error: 'file is encrypted' };
-      // copies still running count too, or two at once overfill the drive
-      const copying = s.tasks.filter((t) => t.kind === 'CopyFile');
-      if (copying.some((t) => t.arg === arg)) return { error: 'already copying this file' };
-      const pending = copying.reduce((n, t) => n + (h.files[t.arg]?.size ?? 0), 0);
-      if (storageUsed(game) + pending + f.size > storage(game.player.gateway)) return { error: 'not enough gateway storage' };
+      if (s.tasks.some((t) => t.kind === 'CopyFile' && t.arg === arg)) return { error: 'already copying this file' };
+      // work still running counts too, or two at once overfill the drive
+      if (storageUsed(game) + pendingStorage(s, h) + f.size > storage(game.player.gateway)) return { error: 'not enough gateway storage' };
       const copier = toolLevel(game, 'FileCopier');
       const rate = Math.max(Math.min(28 * copier, bandwidth(game.player.gateway) * 0.6), 8);
       const dur = Math.min(Math.max(f.size / rate, 1.8), 16);
@@ -105,6 +111,7 @@ function planTask(game, s, h, kind, arg) {
     case 'DeleteFile': {
       const f = h.files[arg];
       if (!f || f.deleted) return { error: 'no such file' };
+      if (s.tasks.some((t) => t.kind === 'CopyFile' && t.arg === arg)) return { error: 'file is being copied' };
       return { label: `destroy ${f.name}`, dur: 3 + f.size / 12, loud: true };
     }
     case 'WipeLogs':
@@ -141,7 +148,7 @@ function planTask(game, s, h, kind, arg) {
       if (!knows(game, who, 'phone')) return { error: "the admin's phone is unknown // PROFILE them on the PEOPLE tab" };
       if (hasSample(game, who)) return { error: 'voice already recorded' };
       if (s.tasks.some((t) => t.kind === 'RecordVoice')) return { error: 'already on a call' };
-      if (storageUsed(game) + 1 > storage(game.player.gateway)) return { error: 'no room on the gateway' };
+      if (storageUsed(game) + pendingStorage(s, h) + 1 > storage(game.player.gateway)) return { error: 'no room on the gateway' };
       return { label: `call ${game.world.people[who].name}`, dur: 8, loud: false };
     }
     case 'Profile':
@@ -189,7 +196,7 @@ function planPeople(game, s, h, kind, i) {
     case 'SpoofCall': {
       if (!phone) return { error: 'phone unknown // PROFILE with OSINT v2+' };
       if (hasSample(game, i)) return { error: 'voice already recorded' };
-      if (storageUsed(game) + 1 > storage(game.player.gateway)) return { error: 'no room on the gateway' };
+      if (storageUsed(game) + pendingStorage(s, h) + 1 > storage(game.player.gateway)) return { error: 'no room on the gateway' };
       if (kind === 'SpoofCall' && toolLevel(game, 'VoiceAnalyser') === 0) return { error: 'no VoiceAnalyser installed' };
       const spoof = kind === 'SpoofCall';
       return { label: `${spoof ? 'spoofed call' : 'call'} ${p.name}`, dur: spoof ? 14 : 8, loud: false };

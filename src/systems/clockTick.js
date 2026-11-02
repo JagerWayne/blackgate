@@ -6,6 +6,7 @@ import { spawnContract } from '../state/contractSpawn.js';
 import { note, toast, randomHeadline } from '../state/gameState.js';
 import { timeScale } from '../state/cheats.js';
 import { haggleTick } from '../state/haggle.js';
+import { freeStaleTags } from '../state/contracts.js';
 
 /// Advances the clock and does the per-minute work.
 export function clockTick(game, dt) {
@@ -57,6 +58,7 @@ export function onMinutes(game, minutes) {
       toast(game, `Offer #${c.id} withdrawn // its window closed`, 'info');
     });
   pruneHistory(game);
+  freeStaleTags(game);
 
   // the board is restocked, and each new job is announced
   let guard = 0;

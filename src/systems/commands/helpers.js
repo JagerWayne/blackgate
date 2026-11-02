@@ -91,6 +91,9 @@ export function link(ctx, up = true) {
 export function remoteFile(ctx, word) {
   const { h } = link(ctx);
   if (!word) fail('name a file: its name, or #n from `bg files`');
+  const last = ctx.term.last;
+  // the numbers of a file list belong to the host it listed
+  if (last?.kind === 'rfile' && last.host !== h.id && rowOf(word) >= 0) fail('that file list is from another host // run `bg files` again');
   const byPick = pick(ctx, word, 'rfile');
   const i = byPick !== null ? byPick : h.files.findIndex((f) => !f.deleted && f.name.toLowerCase() === word.toLowerCase());
   if (i < 0 || !h.files[i] || h.files[i].deleted) fail(`no file "${word}" on ${h.name}`);

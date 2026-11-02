@@ -73,6 +73,16 @@ export function contractLabel(c) {
   return c.title || MISSION_LABEL[c.kind] || 'WORK';
 }
 
+/// Frees the host files that a job no longer holds: one that was declined,
+/// expired, failed or dropped leaves its file tagged otherwise, and the pool
+/// of files new jobs can use runs dry.
+export function freeStaleTags(game) {
+  const live = new Set(game.contracts.filter((c) => ['offered', 'accepted', 'ready'].includes(c.state)).map((c) => c.id));
+  game.world.hosts.forEach((h) => h.files.forEach((f) => {
+    if (f.tag && !live.has(f.tag)) f.tag = 0;
+  }));
+}
+
 /// Marks the accepted work that is now finished.
 export function evaluateMissions(game) {
   game.contracts.forEach((c) => {

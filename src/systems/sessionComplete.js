@@ -37,7 +37,7 @@ export function completeTask(game, s, task) {
     }
     case 'CopyFile': {
       const f = h.files[task.arg];
-      if (f) {
+      if (f && !f.deleted) {
         game.player.storage.push({ name: f.name, size: f.size, tag: f.tag, enc: f.enc, source: h.name });
         game.stats.filesStolen += 1;
         f.copied = true;

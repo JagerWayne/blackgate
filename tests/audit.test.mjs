@@ -7,8 +7,8 @@ import { makeGame } from '../src/state/gameState.js';
 import { connect, sessionTick } from '../src/systems/sessionTick.js';
 import { startTask, taskError } from '../src/systems/sessionTasks.js';
 import { onMinutes } from '../src/systems/clockTick.js';
-import { traceFactor } from '../src/state/gateway.js';
-import { acceptContract } from '../src/state/contracts.js';
+import { traceFactor, storage } from '../src/state/gateway.js';
+import { acceptContract, declineContract } from '../src/state/contracts.js';
 
 await initContent();
 
@@ -98,6 +98,34 @@ test('a target that is also a hop leaves one log, not two', () => {
   g.session.route = [h.id]; // the target is also a hop
   sessionTick(g, 999);
   assert.equal(opens() - before, 1);
+});
+
+test('two calls are not started when the drive has room for one sample', () => {
+  const { g, h } = online((x) => x.company != null, { OsintSweep: 3, VoiceAnalyser: 3 });
+  const staff = g.world.people.map((p, i) => i).filter((i) => g.world.people[i].company === h.company);
+  assert.ok(staff.length >= 2, 'the company has two people');
+  staff.slice(0, 2).forEach((i) => { g.intel = { ...g.intel, [i]: { level: 4 } }; });
+  g.player.storage = [{ name: 'fill', size: storage(g.player.gateway) - 1, tag: 0 }];
+  assert.equal(startTask(g, 'CallRecord', staff[0]), null);
+  assert.ok(taskError(g, g.session, 'CallRecord', staff[1]), 'the first call has the last gigabyte');
+});
+
+test('a file being copied cannot be deleted under the copy', () => {
+  const { g, h } = online((x) => x.files.some((f) => !f.deleted && f.enc === 0), { FileCopier: 5, FileDeleter: 5 });
+  const i = h.files.findIndex((f) => !f.deleted && f.enc === 0);
+  assert.equal(startTask(g, 'CopyFile', i), null);
+  assert.ok(taskError(g, g.session, 'DeleteFile', i));
+});
+
+test('a file is freed when its job is turned down', () => {
+  const g = makeGame('AUDIT', 7);
+  const held = (c) => g.world.hosts[c.target].files.find((f) => f.tag === c.id);
+  const c = g.contracts.find((x) => x.state === 'offered' && held(x));
+  assert.ok(c, 'an offered job holds a file');
+  const f = held(c);
+  assert.equal(declineContract(g, c.id), true);
+  onMinutes(g, 1);
+  assert.equal(f.tag, 0);
 });
 
 test('a news headline is not skipped when the clock moves several minutes at once', () => {

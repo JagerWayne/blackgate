@@ -37,6 +37,19 @@ function setup(seed = 7) {
   return { state, term, say, last, game: state.game };
 }
 
+test('a #n file pick from one host is not taken on the next host', () => {
+  const { say, last, game } = setup();
+  const [a, b] = game.world.hosts.filter((h) => h.files.some((f) => !f.deleted));
+  connect(game, a.id);
+  game.session.phase = 'online';
+  say('bg files');
+  game.session = null;
+  connect(game, b.id);
+  game.session.phase = 'online';
+  assert.match(last('bg copy #1').text, /another host/);
+  assert.equal(game.session.tasks.length, 0);
+});
+
 test('words keep quoted text together', () => {
   assert.deepEqual(words('bg alter "Ana Diaz" status deceased'), ['bg', 'alter', 'Ana Diaz', 'status', 'deceased']);
   assert.deepEqual(words('  mail   read new '), ['mail', 'read', 'new']);
