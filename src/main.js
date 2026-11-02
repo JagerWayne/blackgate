@@ -17,6 +17,7 @@ import { handleEvents } from './systems/events.js';
 import { saveRun, listSlots, saveOnLeave, deleteRun } from './state/save.js';
 import { startRun } from './state/startRun.js';
 import { toast } from './state/gameState.js';
+import { drawFx } from './render/fx.js';
 
 const canvas = document.getElementById('screen');
 const ctx = canvas.getContext('2d', { alpha: false });
@@ -143,6 +144,8 @@ function render() {
   }
   const events = [];
   drawPlay(ctx, sk, w, h, state, events);
+  drawFx(ctx, w, h, state, Math.min(state.time - (state.fxAt ?? state.time), 0.1));
+  state.fxAt = state.time;
   handleEvents(state, events, desktop(w, h));
   // the command prompt's lines run once the frame's clicks are in
   runPending(state, desktop(w, h));

@@ -19,6 +19,8 @@ export function drawSettings(ctx, sk, r, game, ui, input, events) {
       { id: 'set.theme.dark', text: 'DARK // NOIR', style: dark ? primary() : ghost() },
     ]),
     label('D swaps the skin from anywhere', 9.5, sk.dim),
+    check('set.fx', 'Screen effects: scanlines, trace pulse, glitch', game.settings.effects !== false),
+    check('set.sound', 'Sound', game.settings.sound !== false),
     section('BEHAVIOUR'),
     check('set.auto', 'Autosave every 45 seconds', game.settings.autosave),
     check('set.fast', 'Fast-forward world clock (8x)', timeScale(game) > 1),

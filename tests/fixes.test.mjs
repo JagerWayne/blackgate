@@ -132,12 +132,14 @@ test('a tab that does not hold the picked contract picks its own first one', () 
 
 // -- system -------------------------------------------------------------------
 
-test('there is no scanlines setting', () => {
+test('the scanlines live under one working effects switch', () => {
   const state = playState();
+  // the old scanlines setting did nothing; the effects switch drives drawFx
   assert.ok(!('scanlines' in state.game.settings));
+  assert.equal(state.game.settings.effects, true);
   openWindow(state.windows, 'settings', DESK);
-  const ctx = frame(state);
-  assert.ok(!ctx.texts.some((t) => /scanline/i.test(t.s)), 'SYSTEM does not offer it');
+  handleEvents(state, [{ type: 'toggle', id: 'set.fx', value: false }], DESK);
+  assert.equal(state.game.settings.effects, false);
 });
 
 // -- the remote session --------------------------------------------------------

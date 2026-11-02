@@ -4,11 +4,17 @@ import { freeLane, pushLine } from '../state/session.js';
 import { toolLevel, storageUsed, keepsRecord, validRecord } from '../state/gameState.js';
 import { bandwidth, crypt, storage, ram, lanes } from '../state/gateway.js';
 import { software } from '../data/content.js';
+import { voiceAdmin, hasSample } from '../state/voice.js';
+import { knows, intelOf, spammed } from '../state/intel.js';
+
+/// What a task says while the link is still being negotiated.
+export const LINK_DOWN = 'link not up yet';
 
 /// Starts a task on the link.
 export function startTask(game, kind, arg) {
   const s = game.session;
   if (!s) return 'not connected';
+  if (s.phase !== 'online') return LINK_DOWN;
   const lane = freeLane(s, Math.max(lanes(game.player.gateway), 1));
   if (lane === null) return 'all task lanes busy';
   const h = game.world.hosts[s.target];
@@ -28,6 +34,7 @@ export function startTask(game, kind, arg) {
 /// says why instead of failing after the click.
 export function taskError(game, s, kind, arg) {
   if (!s) return 'not connected';
+  if (s.phase !== 'online') return LINK_DOWN;
   const lane = freeLane(s, Math.max(lanes(game.player.gateway), 1));
   if (lane === null) return 'all task lanes busy';
   const h = game.world.hosts[s.target];
@@ -60,6 +67,7 @@ function planTask(game, s, h, kind, arg) {
       const svc = h.services[arg];
       if (!svc) return { error: 'no such service' };
       if (svc.open) return { error: 'service already open' };
+      if (svc.kind === 'voice') return { error: "voice lock // needs the admin's voiceprint" };
       const lvl = toolLevel(game, 'PasswordCracker');
       if (lvl < svc.password) return { error: `breaker v${lvl} cannot beat lock v${svc.password}` };
       const dur = (2.5 + svc.password * 2.2) / Math.max(crypt(game.player.gateway), 1);
@@ -119,6 +127,89 @@ function planTask(game, s, h, kind, arg) {
     }
     case 'OsintSweep':
       return { label: 'osint sweep', dur: 6, loud: false };
+    case 'RecordVoice': {
+      // arg: the voice service; the call goes to the lock's admin
+      const svc = h.services[arg];
+      if (svc?.kind !== 'voice') return { error: 'not a voice lock' };
+      const who = voiceAdmin(game, h);
+      if (who === null) return { error: 'nobody to call' };
+      if (!knows(game, who, 'phone')) return { error: "the admin's phone is unknown // PROFILE them on the PEOPLE tab" };
+      if (hasSample(game, who)) return { error: 'voice already recorded' };
+      if (s.tasks.some((t) => t.kind === 'RecordVoice')) return { error: 'already on a call' };
+      if (storageUsed(game) + 1 > storage(game.player.gateway)) return { error: 'no room on the gateway' };
+      return { label: `call ${game.world.people[who].name}`, dur: 8, loud: false };
+    }
+    case 'Profile':
+    case 'CallRecord':
+    case 'SpoofCall':
+    case 'TapPhone':
+    case 'HackInbox':
+    case 'Phish':
+    case 'Spam':
+      return planPeople(game, s, h, kind, arg);
+    case 'PlayVoiceprint': {
+      const svc = h.services[arg];
+      if (svc?.kind !== 'voice') return { error: 'not a voice lock' };
+      if (svc.open) return { error: 'service already open' };
+      const who = voiceAdmin(game, h);
+      if (who === null || !hasSample(game, who)) return { error: "record the admin's voice first" };
+      const lvl = toolLevel(game, 'VoiceAnalyser');
+      if (lvl < svc.password) return { error: `analyser v${lvl} cannot match lock v${svc.password}` };
+      return { label: `voiceprint ${svc.name}:${svc.port}`, dur: 3 + svc.password, loud: false };
+    }
+    default:
+      return { error: 'not a task' };
+  }
+}
+
+/// The people tasks: arg is the person, who must work at the linked host's
+/// company. Each says what it still needs.
+function planPeople(game, s, h, kind, i) {
+  const p = game.world.people[i];
+  if (!p) return { error: 'no such person' };
+  if (p.company !== h.company) return { error: `link to a host of ${game.world.companies[p.company]?.name ?? 'their company'} first` };
+  const it = intelOf(game, i);
+  const busy = s.tasks.some((t) => t.kind === kind && t.arg === i);
+  if (busy) return { error: 'already running on this person' };
+  const phone = knows(game, i, 'phone');
+  const email = knows(game, i, 'email');
+  switch (kind) {
+    case 'Profile': {
+      const lvl = Math.min(toolLevel(game, 'OsintSweep'), 4);
+      if (it.level >= lvl) return { error: it.level >= 4 ? 'nothing more to find' : `OSINT v${lvl} has found all it can` };
+      return { label: `profile ${p.name}`, dur: 4 + lvl, loud: false };
+    }
+    case 'CallRecord':
+    case 'SpoofCall': {
+      if (!phone) return { error: 'phone unknown // PROFILE with OSINT v2+' };
+      if (hasSample(game, i)) return { error: 'voice already recorded' };
+      if (storageUsed(game) + 1 > storage(game.player.gateway)) return { error: 'no room on the gateway' };
+      if (kind === 'SpoofCall' && toolLevel(game, 'VoiceAnalyser') === 0) return { error: 'no VoiceAnalyser installed' };
+      const spoof = kind === 'SpoofCall';
+      return { label: `${spoof ? 'spoofed call' : 'call'} ${p.name}`, dur: spoof ? 14 : 8, loud: false };
+    }
+    case 'TapPhone':
+      if (!phone) return { error: 'phone unknown // PROFILE with OSINT v2+' };
+      if (it.tapped) return { error: 'phone already tapped' };
+      if (toolLevel(game, 'SpoofKit') < 2) return { error: 'taps need SPOOF KIT v2' };
+      return { label: `tap ${p.name}`, dur: 10, loud: true };
+    case 'HackInbox': {
+      if (!email) return { error: 'email unknown // PROFILE them first' };
+      if (it.inbox) return { error: 'inbox already hacked' };
+      const stuff = knows(game, i, 'leak') && toolLevel(game, 'CredentialStuff') > 0;
+      const brute = toolLevel(game, 'PasswordCracker') >= p.clearance;
+      if (!stuff && !brute) return { error: `needs their leaked password + CREDENTIAL STUFFER, or a breaker v${p.clearance}` };
+      return { label: `hack inbox ${p.email}`, dur: stuff ? 4 : 6 + p.clearance * 2, loud: !stuff };
+    }
+    case 'Phish':
+      if (!email) return { error: 'email unknown // PROFILE them first' };
+      if (it.inbox) return { error: 'inbox already hacked' };
+      if (it.phishAt !== undefined) return { error: 'a phish is already waiting on them' };
+      return { label: `phish ${p.email}`, dur: 5, loud: false };
+    case 'Spam':
+      if (!email) return { error: 'email unknown // PROFILE them first' };
+      if (spammed(game, i)) return { error: 'their inbox is still buried' };
+      return { label: `spam ${p.email}`, dur: 4, loud: false };
     default:
       return { error: 'not a task' };
   }
@@ -164,6 +255,14 @@ export function toolFor(kind) {
     case 'WipeLogs': return 'LogDeleter';
     case 'ModifyLogs': return 'LogModifier';
     case 'OsintSweep': return 'OsintSweep';
+    case 'RecordVoice': return 'VoiceAnalyser';
+    case 'PlayVoiceprint': return 'VoiceAnalyser';
+    case 'Profile': return 'OsintSweep';
+    case 'CallRecord': return 'VoiceAnalyser';
+    case 'SpoofCall': return 'SpoofKit';
+    case 'TapPhone': return 'SpoofKit';
+    case 'Phish': return 'SpoofKit';
+    case 'Spam': return 'SpoofKit';
     default: return null;
   }
 }

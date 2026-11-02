@@ -4,7 +4,8 @@
 // Commands that only show something read the game state.
 
 import { handleEvents, isDestructive } from './events.js';
-import { startTask } from './sessionTasks.js';
+import { startTask, LINK_DOWN } from './sessionTasks.js';
+import { dossiers, intelText, INTEL_FIELDS } from '../state/intel.js';
 import { openWindow, closeWindow, findWindow } from '../state/windows.js';
 import { contractLabel } from '../state/contracts.js';
 import { savedRoutes, MAX_HOPS } from '../state/routes.js';
@@ -108,10 +109,12 @@ function mailArg(ctx, word) {
   return m;
 }
 
-/// The live link, or a failure saying there is none.
-function link(ctx) {
+/// The live link, or a failure saying there is none. With `up`, the link must
+/// have finished connecting: until then the host shows nothing.
+function link(ctx, up = true) {
   const s = ctx.game.session;
   if (!s) fail('not connected // `bg connect <host>` first');
+  if (up && s.phase !== 'online') fail(LINK_DOWN);
   return { s, h: ctx.game.world.hosts[s.target] };
 }
 
@@ -131,6 +134,14 @@ function task(ctx, kind, arg, label) {
   const err = startTask(ctx.game, kind, arg);
   if (err) fail(err);
   return [{ text: `started: ${label}`, tone: 'ok' }];
+}
+
+/// A voice lock on the host: the one named, or the first still locked.
+function voiceLock(ctx, word) {
+  const { h } = link(ctx);
+  const i = word ? rowOf(word) : h.services.findIndex((s) => s.kind === 'voice' && !s.open);
+  if (i < 0 || h.services[i]?.kind !== 'voice') fail(word ? `service ${word} is not a voice lock` : 'no locked voice service here');
+  return i;
 }
 
 /// A person by name (or #n from `bg records`).
@@ -356,7 +367,7 @@ const APPS = {
     about: 'the hacking client: the live link and its tasks',
     commands: {
       connect: simple('<host>', 'open a link through your route', (ctx, [w]) => { const h = hostArg(ctx, w); return { id: `map.go.${h.id}`, done: `link open to ${h.name}` }; }),
-      disconnect: { args: '', help: 'close the link', run: (ctx) => { link(ctx); return press(ctx, 'sess.disconnect', 'disconnected'); } },
+      disconnect: { args: '', help: 'close the link', run: (ctx) => { link(ctx, false); return press(ctx, 'sess.disconnect', 'disconnected'); } },
       status: {
         args: '', help: 'heat, the trace and the running tasks',
         run(ctx) {
@@ -365,9 +376,10 @@ const APPS = {
           const s = game.session;
           if (!s) return [...out, { text: 'not connected' }];
           const h = game.world.hosts[s.target];
+          if (s.phase !== 'online') return [...out, { text: `LINK ${h.name} // negotiating ${Math.round((s.connectT / s.connectDur) * 100)}%` }];
           out.push({ text: `LINK ${h.name} (${h.ip}) // trace ${Math.round(s.trace * 100)}%`, tone: s.trace > 0.7 ? 'err' : 'head' });
           if (!s.tasks.length) out.push({ text: 'no tasks running' });
-          s.tasks.forEach((t) => out.push({ text: `  ${pad(t.label, 32)}${Math.round((t.progress / t.dur) * 100)}%` }));
+          s.tasks.forEach((t) => out.push({ text: `  ${pad(t.label, 32)}${Math.round(Math.min(t.progress, 1) * 100)}%` }));
           return out;
         },
       },
@@ -423,9 +435,23 @@ const APPS = {
         args: '[service #]', help: 'break a password (the first locked service by default)',
         run(ctx, [w]) {
           const { h } = link(ctx);
-          const i = w ? rowOf(w) : h.services.findIndex((s) => !s.open);
-          if (i < 0 || !h.services[i]) fail(w ? `no service ${w} // see \`bg services\`` : 'every service is already open');
+          const i = w ? rowOf(w) : h.services.findIndex((s) => !s.open && s.kind !== 'voice');
+          if (i < 0 || !h.services[i]) fail(w ? `no service ${w} // see \`bg services\`` : 'every password lock is already open');
           return task(ctx, 'CrackPassword', i, `crack ${h.services[i].name}`);
+        },
+      },
+      record: {
+        args: '[service #]', help: "call a voice lock's admin and record their voice",
+        run(ctx, [w]) {
+          const i = voiceLock(ctx, w);
+          return task(ctx, 'RecordVoice', i, `call to the admin of ${link(ctx).h.services[i].name}`);
+        },
+      },
+      voiceprint: {
+        args: '[service #]', help: "play the admin's recording to open a voice lock",
+        run(ctx, [w]) {
+          const i = voiceLock(ctx, w);
+          return task(ctx, 'PlayVoiceprint', i, `voiceprint ${link(ctx).h.services[i].name}`);
         },
       },
       bypass: {
@@ -690,6 +716,54 @@ const APPS = {
     },
   },
 
+  people: {
+    alias: ['ppl', 'dossiers'],
+    window: 'dossiers',
+    about: 'OSINT: dossiers on people, and attacks on their phones and inboxes',
+    commands: {
+      list: {
+        args: '', help: 'everyone on file, with what you know',
+        run(ctx) {
+          const ids = dossiers(ctx.game);
+          if (!ids.length) return [{ text: 'nobody on file // `bg osint` on a link adds leads' }];
+          ctx.term.last = { kind: 'person', ids };
+          return ids.map((i, n) => {
+            const p = ctx.game.world.people[i];
+            return { text: `#${n + 1}  ${pad(p.name, 22)}${pad(intelText(ctx.game, i, 'email'), 34)}${intelText(ctx.game, i, 'phone')}` };
+          });
+        },
+      },
+      staff: {
+        args: '', help: "the staff of the linked host's company",
+        run(ctx) {
+          const { h } = link(ctx);
+          const ids = ctx.game.world.people.map((p, i) => i).filter((i) => ctx.game.world.people[i].company === h.company);
+          ctx.term.last = { kind: 'person', ids };
+          return ids.map((i, n) => ({ text: `#${n + 1}  ${pad(ctx.game.world.people[i].name, 22)}clearance ${ctx.game.world.people[i].clearance}  ${intelText(ctx.game, i, 'role')}` }));
+        },
+      },
+      show: {
+        args: '<person>', help: 'the dossier of one person',
+        run(ctx, [w]) {
+          const i = personArg(ctx, w);
+          const p = ctx.game.world.people[i];
+          const it = ctx.game.intel?.[i] ?? {};
+          return [
+            { text: `${p.name} // ${ctx.game.world.companies[p.company]?.name ?? ''} // clearance ${p.clearance}`, tone: 'head' },
+            ...INTEL_FIELDS.map((f) => ({ text: `  ${pad(f.label, 12)}${intelText(ctx.game, i, f.field)}` })),
+            { text: `  ${[it.tapped && 'TAPPED', it.inbox && 'INBOX HACKED', it.phishAt !== undefined && 'PHISH SENT'].filter(Boolean).join(' // ') || 'nothing done yet'}` },
+          ];
+        },
+      },
+      profile: { args: '<person>', help: 'OSINT a person: email, role, phone, social, leaked password', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'Profile', i, `profile ${ctx.game.world.people[i].name}`); } },
+      call: { args: '<person>', help: 'call and record their voice (leaves a call log)', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'CallRecord', i, `call ${ctx.game.world.people[i].name}`); } },
+      spoofcall: { args: '<person>', help: 'record their voice posing as their IT desk (no log)', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'SpoofCall', i, `spoofcall ${ctx.game.world.people[i].name}`); } },
+      tap: { args: '<person>', help: 'tap their phone (SPOOF KIT v2): a password they say opens a lock', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'TapPhone', i, `tap ${ctx.game.world.people[i].name}`); } },
+      inbox: { args: '<person>', help: 'hack their inbox: company hosts, colleagues, saved passwords', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'HackInbox', i, `inbox ${ctx.game.world.people[i].name}`); } },
+      phish: { args: '<person>', help: 'send a fake reset mail; the answer comes in 3 hours', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'Phish', i, `phish ${ctx.game.world.people[i].name}`); } },
+      spam: { args: '<person>', help: 'bury their inbox for a day; slows the trace if they run the host', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'Spam', i, `spam ${ctx.game.world.people[i].name}`); } },
+    },
+  },
   notepad: {
     alias: ['note'],
     window: 'notepad',

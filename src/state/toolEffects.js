@@ -10,10 +10,14 @@ const BY_LEVEL = {
   FileCopier: (v) => `copies at ${28 * v} GB a minute, if the link keeps up`,
   Decrypter: (v) => `opens files encrypted up to v${v}`,
   TraceTracker: (v) => `warns of a trace ${5 * v}% earlier`,
+  VoiceAnalyser: (v) => `records voices and matches voice locks up to v${v}`,
+  OsintSweep: (v) => ['PROFILE finds email and role', 'PROFILE finds the phone too', 'PROFILE finds the social handle too', 'PROFILE finds leaked passwords too', 'PROFILE finds leaked passwords too'][Math.min(v, 5) - 1],
+  SpoofKit: (v) => (v >= 2 ? 'spoofed calls, phishing, spam and phone taps' : 'spoofed calls, phishing and spam; taps need v2'),
+  CredentialStuff: () => "opens an inbox with its owner's leaked password",
 };
 
 /// The tools a task needs installed, at any version.
-const ANY_LEVEL = new Set(['MonitorBypass', 'FileDeleter', 'LogDeleter', 'OsintSweep', 'LogModifier']);
+const ANY_LEVEL = new Set(['MonitorBypass', 'FileDeleter', 'LogDeleter', 'LogModifier']);
 
 /// What a tool no task uses says: the shop will not sell it.
 export const NO_TASK = 'no task uses this tool yet';

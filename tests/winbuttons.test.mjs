@@ -86,6 +86,7 @@ test('the Bl@ckG@te window draws a live link without overlapping its log', async
   const state = playState();
   const g = state.game;
   assert.equal(connect(g, g.contracts[0].target), null, 'the link opens');
+  g.session.phase = 'online';
   const win = openWindow(state.windows, 'blackgate', DESK);
   for (const tab of [0, 1, 2]) {
     state.win.blackgate = { tab };

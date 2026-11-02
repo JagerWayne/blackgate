@@ -11,13 +11,14 @@ export const WINDOWS = [
   { key: 'software', title: 'SOFTWARE', w: 900, h: 640, minW: 320, minH: 240 },
   { key: 'files', title: 'STORAGE', w: 640, h: 500, minW: 320, minH: 240 },
   { key: 'bank', title: 'BANKING', w: 720, h: 540, minW: 320, minH: 240 },
+  { key: 'dossiers', title: 'DOSSIERS', w: 980, h: 640, minW: 560, minH: 360 },
   { key: 'news', title: 'NEWSWIRE', w: 660, h: 580, minW: 320, minH: 240 },
   { key: 'stats', title: 'OPERATOR', w: 620, h: 540, minW: 320, minH: 240 },
   { key: 'settings', title: 'SYSTEM', w: 600, h: 480, minW: 320, minH: 240 },
   { key: 'notepad', title: 'Notepad', w: 560, h: 460, minW: 320, minH: 240 },
   { key: 'terminal', title: 'Command Prompt', w: 860, h: 540, minW: 420, minH: 260 },
   // opened from the BLACKGATE logo in the header, not from the Start menu
-  { key: 'cheats', title: 'CHEATS', w: 620, h: 680, minW: 360, minH: 300, hidden: true },
+  { key: 'cheats', title: 'CHEATS', w: 760, h: 520, minW: 360, minH: 300, hidden: true },
   { key: 'missions', title: 'MISSION BUILDER', w: 1040, h: 720, minW: 680, minH: 440, hidden: true },
 ];
 

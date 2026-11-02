@@ -13,6 +13,7 @@ import { SERVICE_LABEL } from '../data/enums.js';
 import { taskError } from '../systems/sessionTasks.js';
 import { toolLevel, storageUsed, recordsKept, keepsRecord, recordText, RECORD_LABEL } from '../state/gameState.js';
 import { storage } from '../state/gateway.js';
+import { voiceAdmin, hasSample } from '../state/voice.js';
 
 /// The services tab: two lines a service, its port and lock, then its kind.
 /// A service that cannot be cracked says why.
@@ -20,14 +21,25 @@ export function drawAccess(ctx, sk, r, game, s, ui, input, events) {
   const mine = toolLevel(game, 'PasswordCracker');
   const goal = alterations(game, s).length > 0;
   const rows = game.world.hosts[s.target].services.map((svc, i) => {
-    const why = svc.open ? '' : taskError(game, s, 'CrackPassword', i) ?? '';
+    const voice = svc.kind === 'voice';
+    const who = voice ? voiceAdmin(game, game.world.hosts[s.target]) : null;
+    const sampled = who !== null && hasSample(game, who);
+    // a voice lock is opened by a recording: call the admin, then play it back
+    const step = sampled ? 'PlayVoiceprint' : 'RecordVoice';
+    const why = svc.open ? '' : taskError(game, s, voice ? step : 'CrackPassword', i) ?? '';
     const cells = [
       { text: `${svc.name}:${svc.port}`, size: 10.5, color: svc.open ? sk.ok : sk.text_hi, col: 0, line: 0 },
       { text: svc.open ? 'OPEN' : `LOCK v${svc.password}`, size: 9.5, color: svc.open ? sk.ok : sk.warn, align: 'right', col: 1, line: 0 },
       { text: SERVICE_LABEL[svc.kind] ?? '', size: 9, color: sk.dim, col: 0, line: 1 },
     ];
     // the lock beside the breaker that has to beat it
-    if (!svc.open) {
+    if (!svc.open && voice) {
+      const lvl = toolLevel(game, 'VoiceAnalyser');
+      const admin = who === null ? 'NO ADMIN' : `ADMIN ${game.world.people[who].name.toUpperCase()}${sampled ? ' // RECORDED' : ''}`;
+      // the admin's name takes the place of the kind: a voice lock says so in its name
+      cells[2] = { text: admin, size: 9, color: sampled ? sk.ok : sk.dim, col: 0, line: 1 };
+      cells.push({ text: `YOUR ANALYSER v${lvl}`, size: 9, color: lvl >= svc.password ? sk.ok : sk.danger, align: 'right', col: 1, line: 1 });
+    } else if (!svc.open) {
       cells.push({ text: `YOUR BREAKER v${mine}`, size: 9, color: mine >= svc.password ? sk.ok : sk.danger, align: 'right', col: 1, line: 1 });
     }
     if (why) cells.push({ text: why, size: 9, color: sk.warn, col: 0, line: 2 });
@@ -38,7 +50,9 @@ export function drawAccess(ctx, sk, r, game, s, ui, input, events) {
       grid: true,
       cells,
       marker: svc.open ? sk.ok : objective ? sk.accent : null,
-      actions: svc.open ? undefined : [{ id: `sess.crack.${i}`, text: 'CRACK', style: { ...ghost(), disabled: !!why } }],
+      actions: svc.open ? undefined : [voice
+        ? { id: sampled ? `sess.voice.${i}` : `sess.record.${i}`, text: sampled ? 'VOICEPRINT' : 'RECORD', style: { ...ghost(), disabled: !!why } }
+        : { id: `sess.crack.${i}`, text: 'CRACK', style: { ...ghost(), disabled: !!why } }],
     };
   });
   drawTable(ctx, sk, r, {

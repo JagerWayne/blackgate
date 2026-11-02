@@ -5,6 +5,8 @@ import { note, discover, routeFactor, toolLevel } from '../state/gameState.js';
 import { bandwidth, hops, traceFactor, warnAt, heatFactor, ramSpeed } from '../state/gateway.js';
 import { completeTask } from './sessionComplete.js';
 import { swapFactor } from './sessionTasks.js';
+import { voiceAdmin } from '../state/voice.js';
+import { spammed, SPAM_TRACE } from '../state/intel.js';
 
 /// Opens a link to a target.
 export function connect(game, target) {
@@ -70,6 +72,12 @@ export function sessionTick(game, dt) {
       const h = game.world.hosts[s.target];
       s.traceRate = 0.0032 * Math.max(h.trace, 1) * routeFactor(game)
         * (1 + 0.1 * h.proxy) * traceFactor(game.player.gateway);
+      // an admin buried in spam answers the alarm late
+      const admin = voiceAdmin(game, h);
+      if (admin !== null && spammed(game, admin)) {
+        s.traceRate *= SPAM_TRACE;
+        pushLine(s, 'admin buried in spam // trace slowed');
+      }
       pushLine(s, `connected // ${h.ip}`);
       // the link leaves a log on every machine it passes through; it stays
       // until the operator scrubs or wipes it, and counts as heat on leaving

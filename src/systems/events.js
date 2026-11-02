@@ -79,6 +79,9 @@ function handleSelect(state, e) {
       view.sel = host.id;
       view.glide = true;
     }
+  } else if (e.id === 'sess.people' || e.id === 'dos.list') {
+    const view = state.win[e.id === 'dos.list' ? 'dossiers' : 'blackgate'] ??= {};
+    view.pplSel = view.pplOrder?.[e.index] ?? view.pplSel;
   } else if (e.id === 'sess.records') {
     const view = state.win.blackgate ?? (state.win.blackgate = {});
     view.recSel = view.recOrder?.[e.index] ?? view.recSel;
@@ -181,6 +184,8 @@ function trackTarget(state, contractId, desk) {
 function handleToggle(state, e) {
   const g = state.game;
   if (e.id === 'set.auto') g.settings.autosave = e.value;
+  if (e.id === 'set.fx') g.settings.effects = e.value;
+  if (e.id === 'set.sound') g.settings.sound = e.value;
   else if (e.id === 'set.fast') cheat.setTimeScale(g, e.value ? 8 : 1);
   else if (e.id === 'mg.accept') (state.win.missions ??= {}).accept = e.value;
 }
@@ -275,6 +280,7 @@ function handleClick(state, e, desk) {
   else if (id === 'cheat.missions') openWindow(state.windows, 'missions', desk);
   else if (id.startsWith('mg.')) handleBuilderClick(state, id);
   else if (id === 'hdr.speed') cheat.setTimeScale(game, cheat.nextSpeed(game));
+  else if (id.startsWith('cheat.tab.')) (state.win.cheats ??= {}).tab = Number(id.slice(10));
   else if (id.startsWith('cheat.')) handleCheatClick(state, id);
   else if (id.startsWith('ct.tab.')) state.win.contracts.ctTab = Number(id.slice(7));
   else if (id.startsWith('ct.accept.')) acceptContract(game, Number(id.slice(10)));
@@ -307,6 +313,12 @@ function handleClick(state, e, desk) {
   else if (id === 'sess.disconnect') disconnect(game);
   else if (id.startsWith('sess.task.')) tryTask(game, id.slice(10));
   else if (id.startsWith('sess.crack.')) tryTask(game, 'CrackPassword', Number(id.slice(11)));
+  else if (id.startsWith('ppl.')) {
+    const [, kind, who] = id.split('.');
+    tryTask(game, kind, Number(who));
+  }
+  else if (id.startsWith('sess.record.')) tryTask(game, 'RecordVoice', Number(id.slice(12)));
+  else if (id.startsWith('sess.voice.')) tryTask(game, 'PlayVoiceprint', Number(id.slice(11)));
   else if (id.startsWith('sess.copy.')) tryTask(game, 'CopyFile', Number(id.slice(10)));
   else if (id.startsWith('sess.del.')) tryTask(game, 'DeleteFile', Number(id.slice(9)));
   else if (id.startsWith('sess.decrypt.')) tryTask(game, 'DecryptFile', Number(id.slice(13)));

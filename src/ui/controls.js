@@ -65,6 +65,11 @@ export function chips(items) {
   return { kind: 'chips', items };
 }
 
+/// A row the caller draws itself: `draw(ctx, sk, rect)`, `height` tall.
+export function custom(height, draw) {
+  return { kind: 'custom', height, draw };
+}
+
 export function divider() {
   return { kind: 'divider' };
 }

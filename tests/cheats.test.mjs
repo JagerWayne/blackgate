@@ -81,10 +81,14 @@ test('the window draws in both skins', () => {
     setDark(dark);
     const state = playState();
     openWindow(state.windows, 'cheats', DESK);
-    const ctx = frame(state);
-    for (const word of ['MONEY', 'HEAT', 'TIME', 'RATING']) {
-      assert.ok(ctx.texts.some((t) => t.s.startsWith(word)), word);
-    }
+    // each tab shows its own sections
+    const tabs = [['MONEY', 'HEAT', 'RATING'], ['TIME', 'MISSIONS'], ['SWITCHES', 'ONE-OFFS']];
+    tabs.forEach((words, i) => {
+      click(state, `cheat.tab.${i}`);
+      const ctx = frame(state);
+      for (const word of words) assert.ok(ctx.texts.some((t) => t.s.startsWith(word)), `${word} on tab ${i}`);
+      assert.ok(ctx.texts.some((t) => t.s.includes(' cr ')), 'the status line');
+    });
   }
   setDark(false);
 });
@@ -340,6 +344,7 @@ test('the generator can be pointed at a host, and says when that host cannot tak
 test('CHEATS has the button that opens the MISSION BUILDER', () => {
   const state = playState();
   openWindow(state.windows, 'cheats', DESK);
+  click(state, 'cheat.tab.1');
   const ctx = frame(state);
   assert.ok(ctx.texts.some((t) => t.s === 'OPEN MISSION BUILDER'));
 });

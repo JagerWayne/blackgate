@@ -84,6 +84,8 @@ export function heightOf(ctx, control, width, top, bottom, rest) {
       return GAP + 4;
     case 'spacer':
       return control.height;
+    case 'custom':
+      return control.height + GAP - 6;
     default:
       return 0;
   }

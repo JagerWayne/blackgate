@@ -103,6 +103,7 @@ test('bg copy starts the same task as the COPY button', () => {
   const { say, game } = setup();
   const c = game.contracts.find((x) => x.kind === 'retrieve' && x.file) ?? game.contracts[0];
   assert.equal(connect(game, c.target), null, 'the link opens');
+  game.session.phase = 'online';
   const h = game.world.hosts[c.target];
   h.services.forEach((s) => { s.open = true; });
   const file = h.files.find((f) => !f.deleted && f.enc === 0);

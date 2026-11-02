@@ -26,6 +26,7 @@ lives in JSON files you can read and edit.
 - [The applications](#the-applications)
 - [Command Prompt](#command-prompt)
 - [Jobs](#jobs)
+- [People and OSINT](#people-and-osint)
 - [Traces, heat and raids](#traces-heat-and-raids)
 - [Your machine: the gateway](#your-machine-the-gateway)
 - [Software](#software)
@@ -197,7 +198,7 @@ All are opened from the Start menu and appear on the taskbar while open.
 
 | Application | What it does |
 |---|---|
-| **Bl@ckG@te** | The hacking client. Shows the live connection, the target's files, logs and records, and the actions you can run on the host, such as **BYPASS FIREWALL**, **BLIND MONITOR**, **SCRUB PROXY** and **WIPE LOGS**. An action that cannot run says why. |
+| **Bl@ckG@te** | The hacking client. Shows the live connection and, once the link is up, the target's services, files, logs, records and staff (PEOPLE), and the actions you can run on the host, such as **BYPASS FIREWALL**, **BLIND MONITOR**, **SCRUB PROXY** and **WIPE LOGS**. An action that cannot run says why. |
 | **MAIL** | Messages from the broker, clients and contacts. **MARK ALL READ** clears the unread count. |
 | **CONTRACTS** | The job board: open jobs, your accepted jobs and their deadlines. Accept jobs, show their targets and submit work here. |
 | **NEXUS MAP** | The world map with every machine you have discovered, search and filters by kind, your bounce route, and saved routes. |
@@ -205,6 +206,7 @@ All are opened from the Start menu and appear on the taskbar while open.
 | **SOFTWARE** | The tool shop. Buy and upgrade the tools the jobs need. |
 | **STORAGE** | The files you have downloaded, against your drive space. |
 | **BANKING** | Your money and transactions. |
+| **DOSSIERS** | Everyone you have on file: what you know about them and what you have done to their phone and inbox. See [People and OSINT](#people-and-osint). |
 | **NEWSWIRE** | The news, including stories about the work you have done. |
 | **OPERATOR** | Your rating, rank and statistics. |
 | **SYSTEM** | The light (LUNA) or dark (NOIR) skin, autosave every 45 seconds, an 8× fast-forward for the world clock, **SAVE NOW** and **SAVE + QUIT**. |
@@ -295,7 +297,9 @@ matching button does, with the same costs, checks and messages.
 | `bg services` / `bg files` | What the host offers |
 | `bg logs [wipe\|scrub]` | Show the logs; `wipe` deletes them, `scrub` quietly removes only yours |
 | `bg records [text]` | The people on the host, with search |
-| `bg crack [service #]` | Break a password (the first locked service by default) |
+| `bg crack [service #]` | Break a password (the first locked password service by default) |
+| `bg record [service #]` | Call a voice lock's admin and record their voice (needs the VOICE ANALYSER) |
+| `bg voiceprint [service #]` | Play the admin's recording to open a voice lock |
 | `bg bypass firewall\|monitor\|proxy` | Bypass a defence |
 | `bg copy <file>` / `bg delete <file>` / `bg decrypt <file>` | File tasks |
 | `bg alter <person> <field> <value>` | Change a record |
@@ -324,6 +328,8 @@ matching button does, with the same costs, checks and messages.
 | `operator` | Rating, rank and statistics |
 | `sys autosave on\|off` / `sys fast on\|off` / `sys theme light\|dark` | Settings |
 | `sys save` / `sys quit` | Save, or save and log out |
+| `ppl list` / `ppl staff` / `ppl show <person>` | Everyone on file, the linked company's staff, one dossier |
+| `ppl profile\|call\|spoofcall\|tap\|inbox\|phish\|spam <person>` | The OSINT, phone and inbox attacks (see [People and OSINT](#people-and-osint)) |
 | `notepad show` / `notepad write "<text>"` / `notepad wrap on\|off` / `notepad clear --yes` | Your notes |
 
 **cheat** (left out of `help`; `help cheat` shows it): `cheat money <n>`,
@@ -361,6 +367,42 @@ with search and a portrait, and is where alteration jobs are carried out.
 
 Briefs mark their key details in `{braces}`, and those details are
 highlighted when the brief is shown.
+
+---
+
+## People and OSINT
+
+Every company has staff, and every staffer has a phone, an email, a social
+handle, a clearance level and, sometimes, a password leaked in an old breach.
+You start knowing none of it.
+
+**Finding people.** An OSINT sweep on a link (`bg osint`) adds the company's
+staff to **DOSSIERS** as leads. The **PEOPLE** tab of a live link lists the
+staff of that company. **PROFILE** fills in a dossier; the better your OSINT
+SWEEPER, the more it finds:
+
+| OSINT SWEEPER | PROFILE finds |
+|---|---|
+| v1 | email and role |
+| v2 | + phone |
+| v3 | + social handle |
+| v4+ | + leaked password |
+
+**Working on people.** Attacks run as tasks while you are linked to a host of
+the person's company. Each button says what it needs and what it gets.
+
+| Attack | Needs | Gets you |
+|---|---|---|
+| **CALL + RECORD** | phone, VOICE ANALYSER | a voice recording (for voice locks); leaves a call log |
+| **SPOOFED CALL** | phone, SPOOF KIT | the same recording, posing as their IT desk: no log, slower |
+| **TAP PHONE** | phone, SPOOF KIT v2 | a password they read out: opens the strongest lock their clearance reaches on their company's hosts |
+| **HACK INBOX** | email, plus their leaked password and the CREDENTIAL STUFFER, or a breaker at their clearance | their mail: every host of the company on your map, colleagues as leads, and (clearance 3+) a saved password that opens a lock |
+| **PHISH** | email, SPOOF KIT | a fake reset mail. Three game hours later they take it or not (the lower their clearance, the likelier): if taken, the inbox is hacked and a lock opens |
+| **SPAM** | email, SPOOF KIT | their inbox buried for a day. If they are the host's admin (highest clearance), links to their hosts trace 30% slower |
+
+**Voice locks** open to their admin's voice: profile the admin to v2 for their
+phone, record them (the voice lock's **RECORD**, or a call from PEOPLE), then
+**VOICEPRINT**.
 
 ---
 
@@ -420,7 +462,7 @@ The tools, each with several versions to buy:
 PASSWORD BREAKER, PROXY BYPASS, FIREWALL BYPASS, MONITOR BYPASS,
 TRACE TRACKER, FILE COPIER, FILE DELETER, DECRYPTER, LOG MODIFIER,
 LOG DELETER, IP PROBE, HUD CONNECTION ANALYSIS, LAN SCANNER,
-OSINT SWEEPER, CREDENTIAL STUFFER, VOICE ANALYSER.
+OSINT SWEEPER, CREDENTIAL STUFFER, VOICE ANALYSER, SPOOF KIT.
 
 The shop only sells a tool once the game has a task that uses it.
 

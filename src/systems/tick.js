@@ -4,6 +4,7 @@ import { clockTick } from './clockTick.js';
 import { sessionTick } from './sessionTick.js';
 import { heatTick } from './heatTick.js';
 import { timeScale } from '../state/cheats.js';
+import { intelTick } from '../state/intel.js';
 
 /// Runs the simulation for one step.
 export function tick(game, dt) {
@@ -11,6 +12,7 @@ export function tick(game, dt) {
   game.toasts = game.toasts.filter((t) => game.uiTime - t.born < 5);
   if (game.gameOver || game.paused) return;
   clockTick(game, dt);
+  intelTick(game);
   sessionTick(game, dt * timeScale(game));
   heatTick(game, dt * timeScale(game));
 }

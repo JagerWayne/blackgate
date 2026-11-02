@@ -239,6 +239,21 @@
         "DOPPEL",
         "PERFECT PITCH"
       ]
+    },
+    {
+      "cpu": 0.8,
+      "desc": "Fakes caller ID and mail headers: spoofed calls, phishing, spam and, from v2, phone taps.",
+      "kind": "SpoofKit",
+      "name": "SPOOF KIT",
+      "price": 2200,
+      "short": "SPOOF",
+      "versions": [
+        "MASK",
+        "MIMIC",
+        "CHAMELEON",
+        "SHAPESHIFT",
+        "GHOSTLINE"
+      ]
     }
   ]
 }

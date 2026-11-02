@@ -18,6 +18,8 @@ import { traceWarnAt } from '../systems/sessionTick.js';
 import { ramLoad, swapFactor } from '../systems/sessionTasks.js';
 import { RECORD_LABEL, recordText } from '../state/gameState.js';
 import { hint } from '../data/content.js';
+import { taskRow } from '../ui/taskFx.js';
+import { drawPeople } from './people.js';
 
 /// The height of the link log along the bottom.
 const LOG_H = 124;
@@ -67,7 +69,7 @@ export function drawSession(ctx, sk, r, game, ui, input, events, view) {
   controls.push(...sessionActionControls(game, sk, s));
   controls.push(section(`TASK LANES // ${s.tasks.length}`));
   if (!s.tasks.length) controls.push(label('no tasks running', 10, sk.dim));
-  s.tasks.forEach((t) => controls.push(meter(t.label, Math.min(t.progress, 1), sk.accent)));
+  s.tasks.forEach((t) => controls.push(taskRow(t, game.uiTime ?? 0)));
   // the RAM the running tools take: past the top the machine swaps, and every
   // task slows down
   const have = Math.max(ram(game.player.gateway), 1);
@@ -90,13 +92,24 @@ export function drawSession(ctx, sk, r, game, ui, input, events, view) {
     { id: 'sess.tab.1', label: 'FILES' },
     { id: 'sess.tab.2', label: 'LOGS' },
     { id: 'sess.tab.3', label: 'RECORDS' },
+    { id: 'sess.tab.4', label: 'PEOPLE' },
   ];
-  const tab = view.tab ?? 0;
-  const rightBody = drawFrame(ctx, sk, right, ui, input, events, '', '', tabs, tab);
-  if (tab === 0) drawAccess(ctx, sk, rightBody, game, s, ui, input, events);
-  else if (tab === 1) drawFiles(ctx, sk, rightBody, game, s, ui, input, events);
-  else if (tab === 2) drawLogs(ctx, sk, rightBody, game, s, ui, input, events);
-  else drawRecords(ctx, sk, rightBody, game, s, ui, input, events, view);
+  // the host shows nothing until the link is up
+  if (s.phase !== 'online') {
+    const pane = drawFrame(ctx, sk, right, ui, input, events, '', 'the host answers once the link is up');
+    drawScrolled(ctx, sk, pane, [
+      section('NEGOTIATING LINK'),
+      meter(`HANDSHAKE ${Math.round(Math.min(s.connectT / s.connectDur, 1) * 100)}%`, Math.min(s.connectT / s.connectDur, 1), sk.accent),
+    ], 'sess.wait', ui, input, events);
+  } else {
+    const tab = view.tab ?? 0;
+    const rightBody = drawFrame(ctx, sk, right, ui, input, events, '', '', tabs, tab);
+    if (tab === 0) drawAccess(ctx, sk, rightBody, game, s, ui, input, events);
+    else if (tab === 1) drawFiles(ctx, sk, rightBody, game, s, ui, input, events);
+    else if (tab === 2) drawLogs(ctx, sk, rightBody, game, s, ui, input, events);
+    else if (tab === 3) drawRecords(ctx, sk, rightBody, game, s, ui, input, events, view);
+    else drawPeople(ctx, sk, rightBody, game, s, ui, input, events, view);
+  }
 
   // -- the link log ----------------------------------------------------------
   const log = { x: body.x, y: body.y + body.h - LOG_H, w: body.w, h: LOG_H };
