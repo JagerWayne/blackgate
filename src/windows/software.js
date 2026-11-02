@@ -22,7 +22,6 @@ const FAMILY = {
   ProxyBypass: ['BYPASS', 0xffc857], FirewallBypass: ['BYPASS', 0xffc857], MonitorBypass: ['BYPASS', 0xffc857],
   TraceTracker: ['STEALTH', 0x7aa2ff], LogModifier: ['STEALTH', 0x7aa2ff], LogDeleter: ['STEALTH', 0x7aa2ff],
   FileCopier: ['DATA', 0x5be49b], FileDeleter: ['DATA', 0x5be49b],
-  IpProbe: ['RECON', 0x4fd1d9], LanScan: ['RECON', 0x4fd1d9], HudConnect: ['RECON', 0x4fd1d9],
   OsintSweep: ['SOCIAL', 0xc792ea], VoiceAnalyser: ['SOCIAL', 0xc792ea], SpoofKit: ['SOCIAL', 0xc792ea],
 };
 const familyOf = (kind) => FAMILY[kind] ?? ['TOOL', 0x9aa5b1];

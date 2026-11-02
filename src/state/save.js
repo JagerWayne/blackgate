@@ -183,7 +183,9 @@ function revealLiveTargets(g) {
 /// A run that owns a tool level the catalogue no longer sells: the tool is cut
 /// back to its last level and the price of the levels above it is paid back.
 function cutLostLevels(g) {
-  (g.player.tools ?? []).forEach((t) => {
+  // a tool the catalogue no longer has (PROBE, HUD, LANSCAN) is simply dropped
+  g.player.tools = (g.player.tools ?? []).filter((t) => software().some((d) => d.kind === t.kind));
+  g.player.tools.forEach((t) => {
     const def = software().find((d) => d.kind === t.kind);
     const last = def?.versions.length;
     if (!def || t.level <= last) return;

@@ -121,12 +121,12 @@ test('TRACE moves the trace warning earlier by 5% a version', async () => {
   assert.equal(g.session.warned, true);
 });
 
-test('a tool no task uses cannot be bought', async () => {
+test('a tool that is not in the catalogue cannot be bought', async () => {
   const { buyTool } = await import('../src/state/economy.js');
   const g = makeGame('TOOLS', 7);
   g.player.credits = 1e6;
   g.player.accounts[0].balance = 1e6;
-  assert.equal(buyTool(g, 'HudConnect', 1), 'no task uses this tool yet');
+  assert.equal(buyTool(g, 'HudConnect', 1), 'no such tool');
   assert.ok(!g.player.tools.some((t) => t.kind === 'HudConnect'));
   assert.equal(buyTool(g, 'LogModifier', 1), null, 'LOGMOD is for sale now');
   assert.equal(buyTool(g, 'TraceTracker', 1), null, 'TRACE is for sale now');

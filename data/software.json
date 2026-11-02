@@ -127,51 +127,6 @@
       ]
     },
     {
-      "cpu": 0.6000000238418579,
-      "desc": "Resolves ownership, host role and exposed services of an address.",
-      "kind": "IpProbe",
-      "name": "IP PROBE",
-      "price": 500,
-      "short": "PROBE",
-      "versions": [
-        "LOOKUP",
-        "RESOLVE",
-        "ATLAS",
-        "PANOPTIC",
-        "OMEN"
-      ]
-    },
-    {
-      "cpu": 0.6000000238418579,
-      "desc": "Renders the live route and per-hop analysis on the connection HUD.",
-      "kind": "HudConnect",
-      "name": "HUD CONNECTION ANALYSIS",
-      "price": 350,
-      "short": "HUD",
-      "versions": [
-        "WIREFRAME",
-        "OVERVIEW",
-        "TACTICAL",
-        "PANORAMA",
-        "GODVIEW"
-      ]
-    },
-    {
-      "cpu": 0.6000000238418579,
-      "desc": "Enumerates internal subnets reachable from a compromised host.",
-      "kind": "LanScan",
-      "name": "LAN SCANNER",
-      "price": 2400,
-      "short": "LANSCAN",
-      "versions": [
-        "SWEEP",
-        "GRID",
-        "SUBNET",
-        "DEEPMAP",
-        "TOTAL RECALL"
-      ]
-    },
-    {
       "cpu": 1.399999976158142,
       "desc": "Crawls social and breach data for credentials and personal detail.",
       "kind": "OsintSweep",

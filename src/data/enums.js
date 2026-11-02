@@ -61,4 +61,4 @@ export const HW_LABEL = {
 export const SW_PRICE_MULT = [1, 1, 3.4, 9, 21, 46];
 
 /// The tools the operator starts with.
-export const STARTER_TOOLS = ['PasswordCracker', 'FileCopier', 'LogDeleter', 'IpProbe'];
+export const STARTER_TOOLS = ['PasswordCracker', 'FileCopier', 'LogDeleter'];

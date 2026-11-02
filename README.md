@@ -610,8 +610,7 @@ The tools, each with several versions to buy:
 
 PASSWORD BREAKER, PROXY BYPASS, FIREWALL BYPASS, MONITOR BYPASS,
 TRACE TRACKER, FILE COPIER, FILE DELETER, DECRYPTER, LOG MODIFIER,
-LOG DELETER, IP PROBE, HUD CONNECTION ANALYSIS, LAN SCANNER,
-OSINT SWEEPER, CREDENTIAL STUFFER, VOICE ANALYSER, SPOOF KIT.
+LOG DELETER, OSINT SWEEPER, CREDENTIAL STUFFER, VOICE ANALYSER, SPOOF KIT.
 
 The shop only sells a tool once the game has a task that uses it.
 
@@ -679,9 +678,10 @@ proxy, monitor strength, encryption, voice lock).
 | **LOGMOD** | V1 BLUR | does the whole job |
 | **STUFFER** | V1 RETRY | opens an inbox with its owner's leaked password |
 
-PROBE, HUD and LANSCAN have no task yet, so the shop does not sell them. A saved
-run that owns a version that no longer exists is cut back to the tool's last
-version when it loads, and the price of the levels above it is paid back.
+A saved run that owns a version that no longer exists is cut back to the tool's
+last version when it loads, and the price of the levels above it is paid back.
+A tool that is no longer in the shop (IP PROBE, HUD CONNECTION ANALYSIS and LAN
+SCANNER, which no task ever used) is dropped from the run.
 
 ## Cheat menu
 

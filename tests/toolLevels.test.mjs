@@ -84,6 +84,15 @@ test('a level past the last one cannot be bought', () => {
   assert.ok(buyTool(g, 'Decrypter', top('Decrypter') + 1));
 });
 
+test('the tools nothing could use are gone, from the shop and from old saves', () => {
+  ['IpProbe', 'HudConnect', 'LanScan'].forEach((k) => assert.ok(!defs.some((d) => d.kind === k), k));
+  assert.ok(!makeGame('LEVELS', 7).player.tools.some((t) => t.kind === 'IpProbe'), 'not a starter tool any more');
+  const g = makeGame('LEVELS', 7);
+  g.player.tools.push({ kind: 'IpProbe', level: 1 });
+  saveRun(g);
+  assert.ok(!loadRun('LEVELS').player.tools.some((t) => t.kind === 'IpProbe'), 'dropped from a saved run');
+});
+
 test('a save that owns a level that no longer exists is cut back and refunded', () => {
   const g = makeGame('LEVELS', 7);
   g.player.tools = [{ kind: 'LogDeleter', level: 5 }];
