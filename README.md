@@ -13,6 +13,12 @@ one HTML canvas. There is no framework and no build step for the game
 itself. All content (companies, people, jobs, tools, hardware, cities, news)
 lives in JSON files you can read and edit.
 
+### ⬇ [Download the installer (blackgate.exe)](https://github.com/JagerWayne/blackgate/releases/latest/download/blackgate.exe)
+
+Windows 10/11. Run it once: it installs the game, adds a desktop shortcut and
+keeps the game up to date. All releases are on the
+[releases page](https://github.com/JagerWayne/blackgate/releases).
+
 ---
 
 ## Contents
@@ -27,7 +33,10 @@ lives in JSON files you can read and edit.
 - [Command Prompt](#command-prompt)
 - [Jobs](#jobs)
 - [People and OSINT](#people-and-osint)
-- [DSNET](#dsnet)
+- [Internet XPlorer](#internet-xplorer)
+  - [DSNET](#dsnet)
+  - [SleekPages](#sleekpages)
+  - [Company websites](#company-websites)
 - [Traces, heat and raids](#traces-heat-and-raids)
 - [Your machine: the gateway](#your-machine-the-gateway)
 - [Software](#software)
@@ -46,8 +55,9 @@ lives in JSON files you can read and edit.
 
 ### Windows app (blackgate.exe)
 
-Download `blackgate.exe` from the
-[latest release](https://github.com/JagerWayne/blackgate/releases/latest)
+[Download `blackgate.exe`](https://github.com/JagerWayne/blackgate/releases/latest/download/blackgate.exe)
+(or pick it from the
+[latest release](https://github.com/JagerWayne/blackgate/releases/latest))
 and run it. It is a small launcher (about 60 KB): the game itself comes from
 GitHub. It needs no installer and no administrator rights.
 
@@ -57,7 +67,11 @@ GitHub. It needs no installer and no administrator rights.
   the release, installs it to `Documents\Games\Blackgate\app`, and starts it.
 - **Later runs:** it asks GitHub for the latest release. If the installed
   build is the latest, the game starts straight away. If a newer build is
-  out, it is downloaded and installed first.
+  out, it is downloaded and installed first, and a small window shows it:
+  `Updating to version 0.9.0... 37%`, then `checking the download`,
+  `installing`, and `Updated to version 0.9.0. Starting...`. The login
+  screen then says which version you came from.
+- The login screen shows the installed version and build.
 - **Offline**, or when GitHub cannot be reached, the installed game starts
   as it is. With nothing installed yet, the launcher says it could not
   download the game.
@@ -66,7 +80,10 @@ GitHub. It needs no installer and no administrator rights.
   `Documents\Games\Blackgate`.
 - Every build has its own **build id**: the version plus the build time, for
   example `0.2.0+20261101T174943713Z`.
-- **F11** switches full screen on and off. The window has no menu bar.
+- The game starts **full screen**. **F11** switches it on and off. The
+  window has no menu bar.
+- **Turn off computer** shows "Press Alt + F4 to exit or any key to
+  reboot": **Alt + F4** closes the game.
 
 An update only replaces `app\`, and only once the new copy is downloaded,
 checked and unpacked: a failed update leaves the installed game working.
@@ -104,9 +121,9 @@ The Windows app keeps everything for your Windows account in
 |---|---|
 | `app\` | The installed game. Replaced by each new build. |
 | `app\version.json` | The version and build id of the installed copy. |
-| `saves\<OPERATOR>.json` | One save file per operator (user). |
+| `saves\<OPERATOR>.json` | One save file per profile (four at most). It holds the whole world (40 companies, 2,000 people), your dossiers and your run: about 0.7 MB. |
 | `hosts\<OPERATOR>.json` | The machines that operator has connected to, written on every save: security, services, logs (yours marked) and files (copied, deleted, decrypted). |
-| `*.json`, `hints\`, `sessionActions\`, `images\people\index.json` | Your copy of the game's content files. |
+| `*.json`, `hints\`, `sessionActions\`, `images\people\index.json`, `images\socialmedia\*.json` | Your copy of the game's content files. |
 | `data-version.json` | The build that last checked your content files. |
 | `blackgate.log` | Warnings, for example about content files that differ from the game's. |
 
@@ -128,14 +145,21 @@ file it could not read.
 ## How to play
 
 1. **Boot.** The machine boots and types out its start-up log.
-2. **Log in.** The login screen lists the saved operators. Pick one to carry
-   on their run, or choose **NEW SESSION** and type a handle. Every new
-   session builds a new random world.
-   - Each operator has one save. Starting a new session under a handle that
+2. **Log in.** The login screen lists up to **four profiles**. Pick one to
+   carry on its run, or choose **NEW SESSION** and type a handle.
+   - Each profile has one save. Starting a new session under a handle that
      already has a save replaces it; the login screen warns you in red first.
-   - **DELETE SAVE** removes the selected operator's save. Press it twice to
-     confirm.
-3. **Take a job.** Open **Internet XPlorer** (the DSNET market), pick a listing, read the brief and press **ACCEPT** (or haggle first).
+   - With four profiles in use, a new handle is refused: **DELETE SAVE** one
+     first (press it twice to confirm).
+3. **Watch your world being made.** A new profile gets its own random world.
+   The setup screen registers the **40 companies** (name, website, industry,
+   city), then creates the **2,000 citizens** (about 900 staff and 1,100
+   civilians, each with a full dossier), with counters, progress bars, a
+   running log and their portraits. Any key or click speeds it up. This pool
+   is everyone in the game; most of them never matter.
+4. **Take a job.** **Internet XPlorer** opens on its start page: go to
+   **DSNET**, pick a listing, read the brief and press **ACCEPT** (or haggle
+   first).
 4. **Find the target.** **SHOW TARGET** reveals the machine on the
    **NEXUS MAP** and selects it, and the map glides to it.
 5. **Plan a route.** Add relay hops to your bounce route on the map. More hops
@@ -170,9 +194,14 @@ The game saves automatically every 45 seconds (this can be switched off in
 | `D` | Switch between the light and dark skins |
 | `Tab` / `Shift+Tab` | Move between text fields |
 | `Enter` | Press the highlighted (default) button |
-| `Esc` | Leave a text field, or close the Start menu |
-| `F11` | Full screen (Windows app) |
-| Any key | Turn the machine back on after **Turn off the PC** |
+| `Esc` | Leave a text field, close the Start menu, or close an open dropdown |
+| `F11` | Full screen on and off (Windows app; it starts full screen) |
+| `Alt + F4` | Quit the game |
+| Any key | Turn the machine back on after **Turn off the PC** (Alt, Ctrl, Shift and Windows do not count) |
+
+**In Notepad:** the arrow keys, `Home` and `End` move the caret, a click puts
+it where you click, and typing, `Backspace`, `Delete` and paste work at the
+caret.
 
 The backtick, `Space` and `D` only act when you are not typing in a field.
 
@@ -200,19 +229,18 @@ All are opened from the Start menu and appear on the taskbar while open.
 | Application | What it does |
 |---|---|
 | **Bl@ckG@te** | The hacking client. Shows the live connection and, once the link is up, the target's services, files, logs, records and staff (PEOPLE), and the actions you can run on the host, such as **BYPASS FIREWALL**, **BLIND MONITOR**, **SCRUB PROXY** and **WIPE LOGS**. An action that cannot run says why. |
-| **MAIL** | Messages from the broker, clients and contacts. **MARK ALL READ** clears the unread count. |
-| **DSNET** | Where all jobs live: the market, broker sites, leak profiles and a rumour board, plus **MY JOBS** to submit, link to, show or drop the work you hold. Haggle the fee with the client. The header's ACTIVE button opens MY JOBS. See [DSNET](#dsnet). |
-| **NEXUS MAP** | The world map with every machine you have discovered, search and filters by kind, your bounce route, and saved routes. |
+| **MAIL** | Messages from the broker, clients and contacts. **MARK ALL READ** clears the unread count. It no longer opens at the start of a run; the welcome mail waits in it. |
+| **Internet XPlorer** | The web browser, and the only window open when a run starts. Its start page links to **DSNET** (the job market), **SleekPages** (the social network) and the **Business Directory** (every company's website). See [Internet XPlorer](#internet-xplorer). |
+| **NEXUS MAP** | The world map with every machine you have discovered, a search and a **KIND** dropdown (All, Relay, Public…). Beside it, three tabs: **HOSTS** (the list, with **+HOP** / **-HOP** and **LINK** on every row, and the picked host's card), **ROUTE** (your hops as a chain from your gateway to the target, each with **UP**, **DOWN**, **SHOW** and **REMOVE**, green while your gateway hides it cleanly and red when it slows the link) and **SAVED** (kept routes with **USE** and **DELETE**). **SHOW ON MAP** anywhere selects the host on the map *and* in the HOSTS list. |
 | **GATEWAY** | Your own computer: the chassis and the parts in it, a shop for new parts, and a stock of parts you have taken out. |
-| **SOFTWARE** | The tool shop. Buy and upgrade the tools the jobs need. |
+| **SOFTWARE** | The tool shop: tool cards coloured by family (break-in, bypass, stealth, data, recon, social) with **ALL / INSTALLED / SHOP** filters, and a spec sheet with a five-step upgrade track, one big **BUY / UPGRADE** button and the RAM the tool takes while running. |
 | **STORAGE** | The files you have downloaded, against your drive space. |
 | **BANKING** | Your money and transactions. |
 | **DOSSIERS** | Everyone you have on file: what you know about them and what you have done to their phone and inbox. See [People and OSINT](#people-and-osint). |
 | **NEWSWIRE** | The news, including stories about the work you have done. |
 | **OPERATOR** | Your rating, rank and statistics. |
 | **SYSTEM** | The light (LUNA) or dark (NOIR) skin, autosave every 45 seconds, an 8× fast-forward for the world clock, **SAVE NOW** and **SAVE + QUIT**. |
-| **Notepad** | A notepad kept with your run, with line numbers, word wrap and scroll bars. |
-| **Command Prompt** | Type commands to drive every other application. See [Command Prompt](#command-prompt). |
+| **Notepad** | Notes kept with your run: up to 12 notepads as tabs (**+ NEW** makes an UNTITLED one, **×** pressed twice deletes), line numbers, word wrap, scroll bars and a caret you move with the arrow keys. || **Command Prompt** | Type commands to drive every other application. See [Command Prompt](#command-prompt). |
 
 Two more windows are not in the Start menu: **CHEATS** and
 **MISSION BUILDER** (see [Cheat menu](#cheat-menu)).
@@ -329,11 +357,12 @@ matching button does, with the same costs, checks and messages.
 | `operator` | Rating, rank and statistics |
 | `sys autosave on\|off` / `sys fast on\|off` / `sys theme light\|dark` | Settings |
 | `sys save` / `sys quit` | Save, or save and log out |
-| `dsn open [address]` / `dsn search <text>` | Open a DSNET page (`dsn://hub` by default) or search it |
+| `dsn open [address]` / `dsn search <text>` | Open a page in Internet XPlorer (DSNET's hub by default; `sleekpages`, `directory` or a company's `www.<name>.nx` work too) or search DSNET |
 | `dsn haggle <job> <amount\|+n%>` / `dsn reply <job>` / `dsn take <job>` | Ask for a bigger fee, read the client's answer, take a counter-offer |
 | `ppl list` / `ppl staff` / `ppl show <person>` | Everyone on file, the linked company's staff, one dossier |
 | `ppl profile\|call\|spoofcall\|tap\|inbox\|phish\|spam <person>` | The OSINT, phone and inbox attacks (see [People and OSINT](#people-and-osint)) |
-| `notepad show` / `notepad write "<text>"` / `notepad wrap on\|off` / `notepad clear --yes` | Your notes |
+| `notepad show` / `notepad write "<text>"` / `notepad wrap on\|off` / `notepad clear --yes` | The open notepad |
+| `notepad list` / `notepad new [name]` / `notepad open <n>` / `notepad rename <name>` / `notepad delete <n> --yes` | Your notepads |
 
 **cheat** (left out of `help`; `help cheat` shows it): `cheat money <n>`,
 `cheat heat <0-99>`, `cheat rating <n>`, `cheat speed <1|2|4|8|16>`,
@@ -375,9 +404,19 @@ highlighted when the brief is shown.
 
 ## People and OSINT
 
-Every company has staff, and every staffer has a phone, an email, a social
-handle, a clearance level and, sometimes, a password leaked in an old breach.
-You start knowing none of it.
+Every world has **2,000 people**: about 900 work for the 40 companies, and
+about 1,100 are civilians (freelancers, students, nurses, retirees…) with
+mail at public providers. Everyone has a full dossier: a phone, an email, a
+social handle, a role, a city, a clearance level and, sometimes, a password
+leaked in an old breach. You start knowing none of it.
+
+**Public and private.** Each person shows some details to the world and keeps
+others private (fixed for the world). A public email, phone or handle appears
+as a link on their [SleekPages](#sleekpages) profile and on their
+[company's website](#company-websites): **click it and it goes into the
+dossier** ("EMAIL of … added to the dossier"), with a ✓ beside it from then
+on. A detail picked up this way unlocks the same attacks as one found by
+PROFILE. Private details still need OSINT.
 
 **Finding people.** An OSINT sweep on a link (`bg osint`) adds the company's
 staff to **DOSSIERS** as leads. The **PEOPLE** tab of a live link lists the
@@ -409,11 +448,26 @@ phone, record them (the voice lock's **RECORD**, or a call from PEOPLE), then
 
 ---
 
-## DSNET
+## Internet XPlorer
 
-All jobs live on **DSNET**, a TOR-like hidden market, opened in **Internet XPlorer**, the desktop web browser. Its start page also links to **SleekPages**, the social network, where every person in the world has a profile (some public, with their email and phone).
-(It replaced the old CONTRACTS app.) The board keeps 6 open offers,
-one more for every 30 rating, up to 10.
+The desktop's web browser, and the only window open when a run starts. It
+has tabs that close with their own **×** (up to six; the last stays open),
+back, forward, reload, home, an address bar and a three-relay circuit (click
+it to route through new relays). Home and new tabs open the **start page**,
+with three bookmarks:
+
+| Bookmark | Address | What it is |
+|---|---|---|
+| **DSNET** | `dsnet` (or `dsn://hub`) | The hidden job market. See [DSNET](#dsnet). |
+| **SleekPages** | `sleekpages` (or `sleekpages.com`) | The social network. See [SleekPages](#sleekpages). |
+| **Business Directory** | `directory` | Every company's website, by industry. See [Company websites](#company-websites). |
+
+### DSNET
+
+All jobs live on **DSNET**, "the market for the anonymous", a TOR-like hidden
+market (it replaced the old CONTRACTS app). The board keeps 6 open offers,
+one more for every 30 rating, up to 10. The header's HUB button and every
+"show me the job" link go straight to it.
 
 | Address | Page |
 |---|---|
@@ -425,11 +479,9 @@ one more for every 30 rating, up to 10.
 | `dsn://lookup/<company>` | LEAKBASE: what is known about a target company, its hosts and its staff |
 | `dsn://board` | The undernet board: rumours that change every day |
 
-The browser is always dark, whatever the desktop skin. It has tabs that
-close with their own **×** (up to six; the last stays open), back, forward,
-reload, home, an address bar, and a three-relay circuit: click it to route
-through new relays. A sidebar is always there: HUB, MY JOBS, the six
-categories with their counts, the brokers, the board. Listings show as cards
+DSNET is always dark, whatever the desktop skin. On its pages a sidebar
+shows HUB, MY JOBS, the six categories with their counts, the brokers and the
+board. Listings show as cards
 with the fee, the time left as a bar, the stars, the broker and VIEW and
 ACCEPT. A status bar at the bottom counts open listings, your jobs, replies
 waiting and your money.
@@ -442,6 +494,16 @@ The client answers a few game minutes later:
 - **No:** the posted fee stands.
 - **Insulted:** ask for more than double and the listing is pulled, and that client will not deal with you for a game day.
 
+**Answering a counter-offer.** You can **TAKE** it, or **COUNTER** once with
+an amount between their figure and your ask (the button shows the chance; a
+second round is harder, and ends in yes or no). **DECLINE THE JOB** (press it
+twice) walks away at any point and the listing goes.
+
+The talk with the client is shown as a **chat console**: the client on the
+left in their colour, you on the right in blue, a name and time on each
+message, long lines wrapped, and a status line ("… is typing", "counter-offer
+on the table", "channel closed").
+
 The chance of a yes is `exp(-over x 1.78 x temper / (0.5 + rating / 150))`,
 capped at 97%, where `over` is how far above the fee you ask (0.25 for +25%)
 and `temper` is the client's (0.8 flexible to 1.3 stubborn). Roughly: +10% is
@@ -451,6 +513,44 @@ ask on the same job always gets the same answer.
 
 The broker sites, categories, rumours and 404 pages live in
 `data/darknet.json` and can be edited like the other data files.
+
+### SleekPages
+
+A light, Facebook-style social network: a blue top bar (**Feed**,
+**People**) and white cards on grey.
+
+- **Feed:** posts from random people of the world, a new set every time the
+  page loads or is reloaded. Each post has the person's face, name, time and
+  city, a caption, a **square photo** on the same topic (cars, city, food,
+  pets), likes and comments. Click a name to open the profile.
+- **People:** search everyone by name, job, company or city, fifty to a page
+  with **PREVIOUS** / **NEXT**.
+- **Profile:** a cover banner, a large portrait, name, job and company, an
+  **About** box (works at, lives in, handle, email, phone) and three of their
+  posts. Public details are links that go into the dossier when clicked;
+  private ones read "private". **VIEW DOSSIER** puts the person on file and
+  opens DOSSIERS.
+
+The photos are in `data/images/socialmedia/<topic>/` and the captions in
+`data/images/socialmedia/text.txt` (numbered lines under `### Topic`
+headings). After adding photos or lines, run
+`data/images/socialmedia/populate.bat` (or `node tools/socialmedia.mjs`): it
+writes `images.json` and `text.json`, which the game reads. A new topic needs
+both a folder and a heading of the same name.
+
+### Company websites
+
+Each of the 40 companies has a website, listed in the **Business Directory**.
+The address comes from the name (`www.vantasystems.nx`), and the look is one
+of **ten themes** picked for the world: CORPORATE BLUE, MIDNIGHT, FOREST,
+SUNSET, MONOCHROME, ROYAL, TERMINAL, OCEAN, CRIMSON and SAND, each with its
+own colours and header layout.
+
+| Page | Address | What it shows |
+|---|---|---|
+| **Home** | `www.<name>.nx` | About us and what the company does |
+| **Our team** | `www.<name>.nx/team` | Every staffer: square photo, name, role, and their email and phone where public (click to add to the dossier; click the photo or name for their SleekPages profile) |
+| **Contact** | `www.<name>.nx/contact` | Reception's email and phone, and the city |
 
 ---
 
@@ -542,7 +642,19 @@ Click the **BLACKGATE logo** (the blue triangle at the top left) to open
 - set your rating, from 0 to 150;
 - **REVEAL THE MAP**, **EVERY TOOL AT V5** and **MAX THE GATEWAY**;
 - **OPEN MISSION BUILDER:** build a job to order, choosing its kind, target,
-  objective, payout, deadline, client and brief.
+  objective, payout, deadline, client and brief. The kinds use the market's
+  names, with a line explaining the picked one:
+
+  | Kind | The job |
+  |---|---|
+  | **DATA HEIST** | Copy a file off the host and bring it home |
+  | **SCRUBBERS** | Erase one file from the host |
+  | **BURN BOOK** | Wipe the host: every file and every log |
+  | **PAPERWORK** | Rewrite one detail in a person's record |
+  | **MONEY MOVES** | Move funds out of an account on a bank host |
+  | **MIND THEFT** | Steal a trained AI model off a lab host |
+
+The cheat menu has three tabs (PLAYER, WORLD, SWITCHES) and a status line.
 
 ---
 
@@ -689,6 +801,8 @@ tools/              content tools (see below)
 |---|---|
 | `node tools/countries.mjs <ne_50m_admin_0_countries.geojson>` | Rebuilds `data/countries.json` from Natural Earth's countries file. Positions use the same grid as `cities.json`; Antarctica is left out. |
 | `node tools/portraits.mjs` (or `data/images/people/populate.bat`) | Rebuilds the portrait list from the image folders. |
+| `node tools/socialmedia.mjs` (or `data/images/socialmedia/populate.bat`) | Rebuilds the SleekPages lists: `images.json` (the photos in each topic folder) and `text.json` (the captions in `text.txt`). |
+| `npm run release` | Builds `blackgate.exe` (the launcher), `blackgate-app.zip` and `latest.json`, and uploads them to a GitHub release. |
 
 ---
 
