@@ -15,7 +15,8 @@ export function release(input) {
 export function attachKeys(win, input) {
   win.addEventListener('keydown', (e) => {
     if (KEPT.has(e.key)) e.preventDefault();
-    input.anyKey = true;
+    // Alt (on the way to Alt + F4) and the other modifiers are not "any key"
+    if (!e.altKey && !['Alt', 'Control', 'Shift', 'Meta'].includes(e.key)) input.anyKey = true;
     input.shift = !!e.shiftKey;
     input.ctrl = !!(e.ctrlKey || e.metaKey);
     if (e.key === 'Enter') input.enter = true;
