@@ -2,7 +2,7 @@
 // so fetch() and ES modules work. Content JSON is copied on first run to
 // Documents/Games/Blackgate and read from there; saves live in its saves/.
 
-const { app, BrowserWindow, Menu, protocol, net, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, dialog, protocol, net, ipcMain } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
@@ -17,36 +17,26 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
 
-/// After a new build (not only a new version), warns (console and blackgate.log) about each data
-/// file the user keeps that differs from the one this version ships: it stays
-/// as it is, so new content in it does not reach the game.
-function checkDataVersion() {
+/// Brings the user's data files up to this build: missing ones are copied, ones
+/// the player never edited are replaced, edited ones are kept. After a new
+/// build (not only a new version) each kept file that differs from the shipped
+/// one is warned about (console and blackgate.log), since new content in it
+/// does not reach the game. The hashes of what was copied go in data-version.json.
+function syncData() {
   const stampFile = path.join(USER, 'data-version.json');
-  let old = null;
+  let old = {};
   try {
-    old = JSON.parse(fs.readFileSync(stampFile, 'utf8')).version;
+    old = JSON.parse(fs.readFileSync(stampFile, 'utf8'));
   } catch {}
   // the build id, so a rebuild at the same version is checked too
   const now = readBuild(process.resourcesPath, app.getVersion());
-  if (old === now) return;
-  const stale = [];
-  (function walk(dir) {
-    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-      const s = path.join(dir, e.name);
-      if (e.isDirectory()) walk(s);
-      else if (e.name.endsWith('.json')) {
-        const rel = path.relative(DATA, s);
-        const mine = path.join(USER, rel);
-        if (fs.existsSync(mine) && !fs.readFileSync(mine).equals(fs.readFileSync(s))) stale.push(rel);
-      }
-    }
-  })(DATA);
-  if (old && stale.length) {
-    const lines = stale.map((rel) => `${new Date().toISOString()} warning: ${rel} differs from version ${now}'s copy (kept, from ${old})`);
+  const { hashes, stale } = seed(DATA, USER, old.hashes);
+  if (old.version && old.version !== now && stale.length) {
+    const lines = stale.map((rel) => `${new Date().toISOString()} warning: ${rel} differs from version ${now}'s copy (kept, from ${old.version})`);
     lines.forEach((l) => console.warn(l));
     fs.appendFileSync(path.join(USER, 'blackgate.log'), lines.join('\n') + '\n');
   }
-  fs.writeFileSync(stampFile, JSON.stringify({ version: now }));
+  fs.writeFileSync(stampFile, JSON.stringify({ version: now, hashes }));
 }
 
 /// The user's copy of a data JSON, or null when it is missing or not valid JSON.
@@ -139,15 +129,25 @@ ipcMain.on('data:fallbacks', (e) => {
   e.returnValue = [...fallbacks];
 });
 
+// Two copies would write the same save files, so a second launch hands over to the first.
+const primary = app.requestSingleInstanceLock();
+if (!primary) app.quit();
+let win;
+app.on('second-instance', () => {
+  if (!win) return;
+  if (win.isMinimized()) win.restore();
+  win.focus();
+});
+
 app.whenReady().then(() => {
+  if (!primary) return;
   USER = path.join(app.getPath('documents'), 'Games', 'Blackgate');
   fs.mkdirSync(USER, { recursive: true });
-  checkDataVersion();
-  seed(DATA, USER);
+  syncData();
   fs.mkdirSync(path.join(USER, 'saves'), { recursive: true });
   protocol.handle('app', serve);
   Menu.setApplicationMenu(null);
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1440,
     height: 900,
     minWidth: 1024,
@@ -170,6 +170,10 @@ app.whenReady().then(() => {
     }
   });
   win.loadURL('app://blackgate/index.html');
+}).catch((e) => {
+  // without this a failed start (read-only or locked Documents) leaves a windowless process
+  dialog.showErrorBox('BLACKGATE', `The game could not start.\n\n${e.message}`);
+  app.quit();
 });
 
 app.on('window-all-closed', () => app.quit());

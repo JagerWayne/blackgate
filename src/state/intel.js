@@ -37,7 +37,6 @@ export function knows(game, i, field) {
 /// The details a person may show the world, and whether they do: worked out
 /// from the seed, so a world keeps them without storing them. The role is
 /// always public.
-export const PUBLIC_FIELDS = ['email', 'phone', 'social'];
 export function isPublic(game, i, field) {
   if (field === 'role') return true;
   let h = 2166136261;

@@ -2,7 +2,7 @@
 // delta, so the world behaves the same on every machine. The renderer gets
 // the leftover time as an interpolation factor.
 
-export const STEP = 1 / 60;
+const STEP = 1 / 60;
 
 /// The most steps one frame may run before the loop gives up catching up.
 /// Without it a slow frame turns into an ever growing spiral of work.

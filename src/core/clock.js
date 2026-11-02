@@ -37,11 +37,6 @@ export function hhmm(clock) {
   return `${String(hour(clock)).padStart(2, '0')}:${String(minute(clock)).padStart(2, '0')}`;
 }
 
-/// The minutes left until a target minute.
-export function minutesUntil(clock, target) {
-  return Math.max(0, target - clock.minutes);
-}
-
 /// "DAY 4 - 03 APR 2027"
 export function dateLine(clock) {
   const [d, m, y] = calendar(clock);

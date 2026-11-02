@@ -12,10 +12,6 @@ tools/localmap/
 node_modules/
 dist/
 
-# Electron build output
-node_modules/
-dist/
-
 # player saves never belong in the repo
 saves/
 *.save.json

@@ -86,6 +86,16 @@ test('a save made before the board only had workable jobs is put right', () => {
   assert.equal(f2.tag, 0, 'no other job has claimed it');
 });
 
+test('a save this build cannot read is backed up before a new run replaces it', () => {
+  store['blackgate.save.BROKEN'] = '{"version":99}';
+  saveRun(makeGame('BROKEN', 3));
+  assert.equal(store['blackgate.save.BROKEN.bak'], '{"version":99}');
+  assert.equal(loadRun('BROKEN')?.player.handle, 'BROKEN');
+  saveRun(makeGame('GOOD', 3));
+  saveRun(makeGame('GOOD', 3));
+  assert.ok(!('blackgate.save.GOOD.bak' in store), 'a readable save needs no backup');
+});
+
 test('a saved run can be deleted from the terminal', () => {
   const game = makeGame('SAVER', 3);
   saveRun(game);

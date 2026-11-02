@@ -119,7 +119,7 @@ export function hops(gw) {
 }
 
 /// How much the security units slow an active trace.
-export function traceDelay(gw) { return best(gw, 'security')?.trace_delay ?? 0; }
+function traceDelay(gw) { return best(gw, 'security')?.trace_delay ?? 0; }
 
 /// The share of a raid the security units absorb.
 export function raidShield(gw) { return best(gw, 'security')?.raid_shield ?? 0; }

@@ -1,8 +1,7 @@
 // The clock: the world moves a minute at a time, and the minute does the
 // work: contracts expire, the board refills, the wire runs.
 
-import { advance } from '../core/clock.js';
-import { SECONDS_PER_MINUTE } from '../core/clock.js';
+import { advance, SECONDS_PER_MINUTE } from '../core/clock.js';
 import { spawnContract } from '../state/contractSpawn.js';
 import { note, toast, randomHeadline } from '../state/gameState.js';
 import { timeScale } from '../state/cheats.js';

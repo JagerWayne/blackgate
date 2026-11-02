@@ -50,7 +50,7 @@ function migrate() {
 function saveKeys() {
   migrate();
   try {
-    return allKeys().filter((k) => k.startsWith(PREFIX));
+    return allKeys().filter((k) => k.startsWith(PREFIX) && !k.endsWith('.bak'));
   } catch {
     return [];
   }
@@ -62,13 +62,25 @@ export function saveRun(game) {
   const plain = JSON.parse(JSON.stringify(game, (k, v) => (typeof v === 'bigint' ? v.toString() : v)));
   plain.rng = rngToJson(game.rng);
   try {
-    store().setItem(keyOf(game.player.handle), JSON.stringify(plain));
+    const key = keyOf(game.player.handle);
+    // a save this build cannot read is kept as .bak before a new run takes its place
+    const old = store().getItem(key);
+    if (old && !readable(old)) store().setItem(`${key}.bak`, old);
+    store().setItem(key, JSON.stringify(plain));
     // the desktop app keeps a readable report of the visited hosts beside it
     try {
       globalThis.blackgate?.writeReport?.(safeName(game.player.handle), JSON.stringify(hostReport(game), null, 2));
     } catch {} // the report is a convenience: a failure never fails the save
     current = game.player.handle;
     return true;
+  } catch {
+    return false;
+  }
+}
+
+function readable(text) {
+  try {
+    return isSound(JSON.parse(text));
   } catch {
     return false;
   }

@@ -40,6 +40,25 @@ test('the first-run copy adds missing files and never overwrites', () => {
   assert.ok(!fs.existsSync(path.join(dst, 'pic.jpg')), 'only JSON is copied');
 });
 
+test('an update replaces a file the player never touched and keeps an edited one', () => {
+  const src = fs.mkdtempSync(path.join(os.tmpdir(), 'bg-src-'));
+  const dst = fs.mkdtempSync(path.join(os.tmpdir(), 'bg-dst-'));
+  const put = (dir, name, text) => fs.writeFileSync(path.join(dir, name), text);
+  const read = (name) => fs.readFileSync(path.join(dst, name), 'utf8');
+  put(src, 'plain.json', '{"v":1}');
+  put(src, 'edited.json', '{"v":1}');
+  const first = seed(src, dst);
+  assert.equal(read('plain.json'), '{"v":1}');
+  put(dst, 'edited.json', '{"mine":true}');
+  put(src, 'plain.json', '{"v":2}');
+  put(src, 'edited.json', '{"v":2}');
+  const next = seed(src, dst, first.hashes);
+  assert.equal(read('plain.json'), '{"v":2}', 'the untouched file gets the new content');
+  assert.equal(read('edited.json'), '{"mine":true}', 'the edit survives');
+  assert.deepEqual(next.stale, ['edited.json']);
+  assert.ok(!('edited.json' in next.hashes), 'an edited file is not recorded as shipped');
+});
+
 test('a save name is a plain name, never a path', () => {
   const dir = path.join('C:', 'x');
   assert.equal(saveFile(dir, 'WAAA'), path.join(dir, 'saves', 'WAAA.json'));
