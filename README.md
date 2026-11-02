@@ -27,6 +27,7 @@ lives in JSON files you can read and edit.
 - [Command Prompt](#command-prompt)
 - [Jobs](#jobs)
 - [People and OSINT](#people-and-osint)
+- [DeppSpaceNET](#deppspacenet)
 - [Traces, heat and raids](#traces-heat-and-raids)
 - [Your machine: the gateway](#your-machine-the-gateway)
 - [Software](#software)
@@ -200,6 +201,7 @@ All are opened from the Start menu and appear on the taskbar while open.
 |---|---|
 | **Bl@ckG@te** | The hacking client. Shows the live connection and, once the link is up, the target's services, files, logs, records and staff (PEOPLE), and the actions you can run on the host, such as **BYPASS FIREWALL**, **BLIND MONITOR**, **SCRUB PROXY** and **WIPE LOGS**. An action that cannot run says why. |
 | **MAIL** | Messages from the broker, clients and contacts. **MARK ALL READ** clears the unread count. |
+| **DeppSpaceNET** | A browser for the hidden network: the job market, broker sites, leak profiles of companies and a rumour board. Contact a client to haggle the fee. See [DeppSpaceNET](#deppspacenet). |
 | **CONTRACTS** | The job board: open jobs, your accepted jobs and their deadlines. Accept jobs, show their targets and submit work here. |
 | **NEXUS MAP** | The world map with every machine you have discovered, search and filters by kind, your bounce route, and saved routes. |
 | **GATEWAY** | Your own computer: the chassis and the parts in it, a shop for new parts, and a stock of parts you have taken out. |
@@ -328,6 +330,8 @@ matching button does, with the same costs, checks and messages.
 | `operator` | Rating, rank and statistics |
 | `sys autosave on\|off` / `sys fast on\|off` / `sys theme light\|dark` | Settings |
 | `sys save` / `sys quit` | Save, or save and log out |
+| `dsn open [address]` / `dsn search <text>` | Open a DeppSpaceNET page (`dsn://hub` by default) or search it |
+| `dsn haggle <job> <amount\|+n%>` / `dsn reply <job>` / `dsn take <job>` | Ask for a bigger fee, read the client's answer, take a counter-offer |
 | `ppl list` / `ppl staff` / `ppl show <person>` | Everyone on file, the linked company's staff, one dossier |
 | `ppl profile\|call\|spoofcall\|tap\|inbox\|phish\|spam <person>` | The OSINT, phone and inbox attacks (see [People and OSINT](#people-and-osint)) |
 | `notepad show` / `notepad write "<text>"` / `notepad wrap on\|off` / `notepad clear --yes` | Your notes |
@@ -403,6 +407,44 @@ the person's company. Each button says what it needs and what it gets.
 **Voice locks** open to their admin's voice: profile the admin to v2 for their
 phone, record them (the voice lock's **RECORD**, or a call from PEOPLE), then
 **VOICEPRINT**.
+
+---
+
+## DeppSpaceNET
+
+Open jobs are listed on **DeppSpaceNET**, a browser for a TOR-like hidden
+network, as well as on the CONTRACTS board. The board keeps 6 open offers,
+one more for every 30 rating, up to 10.
+
+| Address | Page |
+|---|---|
+| `dsn://hub` | The portal: search, the six categories, the biggest fees, the brokers |
+| `dsn://cat/<kind>` | DATA HEISTS, SCRUBBERS, PAPERWORK, MONEY MOVES, BURN BOOK, MIND THEFT |
+| `dsn://<broker>.dsn` | Each client's own site, with its banner, tagline, listings and an about page |
+| `dsn://job/<id>` | A listing: brief, fee, window, target, and the channel to the client |
+| `dsn://lookup/<company>` | LEAKBASE: what is known about a target company, its hosts and its staff |
+| `dsn://board` | The undernet board: rumours that change every day |
+
+The browser has back, forward, reload and home, an address bar, up to three
+tabs, and a three-relay circuit: click it to route through new relays.
+
+**Haggling.** On a listing, ask for +10%, +25%, +50% or an exact amount.
+The client answers a few game minutes later:
+
+- **Yes:** the fee rises to your ask.
+- **Counter-offer:** halfway between the posted fee and your ask; take it or leave it.
+- **No:** the posted fee stands.
+- **Insulted:** ask for more than double and the listing is pulled, and that client will not deal with you for a game day.
+
+The chance of a yes is `exp(-over x 1.78 x temper / (0.5 + rating / 150))`,
+capped at 97%, where `over` is how far above the fee you ask (0.25 for +25%)
+and `temper` is the client's (0.8 flexible to 1.3 stubborn). Roughly: +10% is
+about 70% at rating 0 and 90% at LEGEND; +50% is about 17% at rating 0 and 50%
+at LEGEND. The odds are shown on each button. One ask per job, and the same
+ask on the same job always gets the same answer.
+
+The broker sites, categories, rumours and 404 pages live in
+`data/darknet.json` and can be edited like the other data files.
 
 ---
 

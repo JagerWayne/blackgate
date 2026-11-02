@@ -20,6 +20,7 @@ import { drawStats } from '../windows/stats.js';
 import { drawSettings } from '../windows/settings.js';
 import { drawNotepad } from '../windows/notepad.js';
 import { drawDossiers } from '../windows/people.js';
+import { drawDsn } from '../windows/dsn/browser.js';
 import { drawMap } from '../windows/map.js';
 import { drawSession } from '../windows/session.js';
 import { drawCheats } from '../windows/cheats.js';
@@ -40,6 +41,7 @@ const APPS = {
   settings: drawSettings,
   notepad: drawNotepad,
   dossiers: drawDossiers,
+  dsn: drawDsn,
   map: drawMap,
   blackgate: drawSession,
   cheats: drawCheats,

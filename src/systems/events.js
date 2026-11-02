@@ -1,5 +1,7 @@
 // The events the operator made, applied to the game state.
 
+import { handleDsnClick } from '../windows/dsn/browser.js';
+import { askFee, takeOffer } from '../state/haggle.js';
 import { setDark } from '../core/theme.js';
 import {
   openWindow, closeWindow, makeWindows, minimizeWindow, toggleMax, taskWindow,
@@ -193,6 +195,8 @@ function handleToggle(state, e) {
 /// A text field changed.
 function handleEdit(state, e) {
   if (e.id === 'cheat.money.field') (state.win.cheats ??= {}).money = e.value;
+  if (e.id === 'dsn.search') (state.win.dsn ??= {}).query = e.value;
+  if (e.id === 'dsn.askfield') (state.win.dsn ??= {}).ask = e.value;
   else if (e.id.startsWith('mg.')) (state.win.missions ??= {})[e.id.slice(3)] = e.value;
 }
 
@@ -276,6 +280,7 @@ function handleClick(state, e, desk) {
   else if (id === 'hdr.contracts') openWindow(state.windows, 'contracts', desk);
   else if (id === 'hdr.mail') openWindow(state.windows, 'mail', desk);
   else if (id === 'mail.readAll') game.mail.forEach((m) => { m.read = true; });
+  else if (id.startsWith('dsn.')) handleDsn(state, id, desk);
   else if (id === 'hdr.cheat') openWindow(state.windows, 'cheats', desk);
   else if (id === 'cheat.missions') openWindow(state.windows, 'missions', desk);
   else if (id.startsWith('mg.')) handleBuilderClick(state, id);
@@ -339,4 +344,28 @@ function handleClick(state, e, desk) {
     toLogin(state);
     state.login.notice = ok ? 'run saved' : 'the save could not be written';
   }
+}
+
+/// DeppSpaceNET: the job buttons and the haggling here, the browsing in the browser.
+function handleDsn(state, id, desk) {
+  const game = state.game;
+  const view = (state.win.dsn ??= {});
+  const num = (prefix) => Number(id.slice(prefix.length).split('.')[0]);
+  const say = (err) => { if (err) toast(game, err, 'bad'); };
+  if (id.startsWith('dsn.accept.')) say(takeOffer(game, num('dsn.accept.')));
+  else if (id.startsWith('dsn.take.')) say(takeOffer(game, num('dsn.take.')));
+  else if (id.startsWith('dsn.askexact.')) {
+    say(askFee(game, num('dsn.askexact.'), Number(view.ask)));
+    view.ask = '';
+  } else if (id.startsWith('dsn.ask.')) {
+    const [cid, pct] = id.slice(8).split('.').map(Number);
+    const c = game.contracts.find((x) => x.id === cid);
+    if (c) say(askFee(game, cid, c.reward * (1 + pct / 100)));
+  } else if (id.startsWith('dsn.map.')) {
+    openWindow(state.windows, 'map', desk);
+    const map = (state.win.map ??= {});
+    map.sel = Number(id.slice(8));
+    map.glide = true;
+  } else if (id === 'dsn.dossiers') openWindow(state.windows, 'dossiers', desk);
+  else handleDsnClick(view, id, game.uiTime ?? 0);
 }

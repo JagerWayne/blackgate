@@ -6,6 +6,7 @@ import { SECONDS_PER_MINUTE } from '../core/clock.js';
 import { spawnContract } from '../state/contractSpawn.js';
 import { note, toast, randomHeadline } from '../state/gameState.js';
 import { timeScale } from '../state/cheats.js';
+import { haggleTick } from '../state/haggle.js';
 
 /// Advances the clock and does the per-minute work.
 export function clockTick(game, dt) {
@@ -60,11 +61,12 @@ export function onMinutes(game, minutes) {
 
   // the board is restocked, and each new job is announced
   let guard = 0;
-  while (game.contracts.filter((c) => c.state === 'offered').length < 4 && guard < 8) {
+  haggleTick(game);
+  while (game.contracts.filter((c) => c.state === 'offered').length < offerCap(game) && guard < 12) {
     const id = spawnContract(game, false);
     if (id === null) break;
     const c = game.contracts.find((x) => x.id === id);
-    toast(game, `New contract #${id} // ${c?.reward ?? 0} cr // check MAIL`, 'money');
+    toast(game, `New listing #${id} // ${c?.reward ?? 0} cr // on DeppSpaceNET`, 'money');
     guard += 1;
   }
 
@@ -74,4 +76,10 @@ export function onMinutes(game, minutes) {
     game.news.push({ minute: now, headline, body });
     if (game.news.length > 40) game.news.shift();
   }
+}
+
+/// How many open offers the board keeps: six, and one more for every 30
+/// rating, up to ten.
+export function offerCap(game) {
+  return Math.min(6 + Math.floor((game.player.rating ?? 0) / 30), 10);
 }

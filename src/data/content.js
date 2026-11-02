@@ -36,6 +36,7 @@ export function newsHeadlines() { return tables.news.headlines; }
 export function newsBodies() { return tables.news.bodies; }
 export function rivals() { return tables.rivals.handles; }
 export function clients() { return tables.clients.clients; }
+export function darknet() { return tables.darknet; }
 
 /// The brief pool for a mission kind: "retrieve", "delete", "modify"...
 export function briefs(kind) { return tables.briefs[kind] ?? []; }

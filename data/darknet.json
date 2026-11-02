@@ -1,0 +1,83 @@
+{
+  "brokers": {
+    "ANON-4471": {
+      "domain": "4471.dsn",
+      "tagline": "no names. no faces. no refunds.",
+      "temper": 1.2,
+      "accent": "#9be564",
+      "banner": ["  _ _  _ _ ____ _ ", " | | || | |__  / |", " |_  _|_  _|/ /| |", "   |_|  |_|/_/ |_|"],
+      "about": "A handle that has posted work on the network for nine years and never once said why. Pays on time. Does not haggle well and does not like to be asked."
+    },
+    "VENN": {
+      "domain": "venn.dsn",
+      "tagline": "where two circles meet, there is a door.",
+      "temper": 0.9,
+      "accent": "#c792ea",
+      "banner": ["   .--.   .--.  ", "  /    \\ /    \\ ", " |   VE | NN   |", "  \\    / \\    / ", "   '--'   '--'  "],
+      "about": "Riddles in the copy, precise in the brief. VENN's jobs always overlap two companies, and VENN is always standing in the overlap."
+    },
+    "M. HALLORAN": {
+      "domain": "halloran-and-associates.dsn",
+      "tagline": "discreet legal remedies since 2009.",
+      "temper": 1.0,
+      "accent": "#e5c07b",
+      "banner": ["=================================", "  M. HALLORAN & ASSOCIATES (sic) ", "================================="],
+      "about": "A solicitor with no practice certificate and a great many clients. The paperwork always needs a small correction somewhere it should not be."
+    },
+    "THE COMMITTEE": {
+      "domain": "committee.dsn",
+      "tagline": "minutes of the meeting are not kept.",
+      "temper": 1.3,
+      "accent": "#61afef",
+      "banner": ["[ THE COMMITTEE ]", "[ agenda item 7 ]", "[ any other business ]"],
+      "about": "Nobody knows who sits on it. Every job arrives as a numbered agenda item and every fee was set by a vote. Votes are rarely reopened."
+    },
+    "OCTANT LTD": {
+      "domain": "octant.dsn",
+      "tagline": "solutions. at scale. off the books.",
+      "temper": 1.1,
+      "accent": "#56b6c2",
+      "banner": ["  ____  ____ _____ ", " / __ \\/ ___|_   _|", "| |  | | |     | |  ", "| |__| | |___  | |  ", " \\____/ \\____| |_|  OCTANT LTD"],
+      "about": "A shell company with a glossy front page and a quarterly budget for things it cannot write down. Will pay more for speed, never for attitude."
+    },
+    "PRIVATE CLIENT": {
+      "domain": "private.dsn",
+      "tagline": "this page will self-destruct.",
+      "temper": 0.8,
+      "accent": "#abb2bf",
+      "banner": ["+---------------------+", "|   PRIVATE  CLIENT   |", "+---------------------+"],
+      "about": "One-off customers brokered through a blind drop. Nervous, in a hurry, and often willing to pay a little more to stop worrying."
+    },
+    "SOUTHBANK PARTNERS": {
+      "domain": "southbank.dsn",
+      "tagline": "capital finds a way.",
+      "temper": 1.0,
+      "accent": "#e06c75",
+      "banner": ["$$$ SOUTHBANK PARTNERS $$$", "    capital finds a way    "],
+      "about": "A fund that moves money nobody can see. Haggles like a trader: respects a firm number, despises a greedy one."
+    }
+  },
+  "categories": {
+    "retrieve": { "name": "DATA HEISTS", "blurb": "Somebody has a file. Somebody else wants it. Bring it home." },
+    "delete": { "name": "SCRUBBERS", "blurb": "Make it so it never existed. Leave nothing but a gap." },
+    "modify": { "name": "PAPERWORK", "blurb": "Records, rewritten. A death, a pardon, a promotion." },
+    "transfer": { "name": "MONEY MOVES", "blurb": "Funds that wander from one ledger into another." },
+    "destroy": { "name": "BURN BOOK", "blurb": "Total loss. Every file, every log, every trace." },
+    "model": { "name": "MIND THEFT", "blurb": "Trained models walk out of the lab in your pocket." }
+  },
+  "forum": [
+    "anyone else seeing {co} add a new firewall? asking for a friend",
+    "{client} paid me in under an hour. ten out of ten would be anonymous again",
+    "pro tip: spam the admin before you link. they read their inbox before the alarm",
+    "rumour: {co} staff reuse their breach passwords. who could have guessed",
+    "lost a whole run to a trace at {co}. bounce more, kids",
+    "{client} pulled my listing because I asked for double. lesson learned",
+    "the wire says {headline}. that was us. you are welcome",
+    "do not phish clearance 5. they do not click links. they write memos about links"
+  ],
+  "notFound": [
+    "This hidden service has been seized. Or never existed. Or is watching you read this.",
+    "404 // the relay you asked for has gone dark",
+    "Nothing here but a cold cup of coffee and a lot of regret."
+  ]
+}

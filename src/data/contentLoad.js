@@ -12,6 +12,7 @@ export const TOPIC_FILES = {
   news: 'news.json',
   rivals: 'rivals.json',
   clients: 'clients.json',
+  darknet: 'darknet.json',
   briefs: 'briefs.json',
   missions: 'missions.json',
   software: 'software.json',

@@ -1,6 +1,7 @@
 // The cheat menu: a hidden window behind the BLACKGATE logo that changes the
 // money, the heat, the clock, the rating and a few switches.
 // Run with: node --test tests/*.mjs
+import { offerCap } from '../src/systems/clockTick.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initContent, software, chassis } from '../src/data/content.js';
@@ -214,7 +215,7 @@ test('skipping time runs the minutes: the clock moves and the board keeps up', (
   const start = g.clock.minutes;
   click(state, 'cheat.skip.1440');
   assert.equal(g.clock.minutes, start + 1440);
-  assert.equal(offered(g).length, 4, 'the board refilled');
+  assert.equal(offered(g).length, offerCap(g), 'the board refilled');
 });
 
 test('time cannot be skipped with a link open', () => {

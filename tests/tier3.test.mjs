@@ -52,7 +52,7 @@ test('a new job on the board is announced', () => {
   job.state = 'accepted'; // the board is one short and refills
   g.toasts = [];
   onMinutes(g, 1);
-  assert.ok(g.toasts.some((t) => /^New contract #\d+/.test(t.text)), 'a toast names the new job');
+  assert.ok(g.toasts.some((t) => /^New listing #\d+/.test(t.text)), 'a toast names the new job');
 });
 
 test('an offer whose window closes moves to the history with a word', () => {
