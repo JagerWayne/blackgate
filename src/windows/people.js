@@ -6,7 +6,7 @@ import { drawTable, flex } from '../ui/table.js';
 import { splitPanel, detailPane, drawFrame } from '../ui/panel.js';
 import { drawScrolled } from '../ui/scroll.js';
 import { section, label, keyValue, buttons, chips } from '../ui/controls.js';
-import { ghost } from '../ui/styles.js';
+import { ghost, danger } from '../ui/styles.js';
 import { drawPortrait, portraitOf } from '../ui/portrait.js';
 import { draw as drawText } from '../core/text.js';
 import { color } from '../core/theme.js';
@@ -57,7 +57,7 @@ function personRow(game, i, sk) {
 
 /// The detail of a person: the portrait, the dossier, then the attacks. With
 /// no live link to their company, the attacks say where to go.
-function drawDossier(ctx, sk, r, game, i, s, ui, input, events, scrollId) {
+function drawDossier(ctx, sk, r, game, i, s, ui, input, events, scrollId, view = {}) {
   const inner = detailPane(ctx, sk, r);
   const p = game.world.people[i];
   const co = game.world.companies[p.company]?.name ?? 'their company';
@@ -84,6 +84,13 @@ function drawDossier(ctx, sk, r, game, i, s, ui, input, events, scrollId) {
     controls.push(buttons([{ id: `ppl.${a.kind}.${i}`, text: a.text, style: { ...ghost(), disabled: !!why } }]));
     controls.push(label(here && why ? `${a.gets} // ${why}` : a.gets, 9, here && why ? sk.warn : sk.dim));
   });
+  // only the DOSSIERS window can take someone off file: twice, to be sure
+  if (scrollId.startsWith('dos.')) {
+    const sure = view.armed === `dos.del.${i}`;
+    controls.push(section('FILE'));
+    controls.push(buttons([{ id: `dos.del.${i}`, text: sure ? 'CONFIRM: REMOVE' : 'REMOVE FROM DOSSIERS', style: sure ? danger() : ghost() }]));
+    controls.push(label(sure ? 'everything you know about them goes // click again' : 'forget this person: what you found goes, they can be found again', 9, sure ? sk.danger : sk.dim));
+  }
   const top = face.y + face.h + 10;
   drawScrolled(ctx, sk, { x: inner.x, y: top, w: inner.w, h: Math.max(inner.y + inner.h - top, 20) }, controls, scrollId, ui, input, events);
 }
@@ -101,7 +108,7 @@ function drawPeopleList(ctx, sk, r, game, s, order, ui, input, events, view, id,
     rowH: 58,
     empty,
   }, ui, input, events);
-  if (view.pplSel !== null) drawDossier(ctx, sk, detail, game, view.pplSel, s, ui, input, events, `${id}.detail`);
+  if (view.pplSel !== null) drawDossier(ctx, sk, detail, game, view.pplSel, s, ui, input, events, `${id}.detail`, view);
 }
 
 /// The PEOPLE tab: the staff of the linked host's company.

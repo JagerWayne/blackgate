@@ -1,4 +1,4 @@
-import { learn } from '../state/intel.js';
+import { learn, forget } from '../state/intel.js';
 import { fileLead } from '../windows/dsn/sleek.js';
 import { newPad, openPad, deletePad } from '../state/notes.js';
 // The events the operator made, applied to the game state.
@@ -337,7 +337,14 @@ function handleClick(state, e, desk) {
   else if (id === 'sess.disconnect') disconnect(game);
   else if (id.startsWith('sess.task.')) tryTask(game, id.slice(10));
   else if (id.startsWith('sess.crack.')) tryTask(game, 'CrackPassword', Number(id.slice(11)));
-  else if (id.startsWith('ppl.')) {
+  else if (id.startsWith('dos.del.')) {
+    const view = (state.win.dossiers ??= {});
+    if (view.armed === id) {
+      const who = Number(id.slice(8));
+      if (forget(game, who)) toast(game, `${game.world.people[who].name} removed from the dossiers`, 'info');
+      view.armed = null;
+    } else view.armed = id;
+  } else if (id.startsWith('ppl.')) {
     const [, kind, who] = id.split('.');
     tryTask(game, kind, Number(who));
   }

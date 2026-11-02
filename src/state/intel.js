@@ -77,6 +77,14 @@ export function dossiers(game) {
   return Object.keys(game.intel ?? {}).map(Number).filter((i) => game.world.people[i]);
 }
 
+/// Takes a person off file: every detail found and every attack on them is
+/// forgotten. They can be found again. Returns true when they were on file.
+export function forget(game, i) {
+  if (!game.intel?.[i]) return false;
+  delete game.intel[i];
+  return true;
+}
+
 /// Every staffer of a company becomes a lead (a name on file, nothing more).
 export function addLeads(game, company) {
   let n = 0;

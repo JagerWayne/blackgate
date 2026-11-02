@@ -1,3 +1,4 @@
+import { forget } from '../state/intel.js';
 import { routeLines } from '../state/session.js';
 import { padsOf, newPad, openPad, deletePad, MAX_PADS } from '../state/notes.js';
 // The command prompt's commands: `<app> <action> [what]`, plus a few general
@@ -807,6 +808,15 @@ const APPS = {
             ...INTEL_FIELDS.map((f) => ({ text: `  ${pad(f.label, 12)}${intelText(ctx.game, i, f.field)}` })),
             { text: `  ${[it.tapped && 'TAPPED', it.inbox && 'INBOX HACKED', it.phishAt !== undefined && 'PHISH SENT'].filter(Boolean).join(' // ') || 'nothing done yet'}` },
           ];
+        },
+      },
+      forget: {
+        args: '<person> --yes', help: 'take someone off file: everything you found about them goes',
+        run(ctx, [w, yes]) {
+          const i = personArg(ctx, w);
+          if (yes !== '--yes') fail(`this forgets everything about them: \`ppl forget ${w} --yes\``);
+          if (!forget(ctx.game, i)) fail(`${ctx.game.world.people[i].name} is not on file`);
+          return [{ text: `${ctx.game.world.people[i].name} removed from the dossiers`, tone: 'ok' }];
         },
       },
       profile: { args: '<person>', help: 'OSINT a person: email, role, phone, social, leaked password', run: (ctx, [w]) => { const i = personArg(ctx, w); return task(ctx, 'Profile', i, `profile ${ctx.game.world.people[i].name}`); } },

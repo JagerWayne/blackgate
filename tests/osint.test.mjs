@@ -138,3 +138,19 @@ test('ppl commands profile and show a person', () => {
   run(state, term, 'ppl show #1', { x: 0, y: 0, w: 1600, h: 900 });
   assert.ok(term.lines.some((l) => l.text.includes(g.world.people[staff[0]].email)));
 });
+
+test('DOSSIERS: a person can be removed from file, with a second press to confirm', async () => {
+  const { handleEvents } = await import('../src/systems/events.js');
+  const { intelOf, dossiers, learn, knows } = await import('../src/state/intel.js');
+  const { makeGame } = await import('../src/state/gameState.js');
+  const state = { game: makeGame('DEL', 3), win: {}, windows: { list: [] }, ui: {} };
+  const g = state.game;
+  intelOf(g, 4);
+  learn(g, 4, 'email');
+  assert.ok(dossiers(g).includes(4));
+  handleEvents(state, [{ type: 'click', id: 'dos.del.4' }], { x: 0, y: 0, w: 1600, h: 900 });
+  assert.ok(dossiers(g).includes(4), 'the first press only arms it');
+  handleEvents(state, [{ type: 'click', id: 'dos.del.4' }], { x: 0, y: 0, w: 1600, h: 900 });
+  assert.ok(!dossiers(g).includes(4), 'gone from file');
+  assert.equal(knows(g, 4, 'email'), false, 'what was found is forgotten');
+});
