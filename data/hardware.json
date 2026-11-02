@@ -1,4 +1,5 @@
 {
+  "schema": 2,
   "chassis": [
     {
       "cpu_slots": 1,
