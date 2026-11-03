@@ -62,7 +62,7 @@ function planTask(game, s, h, kind, arg) {
   switch (kind) {
     case 'BypassFirewall': {
       const lvl = toolLevel(game, 'FirewallBypass');
-      if (lvl < h.firewall - 1) return { error: 'firewall bypass too weak' };
+      if (lvl < h.firewall) return { error: 'firewall bypass too weak' };
       if (s.fwBypassed) return { error: 'firewall already bypassed' };
       return { label: 'bypass firewall', dur: 2.5 + h.firewall * 1.6, loud: false };
     }

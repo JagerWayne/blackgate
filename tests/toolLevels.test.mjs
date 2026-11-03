@@ -52,11 +52,13 @@ test('no tool that is for sale describes a level the same as the one before it',
 test('a tool stops at the highest level any target can ask for', () => {
   const m = demands();
   assert.equal(top('PasswordCracker'), m.lock);
-  assert.equal(top('FirewallBypass'), m.firewall - 1);
+  assert.equal(top('FirewallBypass'), m.firewall);
   assert.equal(top('ProxyBypass'), m.proxy);
   assert.equal(top('MonitorBypass'), m.monitor);
+  assert.equal(top('DdosCannon'), Math.min(m.firewall, m.proxy));
   assert.equal(top('Decrypter'), m.enc);
   assert.equal(top('VoiceAnalyser'), m.voice);
+  assert.deepEqual([m.lock, m.firewall, m.monitor, m.proxy, m.enc, m.voice], [3, 5, 5, 5, 7, 1], 'the targets span the whole ladders');
   assert.equal(top('OsintSweep'), Math.max(...INTEL_FIELDS.map((f) => f.level)));
 });
 

@@ -13,7 +13,8 @@ const REWARD = {
 /// Works out the pay, writes the brief and puts the job on the board.
 export function postContract(game, spec) {
   const { kind, target, co, hostName, subject, amount, difficulty, story, rating } = spec;
-  let reward = REWARD[kind] + difficulty * rewardScale(kind);
+  // pay rises with the operator's standing as well as with the target: x1.5 at rating 100
+  let reward = (REWARD[kind] + difficulty * rewardScale(kind)) * (1 + Math.min(rating ?? 0, 100) / 200);
   reward = Math.floor(reward * (0.85 + nextF32(game.rng) * 0.4));
   const drawn = game.clock.minutes + 1440 + range(game.rng, 0, 2880);
   const deadline = spec.hours ? game.clock.minutes + spec.hours * 60 : drawn;

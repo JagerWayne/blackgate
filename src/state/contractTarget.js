@@ -1,6 +1,7 @@
 // Picking the target a job is done on.
 
 import { range } from '../core/rng.js';
+import { unlocks } from '../data/content.js';
 import { storage } from './gateway.js';
 import { storageUsed } from './gameHelpers.js';
 import { recordsKept } from './records.js';
@@ -13,11 +14,14 @@ function hostKinds(kind) {
 }
 
 /// The guard a target may have for the operator's rating: a new operator is
-/// only given hosts with no firewall, monitor or proxy. The hardened hosts
-/// come with the rating that unlocks the heavy work.
+/// only given hosts with no firewall, monitor or proxy. After that the world
+/// holds what the versions the rating has unlocked can beat (version n beats
+/// guard n).
 function guardCap(game) {
-  if (game.player.rating < 8) return { firewall: 0, monitor: 0, proxy: 0 };
-  return { firewall: 6, monitor: 6, proxy: 5 };
+  const rating = game.player.rating;
+  const open = unlocks();
+  const level = rating < open[1].rating ? 0 : open.filter((u) => rating >= u.rating).length;
+  return { firewall: level, monitor: level, proxy: level };
 }
 
 /// The room left on the gateway's drives, in GB.

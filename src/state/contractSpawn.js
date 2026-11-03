@@ -34,7 +34,7 @@ export function spawnContract(game, story = false, want = {}) {
   const co = companyName(game, target);
   const hostName = host(game, target).name;
   const h = host(game, target);
-  const difficulty = Math.min(Math.max(h.firewall + h.monitor + h.proxy, 1), 12);
+  const difficulty = Math.min(Math.max(h.firewall + h.monitor + h.proxy, 1), 15);
   let fileName = null;
   let subject = '';
   let amount = 0;

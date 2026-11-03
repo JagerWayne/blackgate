@@ -56,7 +56,7 @@ function whyNot(game, s, spec) {
     case 'BypassFirewall':
       if (!h.firewall) return r.none ?? '';
       if (lvl === 0) return r.noTool ?? '';
-      if (lvl < h.firewall - 1) return r.weak ?? '';
+      if (lvl < h.firewall) return r.weak ?? '';
       if (s.fwBypassed) return r.done ?? '';
       return '';
     case 'BypassMonitor':

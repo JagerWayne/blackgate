@@ -55,11 +55,11 @@ test('every tool carries the modern name and keeps its kind id', () => {
   assert.deepEqual(have, NAMES);
 });
 
-test('the cannon has four distinct versions', () => {
+test('the cannon has five distinct versions', () => {
   const d = software().find((x) => x.kind === 'DdosCannon');
-  assert.equal(d.versions.length, 4);
+  assert.equal(d.versions.length, 5);
   const texts = d.versions.map((_, i) => versionEffect('DdosCannon', i + 1));
-  assert.equal(new Set(texts).size, 4, texts.join(' | '));
+  assert.equal(new Set(texts).size, 5, texts.join(' | '));
 });
 
 test('the cannon is a host action with its own button', () => {

@@ -113,6 +113,7 @@ export function loadRun(handle = current) {
     fillRecords(g);
     revealLiveTargets(g);
     repairLiveJobs(g);
+    clampLocks(g);
     cutLostLevels(g);
     return g;
   } catch (e) {
@@ -172,6 +173,14 @@ function revealLiveTargets(g) {
     const h = g.world.hosts[c.target];
     if (h) h.discovered = true;
   });
+}
+
+/// A world made when the cracker had five versions and the voice cloner three:
+/// no lock asks for more than v3 now, and a voice lock for v1.
+function clampLocks(g) {
+  (g.world?.hosts ?? []).forEach((h) => (h.services ?? []).forEach((v) => {
+    v.password = v.kind === 'voice' ? Math.min(v.password, 1) : Math.min(v.password, 3);
+  }));
 }
 
 /// A run that owns a tool level the catalogue no longer sells: the tool is cut

@@ -1,19 +1,22 @@
 {
-  "schema": 2,
+  "schema": 3,
   "software": [
     {
       "cpu": 1.399999976158142,
       "desc": "Sends the lock's hash to rented cloud GPUs. Each version beats a stronger lock; accelerator cards in your rig make it faster.",
       "kind": "PasswordCracker",
       "name": "CLOUD GPU HASH CRACKER",
-      "price": 700,
+      "price": 1500,
+      "prices": [
+        1500,
+        4000,
+        8500
+      ],
       "short": "CRACKER",
       "versions": [
         "HASHBUSTER",
         "KRAKEN",
-        "SKELETON KEY",
-        "ZERODAY",
-        "ORACLE"
+        "SKELETON KEY"
       ]
     },
     {
@@ -21,11 +24,21 @@
       "desc": "Pivots through a cloud tunnel to scrub the proxy trail and open the relay.",
       "kind": "ProxyBypass",
       "name": "CLOUD PIVOT TUNNEL",
-      "price": 600,
+      "price": 1800,
+      "prices": [
+        1800,
+        3800,
+        6500,
+        9500,
+        14000
+      ],
       "short": "PIVOT",
       "versions": [
         "GHOSTLINE",
-        "COLDSPOT"
+        "COLDSPOT",
+        "VAPORTRAIL",
+        "MIRAGE",
+        "PHANTOM"
       ]
     },
     {
@@ -33,13 +46,21 @@
       "desc": "Tunnels past the web application firewall over DNS.",
       "kind": "FirewallBypass",
       "name": "WAF / DNS TUNNEL",
-      "price": 750,
+      "price": 2200,
+      "prices": [
+        2200,
+        4500,
+        7200,
+        10500,
+        15000
+      ],
       "short": "WAF",
       "versions": [
         "CROWBAR",
         "RAM",
         "BREACH",
-        "SIEGEBREAK"
+        "SIEGEBREAK",
+        "ROOTKIT"
       ]
     },
     {
@@ -47,13 +68,21 @@
       "desc": "Blinds the host's endpoint detection so the intrusion monitor goes quiet and the trace slows.",
       "kind": "MonitorBypass",
       "name": "EDR BLINDER",
-      "price": 900,
+      "price": 2500,
+      "prices": [
+        2500,
+        5000,
+        8000,
+        12000,
+        16500
+      ],
       "short": "EDR",
       "versions": [
         "BLINDFOLD",
         "DEAF EYE",
         "SILENCE",
-        "DEAD AIR"
+        "DEAD AIR",
+        "BLACKOUT"
       ]
     },
     {
@@ -61,13 +90,21 @@
       "desc": "Floods the host's edge: drops the firewall and the proxy in one go. The trace starts at once and runs three times faster.",
       "kind": "DdosCannon",
       "name": "VOLUMETRIC DDOS CANNON",
-      "price": 2600,
+      "price": 2000,
+      "prices": [
+        2000,
+        4000,
+        7000,
+        10000,
+        13000
+      ],
       "short": "DDOS",
       "versions": [
         "SYN FLOOD",
         "UDP STORM",
         "AMPLIFIER",
-        "BOTNET"
+        "BOTNET",
+        "TERABIT"
       ]
     },
     {
@@ -75,14 +112,19 @@
       "desc": "Intercepts the security operations centre's alerts: the trace warning comes earlier.",
       "kind": "TraceTracker",
       "name": "SOC TRACE INTERCEPTOR",
-      "price": 500,
+      "price": 1000,
+      "prices": [
+        1000,
+        2500,
+        4800,
+        8000
+      ],
       "short": "SOC",
       "versions": [
         "PING",
         "RADAR",
         "SONAR",
-        "LIDAR",
-        "OMNISCIENT"
+        "LIDAR"
       ]
     },
     {
@@ -112,11 +154,25 @@
       "desc": "Breaks ransomware-grade protection so a file can be copied or handed in.",
       "kind": "Decrypter",
       "name": "RANSOM DECRYPTOR",
-      "price": 1100,
+      "price": 1000,
+      "prices": [
+        1000,
+        2200,
+        4000,
+        6500,
+        9000,
+        12000,
+        15500
+      ],
       "short": "RANSOM",
       "versions": [
         "PIN",
-        "LOCKPICK"
+        "LOCKPICK",
+        "CIPHER",
+        "KEYSMITH",
+        "MASTER KEY",
+        "SKELETON",
+        "ZERO KEY"
       ]
     },
     {
@@ -171,12 +227,13 @@
       "desc": "Records a voice on a call and clones it to open voice locks.",
       "kind": "VoiceAnalyser",
       "name": "NEURAL VOICE CLONER",
-      "price": 3000,
+      "price": 4200,
+      "prices": [
+        4200
+      ],
       "short": "CLONER",
       "versions": [
-        "SAMPLE",
-        "MIMIC",
-        "PARROT"
+        "SAMPLE"
       ]
     },
     {

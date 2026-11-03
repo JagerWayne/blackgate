@@ -679,10 +679,12 @@ paid work:
 | Level | Rating needed |
 |---|---|
 | 1 | 0 |
-| 2 | 8 |
-| 3 | 22 |
-| 4 | 42 |
-| 5 | 70 |
+| 2 | 6 |
+| 3 | 16 |
+| 4 | 30 |
+| 5 | 48 |
+| 6 | 70 |
+| 7 | 100 |
 
 ---
 
@@ -694,48 +696,62 @@ tool beats the hardest target in the game. Tools with one job have one version.
 A target needs a version at least as strong as its own rating (lock, firewall,
 proxy, monitor strength, encryption, voice lock).
 
+The world is built to match: locks run from 1 to 3 and voice locks are 1,
+while the firewall, the monitor and the proxy each go up to 5 and encryption
+up to 7. The last host of a company is its crown jewel, one step harder than
+the rest. The job board only offers guards the versions your rating has
+unlocked can beat (none below rating 6), and pay grows with both the target
+(difficulty is the three guards added, up to 15) and your rating (x1.5 at
+rating 100). Each version has its own price.
+
 | Tool | Version | What it does |
 |---|---|---|
 | **CRACKER** | V1 HASHBUSTER | beats locks up to v1 |
-| | V2 KRAKEN | beats locks up to v2 |
-| | V3 SKELETON KEY | beats locks up to v3 |
-| | V4 ZERODAY | beats locks up to v4 |
-| | V5 ORACLE | beats locks up to v5 |
+|  | V2 KRAKEN | beats locks up to v2 |
+|  | V3 SKELETON KEY | beats locks up to v3 |
 | **PIVOT** | V1 GHOSTLINE | scrubs proxies up to PX 1 |
-| | V2 COLDSPOT | scrubs proxies up to PX 2 |
-| **WAF** | V1 CROWBAR | gets past firewalls up to FW 2 |
-| | V2 RAM | gets past firewalls up to FW 3 |
-| | V3 BREACH | gets past firewalls up to FW 4 |
-| | V4 SIEGEBREAK | gets past firewalls up to FW 5 |
+|  | V2 COLDSPOT | scrubs proxies up to PX 2 |
+|  | V3 VAPORTRAIL | scrubs proxies up to PX 3 |
+|  | V4 MIRAGE | scrubs proxies up to PX 4 |
+|  | V5 PHANTOM | scrubs proxies up to PX 5 |
+| **WAF** | V1 CROWBAR | gets past firewalls up to FW 1 |
+|  | V2 RAM | gets past firewalls up to FW 2 |
+|  | V3 BREACH | gets past firewalls up to FW 3 |
+|  | V4 SIEGEBREAK | gets past firewalls up to FW 4 |
+|  | V5 ROOTKIT | gets past firewalls up to FW 5 |
 | **EDR** | V1 BLINDFOLD | blinds monitors up to strength 1 |
-| | V2 DEAF EYE | blinds monitors up to strength 2 |
-| | V3 SILENCE | blinds monitors up to strength 3 |
-| | V4 DEAD AIR | blinds monitors up to strength 4 |
+|  | V2 DEAF EYE | blinds monitors up to strength 2 |
+|  | V3 SILENCE | blinds monitors up to strength 3 |
+|  | V4 DEAD AIR | blinds monitors up to strength 4 |
+|  | V5 BLACKOUT | blinds monitors up to strength 5 |
 | **DDOS** | V1 SYN FLOOD | drops firewalls up to FW 1 and proxies up to PX 1 at once, loudly |
-| | V2 UDP STORM | drops firewalls up to FW 2 and proxies up to PX 2 at once, loudly |
-| | V3 AMPLIFIER | drops firewalls up to FW 3 and proxies up to PX 2 at once, loudly |
-| | V4 BOTNET | drops firewalls up to FW 4 and proxies up to PX 2 at once, loudly |
+|  | V2 UDP STORM | drops firewalls up to FW 2 and proxies up to PX 2 at once, loudly |
+|  | V3 AMPLIFIER | drops firewalls up to FW 3 and proxies up to PX 3 at once, loudly |
+|  | V4 BOTNET | drops firewalls up to FW 4 and proxies up to PX 4 at once, loudly |
+|  | V5 TERABIT | drops firewalls up to FW 5 and proxies up to PX 5 at once, loudly |
 | **SOC** | V1 PING | warns of a trace 5% earlier |
-| | V2 RADAR | warns of a trace 10% earlier |
-| | V3 SONAR | warns of a trace 15% earlier |
-| | V4 LIDAR | warns of a trace 20% earlier |
-| | V5 OMNISCIENT | warns of a trace 25% earlier |
+|  | V2 RADAR | warns of a trace 10% earlier |
+|  | V3 SONAR | warns of a trace 15% earlier |
+|  | V4 LIDAR | warns of a trace 20% earlier |
+| **EXFIL** | V1 STRAW | does the whole job |
+| **SHRED** | V1 ERASER | does the whole job |
 | **RANSOM** | V1 PIN | opens files encrypted up to v1 |
-| | V2 LOCKPICK | opens files encrypted up to v2 |
+|  | V2 LOCKPICK | opens files encrypted up to v2 |
+|  | V3 CIPHER | opens files encrypted up to v3 |
+|  | V4 KEYSMITH | opens files encrypted up to v4 |
+|  | V5 MASTER KEY | opens files encrypted up to v5 |
+|  | V6 SKELETON | opens files encrypted up to v6 |
+|  | V7 ZERO KEY | opens files encrypted up to v7 |
+| **FABRICATE** | V1 BLUR | does the whole job |
+| **STOMPER** | V1 TEAR | does the whole job |
 | **CRAWLER** | V1 CRAWL | PROFILE finds email and role |
-| | V2 SPIDER | PROFILE finds the phone too |
-| | V3 DREDGE | PROFILE finds the social handle too |
-| | V4 SIPHON | PROFILE finds leaked passwords too |
-| **CLONER** | V1 SAMPLE | records voices and matches voice locks up to v1 |
-| | V2 MIMIC | records voices and matches voice locks up to v2 |
-| | V3 PARROT | records voices and matches voice locks up to v3 |
-| **SPOOF** | V1 MASK | spoofed calls, phishing and spam; taps need v2 |
-| | V2 MIMIC | spoofed calls, phishing, spam and phone taps |
-| **COPIER** | V1 STRAW | does the whole job |
-| **DELETER** | V1 ERASER | does the whole job |
-| **LOGDEL** | V1 TEAR | does the whole job |
-| **LOGMOD** | V1 BLUR | does the whole job |
+|  | V2 SPIDER | PROFILE finds the phone too |
+|  | V3 DREDGE | PROFILE finds the social handle too |
+|  | V4 SIPHON | PROFILE finds leaked passwords too |
 | **STUFFER** | V1 RETRY | opens an inbox with its owner's leaked password |
+| **CLONER** | V1 SAMPLE | records voices and matches voice locks up to v1 |
+| **SPOOF** | V1 MASK | spoofed calls, phishing and spam; taps need v2 |
+|  | V2 MIMIC | spoofed calls, phishing, spam and phone taps |
 
 A saved run that owns a version that no longer exists is cut back to the tool's
 last version when it loads, and the price of the levels above it is paid back.

@@ -5,7 +5,7 @@
 
 import { drawFrame, splitPanel, detailPane } from '../ui/panel.js';
 import { software, unlocks } from '../data/content.js';
-import { SW_PRICE_MULT } from '../data/enums.js';
+import { toolPrice } from '../state/economy.js';
 import { label, para, keyValue, spacer, custom, meter, buttons as buttonRow } from '../ui/controls.js';
 import { primary, ghost } from '../ui/styles.js';
 import { drawScrolled } from '../ui/scroll.js';
@@ -63,7 +63,7 @@ export function drawSoftware(ctx, sk, r, game, ui, input, events, view) {
   const have = levelOf(d.kind);
   const unlock = unlocks();
   const [fam, tint] = familyOf(d.kind);
-  const priceOf = (level) => Math.floor(d.price * SW_PRICE_MULT[level]);
+  const priceOf = (level) => toolPrice(d, level);
   const nameOf = (level) => d.versions[level - 1] ?? `V${level}`;
   const idle = versionEffect(d.kind, 1) === NO_TASK;
 
@@ -75,7 +75,7 @@ export function drawSoftware(ctx, sk, r, game, ui, input, events, view) {
       c.fillRect(rr.x, rr.y, 4, rr.h);
       drawText(c, fam, rr.x + 14, rr.y + 8, FONT.body, color(tint));
       drawText(c, ellipsize(c, d.name.toUpperCase(), FONT.heading, rr.w - 120), rr.x + 14, rr.y + 28, FONT.heading, color(s.text_hi));
-      drawText(c, have ? `v${have} / 5` : 'NOT OWNED', rr.x + rr.w - 12, rr.y + 30, FONT.emphasis, color(have ? s.ok : s.dim), { align: 'right' });
+      drawText(c, have ? `v${have} / ${d.versions.length}` : 'NOT OWNED', rr.x + rr.w - 12, rr.y + 30, FONT.emphasis, color(have ? s.ok : s.dim), { align: 'right' });
     }),
     spacer(6),
     para(d.desc, FONT.body, sk.text),

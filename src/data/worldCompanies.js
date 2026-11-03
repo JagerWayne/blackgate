@@ -57,12 +57,15 @@ export function buildCompanies(rng, hosts, companies, people, accounts, usedIps,
     const hostRoles = hostRolesFor(kind);
     for (let h = 0; h < nHosts; h += 1) {
       const role = hostRoles[h % hostRoles.length];
+      // the last host of a company is its crown jewel and one step harder; the
+      // firewall, the monitor and the proxy each reach 5 there
+      const core = h === nHosts - 1 ? 1 : 0;
       const sec = soft
         ? [0, 0, 0, 1]
         : [
-          Math.min(Math.floor(baseSec / 2), 5),
-          Math.min(baseSec, 6),
-          Math.min(Math.max(baseSec - 1, 0), 6),
+          Math.min(Math.max(baseSec - 1 + core, 0), 5),
+          Math.min(baseSec + core, 5),
+          Math.min(Math.max(baseSec - 1 + core, 0), 5),
           Math.min(baseSec + 1, 8),
         ];
       const hid = mkHost(rng, hosts, companies, idx, hostKindFor(kind), role, city, sec, usedIps);

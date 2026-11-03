@@ -166,5 +166,7 @@ export function buyTool(game, kind, level) {
 
 /// The price of a tool at a level.
 export function toolPrice(def, level) {
-  return Math.floor(def.price * TOOL_MULT[Math.min(level, 5)]);
+  // a tool with a price sheet sells each version at its own price; a version
+  // past the sheet (an old save's) is valued by the old multiplier
+  return def.prices?.[level - 1] ?? Math.floor(def.price * TOOL_MULT[Math.min(level, 5)]);
 }

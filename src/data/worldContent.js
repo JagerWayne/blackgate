@@ -27,6 +27,9 @@ export function buildHostContent(rng, host, kind, role, wealth) {
     host.services.push({ name: 'database', port: 5432, kind: 'db', password: adminPw, open: false, visible: true });
   }
 
+  // the cracker stops at v3 and the voice cloner at v1: no lock asks for more
+  host.services.forEach((v) => { v.password = v.kind === 'voice' ? 1 : Math.min(v.password, 3); });
+
   const nFiles = 3 + range(rng, 0, 4) + wealth;
   for (let i = 0; i < nFiles; i += 1) {
     const stems = fileStems();
@@ -42,6 +45,8 @@ export function buildHostContent(rng, host, kind, role, wealth) {
     } else if (chance(rng, 0.15)) {
       enc = 1;
     }
+    // the harder the host, the harder its encryption: the decrypter has seven versions
+    if (enc > 0) enc = Math.min(enc + host.firewall, 7);
     host.files.push({
       name: `${stem}_${range(rng, 10, 99)}.${ext}`,
       size,

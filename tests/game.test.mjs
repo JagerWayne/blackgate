@@ -32,7 +32,8 @@ test('a job can be taken, done and paid', () => {
   assert.equal(h.files[fi].enc, 0, 'the starter payload is plain');
   assert.equal(startTask(g, 'CopyFile', fi), null);
 
-  for (let i = 0; i < 1200; i += 1) {
+  // a 1 Gbps field rig takes 40 s over the biggest of the first files
+  for (let i = 0; i < 3600; i += 1) {
     tick(g, 1 / 60);
     if (!g.session) break;
   }
