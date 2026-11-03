@@ -53,7 +53,7 @@ test('the same seed gives the same records', () => {
 
 test('the records draw nothing from the generator: the hosts of a seed are unchanged', () => {
   const g = makeGame('FP', 7);
-  const s = JSON.stringify(g.world.hosts.map((h) => [h.ip, h.files.map((f) => f.name + f.size + f.enc), h.services.map((v) => v.password)]));
+  const s = JSON.stringify(g.world.hosts.map((h) => [h.ip, h.files.filter((f) => !f.name.includes('_dump_')).map((f) => f.name + f.size + f.enc), h.services.map((v) => v.password)]));
   // the fingerprint of seed 7's hosts before people had records
   assert.equal(createHash('sha1').update(s).digest('hex'), '41b5c797a32a52359a6f439c61153d854a9afb9f');
   assert.equal(g.world.people.length, 2000);

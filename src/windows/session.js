@@ -65,6 +65,9 @@ export function drawSession(ctx, sk, r, game, ui, input, events, view) {
   controls.push(section('LINK'));
   controls.push(keyValue('STATE', s.phase === 'online' ? 'LINK UP' : 'NEGOTIATING', sk.ok));
   controls.push(meter(`TRACE ${(s.trace * 100).toFixed(0)}% // WARNS AT ${Math.round(warn * 100)}%`, s.trace, traceTint, warn));
+  if (s.windowLeft !== undefined) {
+    controls.push(keyValue('WINDOW', `${Math.max(Math.ceil(s.windowLeft), 0)}s until the host drops the link`, s.windowLeft < 20 ? sk.danger : sk.warn));
+  }
   // the actions that work on the host itself
   controls.push(...sessionActionControls(game, sk, s));
   controls.push(section(`THREAD SLOTS // ${demand(game, s)}/${slots(game)}`));

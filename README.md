@@ -563,6 +563,13 @@ own colours and header layout.
   and **the run is over**. Disconnect in time. The one exception is the
   GHOST-VPS BASTION: its provider pulls the plug and **wipes every file on
   your drives**, but the run goes on (credits, tools and the world are kept).
+- **Copying and the window.** A copy takes the file's size over your uplink
+  (1.2 GB a second for every Gbps; the files tab shows the seconds). A host
+  whose firewall, monitor and proxy add up to 6 or more drops your session on
+  its own clock: 90 seconds at 6, 15 fewer for each step, never under 45. Its
+  datastore dump (150 to 450 GB) is too big for a 1 Gbps line inside that
+  window; a 10 Gbps rack takes it in time. A timeout is not a capture: the
+  copies under way are lost and the logs you left still count.
 - **Logs.** Every link writes a *session open* log with your address on the
   target and on each bounce hop, and your actions add more on the target.
   A machine keeps its logs until you scrub or wipe them. Logs you leave
@@ -625,7 +632,10 @@ The parts:
   ZFS enclosures need a rack chassis.
   ENCRYPTED NVME STRIP 4 TB (1,500 cr); ENCRYPTED NVME STRIP 8 TB (3,200 cr); ENCRYPTED NVME STRIP 16 TB (6,000 cr); ZFS FLASH ENCLOSURE 32 TB (9,500 cr); ZFS FLASH ENCLOSURE 64 TB (16,000 cr); ZFS FLASH ENCLOSURE 128 TB (28,000 cr).
 - **Modem:** download speed (added to the onboard uplink), and how many hops
-  your route can take cleanly.
+  your route can take cleanly. It also sets how easily the line is traced:
+  the fixed fibre lines are followed 15% faster, the SFP+ trunk 10% slower,
+  and the LEO dish 20% slower, but a dish is found from orbit after 120
+  seconds of activity (the trace starts and runs three times faster).
   FTTP MODEM 1 GBPS (800 cr); FTTP MODEM 2.5 GBPS (2,200 cr); SFP+ OPTICAL TRUNK 10 GBPS (7,500 cr); LEO PHASED-ARRAY 25 GBPS (18,000 cr).
 - **Security:** sensors and failsafes against traces and raids. They work
   together: the earliest warning, the best shield and any failsafe count. A

@@ -2,7 +2,8 @@
 
 import { makeSession, pushLine } from '../state/session.js';
 import { note, discover, routeFactor, toolLevel } from '../state/gameState.js';
-import { bandwidth, chassisOf, fpga, hops, traceFactor, warnAt, heatFactor } from '../state/gateway.js';
+import { bandwidth, chassisOf, fpga, hops, traceFactor, triangulation, warnAt, heatFactor } from '../state/gateway.js';
+import { exfilWindow } from '../state/transfer.js';
 import { heatGain, wipeStorage } from './physical.js';
 import { completeTask } from './sessionComplete.js';
 import { overloadTick, throttle, weight } from './compute.js';
@@ -80,6 +81,12 @@ export function sessionTick(game, dt) {
         pushLine(s, 'admin buried in spam // trace slowed');
       }
       pushLine(s, `connected // ${h.ip}`);
+      // a hard host closes the link on its own clock
+      const window = exfilWindow(h);
+      if (window !== null) {
+        s.windowLeft = window;
+        pushLine(s, `warning: the host drops sessions after ${window}s`);
+      }
       // the link leaves a log on every machine it passes through; it stays
       // until the operator scrubs or wipes it, and counts as heat on leaving
       new Set([...s.route, s.target]).forEach((id) => {
@@ -105,6 +112,24 @@ export function sessionTick(game, dt) {
     completeTask(game, s, task);
   });
   overloadTick(game, s, dt);
+  s.online = (s.online ?? 0) + dt;
+  if (s.windowLeft !== undefined) {
+    s.windowLeft -= dt;
+    if (s.windowLeft <= 0) {
+      note(game, 'session timed out // the host closed the link');
+      game.toasts.push({ text: 'Session timed out: the host closed the link', kind: 'bad', born: game.uiTime });
+      disconnect(game);
+      return;
+    }
+  }
+  // a dish has no wire to trace, but the satellite gives it away after a while
+  const found = triangulation(game.player.gateway);
+  if (found && !s.triangulated && s.online >= found) {
+    s.triangulated = true;
+    s.alerted = true;
+    s.traceRate *= 3;
+    pushLine(s, 'orbital triangulation // the dish is being located');
+  }
   // a trace frozen from the cheat menu holds where it is
   if (s.alerted && !game.cheats?.freezeTrace) {
     let rate = s.traceRate;

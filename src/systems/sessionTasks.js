@@ -2,7 +2,8 @@
 
 import { freeLane, pushLine } from '../state/session.js';
 import { toolLevel, storageUsed, keepsRecord, validRecord } from '../state/gameState.js';
-import { bandwidth, crypt, fpga, storage } from '../state/gateway.js';
+import { crypt, fpga, storage } from '../state/gateway.js';
+import { copyRate } from '../state/transfer.js';
 import { roomFor, SATURATED } from './compute.js';
 import { software } from '../data/content.js';
 import { voiceAdmin, hasSample } from '../state/voice.js';
@@ -93,10 +94,7 @@ function planTask(game, s, h, kind, arg) {
       if (s.tasks.some((t) => t.kind === 'CopyFile' && t.arg === arg)) return { error: 'already copying this file' };
       // work still running counts too, or two at once overfill the drive
       if (storageUsed(game) + pendingStorage(s, h) + f.size > storage(game.player.gateway)) return { error: 'not enough gateway storage' };
-      const copier = toolLevel(game, 'FileCopier');
-      const rate = Math.max(Math.min(28 * copier, bandwidth(game.player.gateway) * 0.6), 8);
-      const dur = Math.min(Math.max(f.size / rate, 1.8), 16);
-      return { label: `copy ${f.name}`, dur, loud: true };
+      return { label: `copy ${f.name}`, dur: Math.max(f.size / copyRate(game.player.gateway), 1.2), loud: true };
     }
     case 'DecryptFile': {
       const f = h.files[arg];

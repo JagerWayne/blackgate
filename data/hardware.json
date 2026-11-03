@@ -1,5 +1,5 @@
 {
-  "schema": 4,
+  "schema": 5,
   "chassis": [
     {
       "accel_slots": 1,
@@ -348,6 +348,8 @@
       "raid_shield": 0,
       "tier": 1,
       "trace_delay": 0,
+      "trace_mult": 1.15,
+      "triangulated": 0,
       "warn_at": 0.85
     },
     {
@@ -365,6 +367,8 @@
       "raid_shield": 0,
       "tier": 2,
       "trace_delay": 0,
+      "trace_mult": 1.15,
+      "triangulated": 0,
       "warn_at": 0.85
     },
     {
@@ -382,6 +386,8 @@
       "raid_shield": 0,
       "tier": 3,
       "trace_delay": 0,
+      "trace_mult": 0.9,
+      "triangulated": 0,
       "warn_at": 0.85
     },
     {
@@ -394,11 +400,13 @@
       "lanes": 1,
       "multiplier": 1,
       "name": "LEO PHASED-ARRAY 25 GBPS",
-      "note": "no wire to trace // 10 hops clean",
+      "note": "no wire to trace, found from orbit after 120 s // 10 hops clean",
       "price": 18000,
       "raid_shield": 0,
       "tier": 4,
       "trace_delay": 0,
+      "trace_mult": 0.8,
+      "triangulated": 120,
       "warn_at": 0.85
     },
     {

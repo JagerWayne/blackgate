@@ -128,8 +128,19 @@ export function defense(gw) {
   return names.length ? names.join(' + ') : 'NO PROTECTION';
 }
 
+/// The modem that sets the line: the fastest fitted.
+function lineModem(gw) {
+  return partsOf(gw, 'modem').map((p) => componentDef('modem', p.level)).filter(Boolean).sort((a, b) => b.tier - a.tier)[0];
+}
+
+/// How easily the line is followed: a fixed fibre line is easy, a dish has no wire.
+function lineFactor(gw) { return lineModem(gw)?.trace_mult ?? 1; }
+
+/// The seconds of activity after which an orbital dish is located, or 0.
+export function triangulation(gw) { return lineModem(gw)?.triangulated ?? 0; }
+
 /// How fast a passive trace finds the machine.
-export function traceFactor(gw) { return chassisOf(gw).trace_factor * (1 - 0.07 * traceDelay(gw)); }
+export function traceFactor(gw) { return chassisOf(gw).trace_factor * (1 - 0.07 * traceDelay(gw)) * lineFactor(gw); }
 
 /// How fast heat builds on the operator.
 export function heatFactor(gw) { return chassisOf(gw).heat_factor; }

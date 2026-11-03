@@ -110,7 +110,7 @@ test('the link window names its job, the objective file and the trace threshold'
   const ctx = frame(state);
   assert.ok(has(ctx, new RegExp(`^#${job.id} `)), 'the JOB block names it');
   assert.ok(has(ctx, /WARNS AT \d+%/), 'the trace says where it warns');
-  assert.ok(has(ctx, /^GATEWAY \/\/ \d+ GB FREE OF \d+$/), 'the files tab shows the free space');
+  assert.ok(has(ctx, /^GATEWAY \/\/ \d+ GB FREE OF \d+ \/\/ \d+\.\d GB\/s$/), 'the files tab shows the free space');
   if (job.file) assert.ok(has(ctx, /^OBJECTIVE$/), 'the objective file is marked');
 });
 

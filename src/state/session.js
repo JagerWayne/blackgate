@@ -21,6 +21,7 @@ export function makeSession(target, route, connectDur) {
     selService: null,
     selFile: null,
     started: 0,
+    online: 0,
     nextLane: 0,
     xferAmount: 0,
     linksFound: 0,

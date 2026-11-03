@@ -13,6 +13,7 @@ import { SERVICE_LABEL } from '../data/enums.js';
 import { taskError } from '../systems/sessionTasks.js';
 import { toolLevel, storageUsed, recordsKept, keepsRecord, recordText, RECORD_LABEL } from '../state/gameState.js';
 import { storage } from '../state/gateway.js';
+import { copyRate } from '../state/transfer.js';
 import { voiceAdmin, hasSample } from '../state/voice.js';
 
 /// The services tab: two lines a service, its port and lock, then its kind.
@@ -71,7 +72,8 @@ export function drawFiles(ctx, sk, r, game, s, ui, input, events) {
   // the room left on the gateway, over the list of what could fill it
   const cap = storage(game.player.gateway);
   const free = Math.max(cap - storageUsed(game), 0);
-  drawText(ctx, `GATEWAY // ${free} GB FREE OF ${cap}`, r.x + 4, r.y + 2, 9.5, color(free > 0 ? sk.dim : sk.danger));
+  const rate = copyRate(game.player.gateway);
+  drawText(ctx, `GATEWAY // ${free} GB FREE OF ${cap} // ${rate.toFixed(1)} GB/s`, r.x + 4, r.y + 2, 9.5, color(free > 0 ? sk.dim : sk.danger));
   const listR = { x: r.x, y: r.y + 24, w: r.w, h: Math.max(r.h - 24, 20) };
   // the files a job in hand asks for
   const wanted = new Set(game.contracts
@@ -86,7 +88,8 @@ export function drawFiles(ctx, sk, r, game, s, ui, input, events) {
       const goal = wanted.has(f.name);
       const cells = [
         { text: f.name, size: 10.5, color: sk.text_hi, col: 0, line: 0 },
-        { text: `${f.size} GB`, size: 9.5, color: f.size > free ? sk.danger : sk.warn, align: 'right', col: 1, line: 0 },
+        // the size, and the seconds a copy takes: red when the host's window shuts first
+        { text: `${f.size} GB // ${Math.ceil(f.size / rate)}s`, size: 9.5, color: f.size > free || f.size / rate > (s.windowLeft ?? Infinity) ? sk.danger : sk.warn, align: 'right', col: 1, line: 0 },
         { text: f.enc > 0 ? `ENCRYPTED v${f.enc}` : 'PLAINTEXT', size: 9, color: f.enc > 0 ? sk.danger : sk.dim, col: 0, line: 1 },
       ];
       if (goal) cells.push({ text: 'OBJECTIVE', size: 9, color: sk.accent, align: 'right', col: 1, line: 1 });

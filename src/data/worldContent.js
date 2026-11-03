@@ -52,6 +52,22 @@ export function buildHostContent(rng, host, kind, role, wealth) {
     });
   }
 
+  // a hard host also keeps a datastore dump, too big for a slow line to take inside its
+  // time window (no random draws, so a world's other contents do not move)
+  if (host.firewall + host.monitor + host.proxy >= 6) {
+    const total = host.files.reduce((n, f) => n + f.size, 0);
+    const stems = fileStems();
+    const exts = fileExtensions();
+    host.files.push({
+      name: `${stems[total % stems.length]}_dump_${10 + (total % 90)}.${exts[total % exts.length]}`,
+      size: Math.min(Math.max(total * 3, 150), 450),
+      enc: 0,
+      tag: 0,
+      content: `DATASTORE DUMP // ${CO_LABEL[kind] ?? 'FIRM'} // ${role.toUpperCase()}`,
+      deleted: false,
+    });
+  }
+
   // a couple of old access logs, so covering your tracks works from minute one
   const nLogs = 2 + range(rng, 0, 3);
   for (let i = 0; i < nLogs; i += 1) {
