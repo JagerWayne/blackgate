@@ -330,7 +330,7 @@ matching button does, with the same costs, checks and messages.
 | `bg crack [service #]` | Break a password (the first locked password service by default) |
 | `bg record [service #]` | Call a voice lock's admin and record their voice (needs the NEURAL VOICE CLONER) |
 | `bg voiceprint [service #]` | Play the admin's recording to open a voice lock |
-| `bg bypass firewall|monitor|proxy|ddos` | Bypass a defence (`ddos` drops the firewall and the proxy together, but starts the trace at once and three times as fast) |
+| `bg bypass firewall\|monitor\|proxy\|ddos` | Bypass a defence (`ddos` drops the firewall and the proxy together, but starts the trace at once and three times as fast) |
 | `bg copy <file>` / `bg delete <file>` / `bg decrypt <file>` | File tasks |
 | `bg alter <person> <field> <value>` | Change a record |
 | `bg osint` | Run an OSINT sweep |
