@@ -6,7 +6,7 @@ import { MISSION_KINDS } from '../data/enums.js';
 import { companyName, host, hasTool } from './gameHelpers.js';
 import { pickChange, recordText, keepsRecord, validRecord, RECORD_LABEL } from './records.js';
 import { hint } from '../data/content.js';
-import { pickTarget, freeSpace } from './contractTarget.js';
+import { pickTarget, freeSpace, fileLimit } from './contractTarget.js';
 import { postContract } from './contractPost.js';
 
 /// Puts a job on the board.
@@ -75,7 +75,7 @@ export function jobFiles(game, h, kind) {
   return h.files
     .map((f, i) => [f, i])
     .filter(([f]) => !f.deleted && f.tag === 0)
-    .filter(([f]) => kind !== 'retrieve' || (f.enc === 0 && f.size <= free))
+    .filter(([f]) => kind !== 'retrieve' || (f.enc === 0 && f.size <= Math.min(free, fileLimit(game))))
     .map(([, i]) => i);
 }
 

@@ -35,6 +35,12 @@ function authReachable(game, h) {
   return !records || unlocked >= AUTH_LEVEL[authOf(records)] + 1;
 }
 
+/// The biggest file a retrieve job may name: the first jobs are files the field
+/// rig copies in a few seconds, and the big ones come with rating 6.
+export function fileLimit(game) {
+  return game.player.rating < unlocks()[1].rating ? 20 : Infinity;
+}
+
 /// The room left on the gateway's drives, in GB.
 export function freeSpace(game) {
   return Math.max(storage(game.player.gateway) - storageUsed(game), 0);
@@ -63,7 +69,7 @@ export function targetsFor(game, kind, { only = null, anyGuard = false } = {}) {
       // the job names a file the operator can take: it has to be there, plain,
       // and small enough for the gateway
       if (kind === 'retrieve') {
-        return h.files.some((f) => !f.deleted && f.tag === 0 && f.enc === 0 && f.size <= free);
+        return h.files.some((f) => !f.deleted && f.tag === 0 && f.enc === 0 && f.size <= Math.min(free, fileLimit(game)));
       }
       if (kind === 'delete') {
         return h.files.some((f) => !f.deleted && f.tag === 0);

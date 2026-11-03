@@ -1,7 +1,7 @@
 // The game's version, shown on the login screen. It must match package.json
 // (a test checks), which is what a release is built and tagged from.
 
-export const VERSION = '0.99.2';
+export const VERSION = '1.0.0';
 
 const SEEN = 'blackgate.seen-version';
 

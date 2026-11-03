@@ -664,7 +664,7 @@ The parts:
 - **Accelerator:** one PCIe card, which speeds up password cracking, file
   decrypting and voice synthesis (not a recorded call, which runs in real
   time). The best card fitted counts.
-  TENSOR HASH ACCELERATOR // 1 UNIT (4,500 cr, 1.5x); // 2 UNITS (9,000 cr, 2.5x); // 3 UNITS (15,000 cr, 3.5x); // 4 UNITS (24,000 cr, 5x).
+  TENSOR HASH ACCELERATOR // 1 UNIT (4,500 cr, 1.5x); TENSOR HASH ACCELERATOR // 2 UNITS (9,000 cr, 2.5x); TENSOR HASH ACCELERATOR // 3 UNITS (15,000 cr, 3.5x); TENSOR HASH ACCELERATOR // 4 UNITS (24,000 cr, 5x).
 - **FPGA:** custom silicon that decrypts and shakes hands 3x faster, and a
   decryption on it takes no thread slot. Every chassis from the Micro-Server up
   takes one.

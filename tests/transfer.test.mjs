@@ -117,3 +117,25 @@ test('the world keeps one datastore dump on each hard host and its other files s
     });
   }
 });
+
+test('a new operator is only asked for files the field rig copies in a few seconds', () => {
+  for (let seed = 1; seed <= 8; seed += 1) {
+    const g = makeGame('FIRST', seed);
+    g.contracts.filter((c) => c.state === 'offered' && c.file).forEach((c) => {
+      const f = g.world.hosts[c.target].files.find((x) => x.name === c.file);
+      assert.ok(f.size <= 20, `seed ${seed}: ${f.name} is ${f.size} GB`);
+      assert.ok(f.size / copyRate(g.player.gateway) <= 20);
+    });
+  }
+});
+
+test('from rating 6 the jobs may name bigger files', async () => {
+  const { targetsFor } = await import('../src/state/contractTarget.js');
+  const g = makeGame('FIRST', 7);
+  const big = g.world.hosts.find((h) => h.company != null && !h.internal && h.firewall + h.monitor + h.proxy === 0 && h.files.every((f) => f.size > 20 || f.deleted));
+  if (!big) return;
+  g.player.rating = 0;
+  assert.ok(!targetsFor(g, 'retrieve').includes(big.id));
+  g.player.rating = 6;
+  assert.ok(targetsFor(g, 'retrieve').includes(big.id));
+});

@@ -140,7 +140,8 @@ test('a file is freed when its job is turned down', () => {
   const f = held(c);
   assert.equal(declineContract(g, c.id), true);
   onMinutes(g, 1);
-  assert.equal(f.tag, 0);
+  // the board may hand the freed file to a new job at once; it is not held by the declined one
+  assert.notEqual(f.tag, c.id);
 });
 
 test('a news headline is not skipped when the clock moves several minutes at once', () => {
