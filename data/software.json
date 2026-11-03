@@ -1,5 +1,5 @@
 {
-  "schema": 3,
+  "schema": 4,
   "software": [
     {
       "cpu": 1.399999976158142,
@@ -17,6 +17,22 @@
         "HASHBUSTER",
         "KRAKEN",
         "SKELETON KEY"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Runs an adversary-in-the-middle reverse proxy and captures a live session token, walking past MFA without the password. The token lasts 40 seconds; when it dies the host notices.",
+      "kind": "SessionHijacker",
+      "name": "SESSION TOKEN HIJACKER",
+      "price": 3500,
+      "prices": [
+        3500,
+        7500
+      ],
+      "short": "AITM",
+      "versions": [
+        "REVERSE PROXY",
+        "TOKEN REPLAY"
       ]
     },
     {

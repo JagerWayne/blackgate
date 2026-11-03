@@ -1,6 +1,7 @@
 // What a finished task did to the world.
 
 import { pushLine } from '../state/session.js';
+import { TOKEN_SECS } from '../data/auth.js';
 import { evaluateMissions } from '../state/contracts.js';
 import { discover } from '../state/gameState.js';
 import { voiceAdmin, sampleName } from '../state/voice.js';
@@ -40,6 +41,17 @@ export function completeTask(game, s, task) {
       s.traceRate *= 3;
       pushLine(s, 'volumetric flood // firewall and proxy down // the trace is on');
       break;
+    // a captured session token opens the service for a while
+    case 'HijackSession': {
+      const svc = h.services[task.arg];
+      if (svc) {
+        svc.open = true;
+        svc.tokenLeft = TOKEN_SECS;
+        pushLine(s, `session token captured // ${svc.name}:${svc.port} // good for ${TOKEN_SECS}s`);
+        h.logs.push({ minute: game.clock.minutes, ip, text: `session replay ${svc.name}`, loud: false });
+      }
+      break;
+    }
     case 'CrackPassword': {
       const svc = h.services[task.arg];
       if (svc) {

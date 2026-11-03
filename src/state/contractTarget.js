@@ -2,6 +2,7 @@
 
 import { range } from '../core/rng.js';
 import { unlocks } from '../data/content.js';
+import { authOf, AUTH_LEVEL } from '../data/auth.js';
 import { storage } from './gateway.js';
 import { storageUsed } from './gameHelpers.js';
 import { recordsKept } from './records.js';
@@ -22,6 +23,15 @@ function guardCap(game) {
   const open = unlocks();
   const level = rating < open[1].rating ? 0 : open.filter((u) => rating >= u.rating).length;
   return { firewall: level, monitor: level, proxy: level };
+}
+
+/// Whether the records lock of a host is behind a guard the rating can beat:
+/// app MFA wants the second unlock level (the hijacker v1), session-bound MFA
+/// the third (v2) and a hardware token the fourth (the HSM tap).
+function authReachable(game, h) {
+  const records = h.services.find((v) => v.kind === 'records');
+  const unlocked = unlocks().filter((u) => game.player.rating >= u.rating).length;
+  return !records || unlocked >= AUTH_LEVEL[authOf(records)] + 1;
 }
 
 /// The room left on the gateway's drives, in GB.
@@ -56,7 +66,7 @@ export function targetsFor(game, kind, { only = null, anyGuard = false } = {}) {
         return h.files.some((f) => !f.deleted && f.tag === 0);
       }
       // an alteration needs a host that keeps the records
-      if (kind === 'modify') return recordsKept(game, h).length > 0;
+      if (kind === 'modify') return recordsKept(game, h).length > 0 && (anyGuard || authReachable(game, h));
       if (kind === 'destroy') {
         // sabotage has to have something to burn
         return h.files.some((f) => !f.deleted);

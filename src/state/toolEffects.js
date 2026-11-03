@@ -8,6 +8,7 @@ const BY_LEVEL = {
   FirewallBypass: (v) => `gets past firewalls up to FW ${v}`,
   ProxyBypass: (v) => `scrubs proxies up to PX ${v}`,
   MonitorBypass: (v) => `blinds monitors up to strength ${v}`,
+  SessionHijacker: (v) => (v >= 2 ? 'beats app MFA and session-bound MFA' : 'beats app MFA'),
   DdosCannon: (v) => `drops firewalls up to FW ${v} and proxies up to PX ${v} at once, loudly`,
   Decrypter: (v) => `opens files encrypted up to v${v}`,
   TraceTracker: (v) => `warns of a trace ${5 * v}% earlier`,

@@ -17,7 +17,8 @@ import { versionEffect, NO_TASK } from '../state/toolEffects.js';
 
 /// Each tool's family and its colour.
 const FAMILY = {
-  PasswordCracker: ['BREAK-IN', 0xff6b6b], Decrypter: ['BREAK-IN', 0xff6b6b], CredentialStuff: ['BREAK-IN', 0xff6b6b],
+  PasswordCracker: ['BREAK-IN', 0xff6b6b], Decrypter: ['BREAK-IN', 0xff6b6b], CredentialStuff: ['BREAK-IN', 0xff6b6b], SessionHijacker: ['BREAK-IN', 0xff6b6b],
+  DdosCannon: ['BYPASS', 0xffc857],
   ProxyBypass: ['BYPASS', 0xffc857], FirewallBypass: ['BYPASS', 0xffc857], MonitorBypass: ['BYPASS', 0xffc857],
   TraceTracker: ['STEALTH', 0x7aa2ff], LogModifier: ['STEALTH', 0x7aa2ff], LogDeleter: ['STEALTH', 0x7aa2ff],
   FileCopier: ['DATA', 0x5be49b], FileDeleter: ['DATA', 0x5be49b],

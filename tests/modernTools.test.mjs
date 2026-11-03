@@ -14,6 +14,7 @@ await initContent();
 
 const NAMES = {
   PasswordCracker: 'CLOUD GPU HASH CRACKER',
+  SessionHijacker: 'SESSION TOKEN HIJACKER',
   ProxyBypass: 'CLOUD PIVOT TUNNEL',
   FirewallBypass: 'WAF / DNS TUNNEL',
   MonitorBypass: 'EDR BLINDER',

@@ -19,6 +19,7 @@ export function slotsFor(gw, kind) {
     case 'cpu': return c.cpu_slots;
     case 'accel': return c.accel_slots ?? 0;
     case 'fpga': return c.fpga_slots ?? 0;
+    case 'hsm': return c.hsm_slots ?? 0;
     case 'storage': return c.storage_slots ?? 1;
     case 'modem': return c.modem_slots;
     case 'security': return c.security_slots;
@@ -106,6 +107,9 @@ export function raidShield(gw) { return Math.max(chassisOf(gw).base_shield ?? 0,
 
 /// Whether the perimeter sensors are fitted: they show the Green, Yellow and Red bands.
 export function hasSensors(gw) { return securityDefs(gw).some((d) => d.hud); }
+
+/// Whether the HSM tap is fitted: it opens the hardware-token locks.
+export function hasHsm(gw) { return partsOf(gw, 'hsm').length > 0; }
 
 /// Whether an RF jammer is fitted.
 export function hasJammer(gw) { return securityDefs(gw).some((d) => d.jammer); }

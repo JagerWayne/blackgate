@@ -4,6 +4,7 @@ import { makeSession, pushLine } from '../state/session.js';
 import { note, discover, routeFactor, toolLevel } from '../state/gameState.js';
 import { bandwidth, chassisOf, fpga, hops, traceFactor, triangulation, warnAt, heatFactor } from '../state/gateway.js';
 import { exfilWindow } from '../state/transfer.js';
+import { tokenTick, dropTokens } from './tokens.js';
 import { heatGain, wipeStorage } from './physical.js';
 import { completeTask } from './sessionComplete.js';
 import { overloadTick, throttle, weight } from './compute.js';
@@ -37,6 +38,7 @@ export function disconnect(game) {
   const s = game.session;
   if (!s) return;
   game.session = null;
+  dropTokens(game, s.target);
   note(game, 'link terminated');
   let heat = 0;
   // a log adds heat once, on the link that closes after it
@@ -122,6 +124,7 @@ export function sessionTick(game, dt) {
       return;
     }
   }
+  tokenTick(game, s, dt);
   // a dish has no wire to trace, but the satellite gives it away after a while
   const found = triangulation(game.player.gateway);
   if (found && !s.triangulated && s.online >= found) {
@@ -148,6 +151,7 @@ export function sessionTick(game, dt) {
   // is a rented server whose provider pulls the plug and wipes it
   if (s.trace >= 1) {
     game.session = null;
+    dropTokens(game, s.target);
     if (chassisOf(game.player.gateway).vps) {
       wipeStorage(game);
       note(game, 'TRACE COMPLETE // the provider wiped the server // the files are gone');

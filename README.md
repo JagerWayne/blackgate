@@ -330,6 +330,7 @@ matching button does, with the same costs, checks and messages.
 | `bg crack [service #]` | Break a password (the first locked password service by default) |
 | `bg record [service #]` | Call a voice lock's admin and record their voice (needs the NEURAL VOICE CLONER) |
 | `bg voiceprint [service #]` | Play the admin's recording to open a voice lock |
+| `bg hijack [service #]` | Capture a session behind MFA (the token lasts 40 s) |
 | `bg bypass firewall\|monitor\|proxy\|ddos` | Bypass a defence (`ddos` drops the firewall and the proxy together, but starts the trace at once and three times as fast) |
 | `bg copy <file>` / `bg delete <file>` / `bg decrypt <file>` | File tasks |
 | `bg alter <person> <field> <value>` | Change a record |
@@ -570,6 +571,19 @@ own colours and header layout.
   datastore dump (150 to 450 GB) is too big for a 1 Gbps line inside that
   window; a 10 Gbps rack takes it in time. A timeout is not a capture: the
   copies under way are lost and the logs you left still count.
+- **MFA and tokens.** A host that is hard enough puts its back-end locks (admin,
+  records, bank, database, AI) behind more than a password: from difficulty 4
+  **app MFA**, from 7 **session-bound MFA**, and on the big banks and
+  ministries from 9 a **hardware token**. A cracked or stuffed password is not
+  enough behind MFA; the SESSION TOKEN HIJACKER (v1 beats app MFA, v2 session-bound
+  MFA) captures a live session instead (HIJACK, or `bg hijack`). The token lasts
+  40 seconds: when it runs out the service locks again, an alteration under way
+  is lost, and the host notices (the trace starts and jumps). Closing the link
+  takes the token back. A hardware token wants the HSM TAP fitted; with it the
+  lock is cracked like a password. The same goes for a company's mail: behind
+  MFA, credential stuffing and brute force are blocked and only the hijacker
+  opens an inbox. Alteration jobs only appear on hosts whose guard your rating
+  can beat (MFA from rating 6, session-bound from 16, tokens from 30).
 - **Logs.** Every link writes a *session open* log with your address on the
   target and on each bounce hop, and your actions add more on the target.
   A machine keeps its logs until you scrub or wipe them. Logs you leave
@@ -628,6 +642,9 @@ The parts:
   decryption on it takes no thread slot. Every chassis from the Micro-Server up
   takes one.
   FPGA WIRE-SPEED CRYPTO ENGINE (35,000 cr).
+- **HSM:** a card that emulates smartcards and hardware tokens, needed for the
+  token locks of the big banks and defence servers. Every chassis takes one.
+  HARDWARE SECURITY MODULE TAP (11,000 cr).
 - **Storage:** how much you can download. Cards add to the onboard drive; the
   ZFS enclosures need a rack chassis.
   ENCRYPTED NVME STRIP 4 TB (1,500 cr); ENCRYPTED NVME STRIP 8 TB (3,200 cr); ENCRYPTED NVME STRIP 16 TB (6,000 cr); ZFS FLASH ENCLOSURE 32 TB (9,500 cr); ZFS FLASH ENCLOSURE 64 TB (16,000 cr); ZFS FLASH ENCLOSURE 128 TB (28,000 cr).
@@ -709,6 +726,8 @@ rating 100). Each version has its own price.
 | **CRACKER** | V1 HASHBUSTER | beats locks up to v1 |
 |  | V2 KRAKEN | beats locks up to v2 |
 |  | V3 SKELETON KEY | beats locks up to v3 |
+| **AITM** | V1 REVERSE PROXY | beats app MFA |
+|  | V2 TOKEN REPLAY | beats app MFA and session-bound MFA |
 | **PIVOT** | V1 GHOSTLINE | scrubs proxies up to PX 1 |
 |  | V2 COLDSPOT | scrubs proxies up to PX 2 |
 |  | V3 VAPORTRAIL | scrubs proxies up to PX 3 |

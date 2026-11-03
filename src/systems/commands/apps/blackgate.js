@@ -1,4 +1,5 @@
 import { routeLines } from '../../../state/session.js';
+import { authOf } from '../../../data/auth.js';
 import { recordsKept, RECORD_LABEL, WORK_FIELDS, parseRecord, validRecord, recordText } from '../../../state/records.js';
 import { pad, clock, fail, rowOf, press, hostArg, link, remoteFile, task, voiceLock, personArg, fieldArg, simple } from '../helpers.js';
 
@@ -79,6 +80,15 @@ export const blackgateApp = {
         const i = w ? rowOf(w) : h.services.findIndex((s) => !s.open && s.kind !== 'voice');
         if (i < 0 || !h.services[i]) fail(w ? `no service ${w} // see \`bg services\`` : 'every password lock is already open');
         return task(ctx, 'CrackPassword', i, `crack ${h.services[i].name}`);
+      },
+    },
+    hijack: {
+      args: '[service #]', help: 'capture a live session behind MFA (the first MFA service by default); the token lasts 40 s',
+      run(ctx, [w]) {
+        const { h } = link(ctx);
+        const i = w ? rowOf(w) : h.services.findIndex((s) => !s.open && (authOf(s) === 'mfa' || authOf(s) === 'session'));
+        if (i < 0 || !h.services[i]) fail(w ? `no service ${w} // see \`bg services\`` : 'no MFA service is locked here');
+        return task(ctx, 'HijackSession', i, `hijack ${h.services[i].name}`);
       },
     },
     record: {

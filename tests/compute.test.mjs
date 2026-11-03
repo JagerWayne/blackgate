@@ -41,7 +41,7 @@ function durOf(g, kind, arg) {
 }
 
 test('the catalogue has accelerator cards and an FPGA', () => {
-  assert.deepEqual(HW_KINDS, ['cpu', 'accel', 'fpga', 'storage', 'modem', 'security']);
+  assert.deepEqual(HW_KINDS, ['cpu', 'accel', 'fpga', 'hsm', 'storage', 'modem', 'security']);
   assert.deepEqual(componentsOf('accel').map((d) => d.multiplier), [1.5, 2.5, 3.5, 5]);
   assert.deepEqual(componentsOf('accel').map((d) => d.price), [4500, 9000, 15000, 24000]);
   assert.deepEqual(componentsOf('fpga').map((d) => [d.multiplier, d.price]), [[3, 35000]]);

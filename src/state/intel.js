@@ -4,6 +4,7 @@
 // open the phone and inbox attacks.
 
 import { pushMail, toast, discover } from './gameState.js';
+import { authOf } from '../data/auth.js';
 
 /// What each PROFILE level finds, in order.
 export const INTEL_FIELDS = [
@@ -104,7 +105,8 @@ function serviceFor(game, i) {
   let best = null;
   (co?.hosts ?? []).forEach((id) => {
     game.world.hosts[id].services.forEach((svc, k) => {
-      if (svc.open || svc.kind === 'voice' || svc.password > p.clearance) return;
+      // a password alone does not open a lock that is behind MFA
+      if (svc.open || svc.kind === 'voice' || authOf(svc) !== 'password' || svc.password > p.clearance) return;
       if (!best || svc.password > best.svc.password) best = { host: id, index: k, svc };
     });
   });

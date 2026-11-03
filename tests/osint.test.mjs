@@ -78,6 +78,8 @@ test('the leaked password opens the inbox, and the mail names the company', () =
   const { g, staff } = linked();
   const i = staff[0];
   intelOf(g, i).level = 4;
+  // this company logs in with a password alone; behind MFA stuffing is blocked (tests/mfa.test.mjs)
+  g.world.hosts.forEach((h) => h.services.forEach((v) => { v.auth = 'password'; }));
   assert.equal(startTask(g, 'HackInbox', i), null);
   finish(g);
   assert.ok(g.intel[i].inbox);

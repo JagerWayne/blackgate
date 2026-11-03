@@ -16,10 +16,10 @@ import { FONT } from '../core/text.js';
 /// Draws the gateway window.
 export function drawGateway(ctx, sk, r, game, ui, input, events, view) {
   const tab = view.tab ?? 0;
-  const cats = ['cpu', 'accel', 'fpga', 'storage', 'modem', 'security', 'gateway', 'stock'];
+  const cats = ['cpu', 'accel', 'fpga', 'hsm', 'storage', 'modem', 'security', 'gateway', 'stock'];
   const stocked = game.player.stock?.length ?? 0;
   const labels = {
-    cpu: 'COMPUTE', accel: 'ACCEL', fpga: 'FPGA', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'CHASSIS',
+    cpu: 'COMPUTE', accel: 'ACCEL', fpga: 'FPGA', hsm: 'HSM', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'CHASSIS',
     stock: stocked ? `STOCK ${stocked}` : 'STOCK',
   };
   const body = drawFrame(ctx, sk, r, ui, input, events, '', 'your chassis, its parts and the supply line');

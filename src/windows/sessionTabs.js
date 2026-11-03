@@ -12,7 +12,8 @@ import { drawPortrait, portraitOf } from '../ui/portrait.js';
 import { SERVICE_LABEL } from '../data/enums.js';
 import { taskError } from '../systems/sessionTasks.js';
 import { toolLevel, storageUsed, recordsKept, keepsRecord, recordText, RECORD_LABEL } from '../state/gameState.js';
-import { storage } from '../state/gateway.js';
+import { storage, hasHsm } from '../state/gateway.js';
+import { authOf, AUTH_LABEL, AUTH_LEVEL } from '../data/auth.js';
 import { copyRate } from '../state/transfer.js';
 import { voiceAdmin, hasSample } from '../state/voice.js';
 
@@ -27,10 +28,14 @@ export function drawAccess(ctx, sk, r, game, s, ui, input, events) {
     const sampled = who !== null && hasSample(game, who);
     // a voice lock is opened by a recording: call the admin, then play it back
     const step = sampled ? 'PlayVoiceprint' : 'RecordVoice';
-    const why = svc.open ? '' : taskError(game, s, voice ? step : 'CrackPassword', i) ?? '';
+    // behind MFA the way in is the session, not the password
+    const auth = authOf(svc);
+    const mfa = auth === 'mfa' || auth === 'session';
+    const why = svc.open ? '' : taskError(game, s, voice ? step : mfa ? 'HijackSession' : 'CrackPassword', i) ?? '';
+    const lockText = mfa ? AUTH_LABEL[auth] : auth === 'token' ? `TOKEN // LOCK v${svc.password}` : `LOCK v${svc.password}`;
     const cells = [
       { text: `${svc.name}:${svc.port}`, size: 10.5, color: svc.open ? sk.ok : sk.text_hi, col: 0, line: 0 },
-      { text: svc.open ? 'OPEN' : `LOCK v${svc.password}`, size: 9.5, color: svc.open ? sk.ok : sk.warn, align: 'right', col: 1, line: 0 },
+      { text: svc.open ? (svc.tokenLeft === undefined ? 'OPEN' : `TOKEN ${Math.ceil(svc.tokenLeft)}s`) : lockText, size: 9.5, color: svc.open ? (svc.tokenLeft !== undefined && svc.tokenLeft < 10 ? sk.danger : sk.ok) : sk.warn, align: 'right', col: 1, line: 0 },
       { text: SERVICE_LABEL[svc.kind] ?? '', size: 9, color: sk.dim, col: 0, line: 1 },
     ];
     // the lock beside the breaker that has to beat it
@@ -40,8 +45,12 @@ export function drawAccess(ctx, sk, r, game, s, ui, input, events) {
       // the admin's name takes the place of the kind: a voice lock says so in its name
       cells[2] = { text: admin, size: 9, color: sampled ? sk.ok : sk.dim, col: 0, line: 1 };
       cells.push({ text: `YOUR ANALYSER v${lvl}`, size: 9, color: lvl >= svc.password ? sk.ok : sk.danger, align: 'right', col: 1, line: 1 });
+    } else if (!svc.open && mfa) {
+      const lvl = toolLevel(game, 'SessionHijacker');
+      cells.push({ text: `YOUR HIJACKER v${lvl}`, size: 9, color: lvl >= AUTH_LEVEL[auth] ? sk.ok : sk.danger, align: 'right', col: 1, line: 1 });
     } else if (!svc.open) {
-      cells.push({ text: `YOUR BREAKER v${mine}`, size: 9, color: mine >= svc.password ? sk.ok : sk.danger, align: 'right', col: 1, line: 1 });
+      const hsm = auth === 'token' ? ` // HSM ${hasHsm(game.player.gateway) ? 'FITTED' : 'MISSING'}` : '';
+      cells.push({ text: `YOUR BREAKER v${mine}${hsm}`, size: 9, color: mine >= svc.password && (auth !== 'token' || hasHsm(game.player.gateway)) ? sk.ok : sk.danger, align: 'right', col: 1, line: 1 });
     }
     if (why) cells.push({ text: why, size: 9, color: sk.warn, col: 0, line: 2 });
     // an ALTERATION job needs this service open
@@ -53,7 +62,9 @@ export function drawAccess(ctx, sk, r, game, s, ui, input, events) {
       marker: svc.open ? sk.ok : objective ? sk.accent : null,
       actions: svc.open ? undefined : [voice
         ? { id: sampled ? `sess.voice.${i}` : `sess.record.${i}`, text: sampled ? 'VOICEPRINT' : 'RECORD', style: { ...ghost(), disabled: !!why } }
-        : { id: `sess.crack.${i}`, text: 'CRACK', style: { ...ghost(), disabled: !!why } }],
+        : mfa
+          ? { id: `sess.hijack.${i}`, text: 'HIJACK', style: { ...ghost(), disabled: !!why } }
+          : { id: `sess.crack.${i}`, text: 'CRACK', style: { ...ghost(), disabled: !!why } }],
     };
   });
   drawTable(ctx, sk, r, {

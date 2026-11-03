@@ -9,6 +9,7 @@ import { componentsOf, firstNames, software } from '../data/content.js';
 import { personRecord } from '../data/worldCompanies.js';
 import { rankName } from '../core/theme.js';
 import { toolPrice } from './economy.js';
+import { assignAuth } from '../data/auth.js';
 import { hostReport } from './hostReport.js';
 
 // One save per operator, under PREFIX + their file-safe name. LEGACY is the
@@ -178,9 +179,13 @@ function revealLiveTargets(g) {
 /// A world made when the cracker had five versions and the voice cloner three:
 /// no lock asks for more than v3 now, and a voice lock for v1.
 function clampLocks(g) {
-  (g.world?.hosts ?? []).forEach((h) => (h.services ?? []).forEach((v) => {
-    v.password = v.kind === 'voice' ? Math.min(v.password, 1) : Math.min(v.password, 3);
-  }));
+  (g.world?.hosts ?? []).forEach((h) => {
+    (h.services ?? []).forEach((v) => {
+      v.password = v.kind === 'voice' ? Math.min(v.password, 1) : Math.min(v.password, 3);
+    });
+    // a world from before MFA gets the guards its hosts would have been given
+    assignAuth(h);
+  });
 }
 
 /// A run that owns a tool level the catalogue no longer sells: the tool is cut

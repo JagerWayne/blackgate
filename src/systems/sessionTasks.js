@@ -2,7 +2,8 @@
 
 import { freeLane, pushLine } from '../state/session.js';
 import { toolLevel, storageUsed, keepsRecord, validRecord } from '../state/gameState.js';
-import { crypt, fpga, storage } from '../state/gateway.js';
+import { crypt, fpga, hasHsm, storage } from '../state/gateway.js';
+import { authOf, inboxAuth, hijackerLevel, AUTH_LABEL, AUTH_LEVEL } from '../data/auth.js';
 import { copyRate } from '../state/transfer.js';
 import { roomFor, SATURATED } from './compute.js';
 import { software } from '../data/content.js';
@@ -44,7 +45,7 @@ export function taskError(game, s, kind, arg) {
 }
 
 /// The tasks that make no sense twice on the same target at once.
-const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'Ddos', 'CrackPassword', 'DeleteFile']);
+const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'Ddos', 'CrackPassword', 'HijackSession', 'DeleteFile']);
 
 const VOICE_TASKS = new Set(['RecordVoice', 'CallRecord', 'SpoofCall']);
 
@@ -87,11 +88,26 @@ function planTask(game, s, h, kind, arg) {
       if (px && lvl < h.proxy) return { error: `cannon too weak for the proxy (PX ${h.proxy})` };
       return { label: 'volumetric flood', dur: 4, loud: true };
     }
+    case 'HijackSession': {
+      // an adversary-in-the-middle capture of a live session: no password, a token that lasts a while
+      const svc = h.services[arg];
+      if (!svc) return { error: 'no such service' };
+      if (svc.open) return { error: 'service already open' };
+      const auth = authOf(svc);
+      if (auth !== 'mfa' && auth !== 'session') return { error: 'no MFA to hijack on this service' };
+      const lvl = toolLevel(game, 'SessionHijacker');
+      if (lvl < AUTH_LEVEL[auth]) return { error: `hijacker v${lvl} cannot beat ${AUTH_LABEL[auth]}` };
+      return { label: `hijack session ${svc.name}:${svc.port}`, dur: 5 + AUTH_LEVEL[auth] * 2, loud: false };
+    }
     case 'CrackPassword': {
       const svc = h.services[arg];
       if (!svc) return { error: 'no such service' };
       if (svc.open) return { error: 'service already open' };
       if (svc.kind === 'voice') return { error: "voice lock // needs the admin's voiceprint" };
+      // behind MFA a password is not enough; a hardware token wants the HSM tap
+      const auth = authOf(svc);
+      if (auth === 'mfa' || auth === 'session') return { error: `${AUTH_LABEL[auth]} // a password is not enough: needs the SESSION TOKEN HIJACKER` };
+      if (auth === 'token' && !hasHsm(game.player.gateway)) return { error: 'hardware token // fit an HSM TAP' };
       const lvl = toolLevel(game, 'PasswordCracker');
       if (lvl < svc.password) return { error: `breaker v${lvl} cannot beat lock v${svc.password}` };
       const dur = (2.5 + svc.password * 2.2) / crypt(game.player.gateway);
@@ -218,6 +234,15 @@ function planPeople(game, s, h, kind, i) {
     case 'HackInbox': {
       if (!email) return { error: 'email unknown // PROFILE them first' };
       if (it.inbox) return { error: 'inbox already hacked' };
+      // behind MFA neither a stuffed nor a cracked password gets in: the session has to be hijacked
+      const guard = inboxAuth(game.world, p.company);
+      if (guard !== 'password') {
+        const need = hijackerLevel(guard);
+        if (toolLevel(game, 'SessionHijacker') < need) {
+          return { error: `their login is behind ${AUTH_LABEL[guard]}: stuffing and brute force are blocked // needs a SESSION TOKEN HIJACKER v${need}` };
+        }
+        return { label: `hijack inbox ${p.email}`, dur: 8, loud: false };
+      }
       const stuff = knows(game, i, 'leak') && toolLevel(game, 'CredentialStuff') > 0;
       const brute = toolLevel(game, 'PasswordCracker') >= p.clearance;
       if (!stuff && !brute) return { error: `needs their leaked password + CREDENTIAL STUFFING ENGINE, or a cracker v${p.clearance}` };
@@ -244,6 +269,7 @@ export function toolFor(kind) {
     case 'BypassMonitor': return 'MonitorBypass';
     case 'BypassProxy': return 'ProxyBypass';
     case 'Ddos': return 'DdosCannon';
+    case 'HijackSession': return 'SessionHijacker';
     case 'CrackPassword': return 'PasswordCracker';
     case 'CopyFile': return 'FileCopier';
     case 'DecryptFile': return 'Decrypter';

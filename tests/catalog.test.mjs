@@ -27,10 +27,10 @@ function rig(tier) {
   return g;
 }
 
-test('there are seven chassis and six kinds of part, and no RAM', () => {
+test('there are seven chassis and seven kinds of part, and no RAM', () => {
   assert.deepEqual(chassis().map((c) => c.tier), [1, 2, 3, 4, 5, 6, 7]);
   assert.deepEqual(chassis().map((c) => c.price), [0, 6500, 14000, 32000, 48000, 75000, 120000]);
-  assert.deepEqual(HW_KINDS, ['cpu', 'accel', 'fpga', 'storage', 'modem', 'security']);
+  assert.deepEqual(HW_KINDS, ['cpu', 'accel', 'fpga', 'hsm', 'storage', 'modem', 'security']);
   assert.equal(componentsOf('ram').length, 0);
 });
 

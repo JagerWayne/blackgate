@@ -3,6 +3,7 @@
 import { range, chance } from '../core/rng.js';
 import { fileStems, fileExtensions } from './content.js';
 import { CO_LABEL } from './enums.js';
+import { assignAuth } from './auth.js';
 
 /// Fills a host with its services and its files.
 export function buildHostContent(rng, host, kind, role, wealth) {
@@ -83,4 +84,7 @@ export function buildHostContent(rng, host, kind, role, wealth) {
       loud: false,
     });
   }
+
+  // the locks of a hard host are behind MFA or a hardware token
+  assignAuth(host);
 }
