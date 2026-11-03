@@ -96,10 +96,10 @@ export const blackgateApp = {
       },
     },
     bypass: {
-      args: 'firewall|monitor|proxy', help: 'bypass a defence',
+      args: 'firewall|monitor|proxy|ddos', help: 'bypass a defence (ddos drops the firewall and the proxy together, loudly)',
       run(ctx, [what]) {
-        const kind = { firewall: 'BypassFirewall', monitor: 'BypassMonitor', proxy: 'BypassProxy' }[what];
-        if (!kind) fail('usage: bg bypass firewall|monitor|proxy');
+        const kind = { firewall: 'BypassFirewall', monitor: 'BypassMonitor', proxy: 'BypassProxy', ddos: 'Ddos' }[what];
+        if (!kind) fail('usage: bg bypass firewall|monitor|proxy|ddos');
         return task(ctx, kind, undefined, `bypass ${what}`);
       },
     },

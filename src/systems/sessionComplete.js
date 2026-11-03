@@ -7,6 +7,13 @@ import { voiceAdmin, sampleName } from '../state/voice.js';
 import { intelOf, addLeads, useAccess, phishTaken, PHISH_MINUTES, SPAM_MINUTES, INTEL_FIELDS } from '../state/intel.js';
 import { toolLevel, pushMail } from '../state/gameState.js';
 
+/// Opens the proxy relays and slows the trace that goes through them.
+function scrubProxy(s, h) {
+  s.proxyBypassed = true;
+  h.services.filter((v) => v.kind === 'proxy').forEach((v) => { v.open = true; });
+  s.traceRate *= 0.65;
+}
+
 /// The task finished: the world changes.
 export function completeTask(game, s, task) {
   const h = game.world.hosts[s.target];
@@ -21,10 +28,17 @@ export function completeTask(game, s, task) {
       pushLine(s, 'monitor blinded // trace starved');
       break;
     case 'BypassProxy':
-      s.proxyBypassed = true;
-      h.services.filter((v) => v.kind === 'proxy').forEach((v) => { v.open = true; });
-      s.traceRate *= 0.65;
+      scrubProxy(s, h);
       pushLine(s, 'proxy chain scrubbed // trace slowed');
+      break;
+    // the flood takes the firewall and the proxy down together; the whole
+    // internet hears it, so the trace is on at once and three times as fast
+    case 'Ddos':
+      s.fwBypassed = true;
+      if (h.proxy > 0 && !s.proxyBypassed) scrubProxy(s, h);
+      s.alerted = true;
+      s.traceRate *= 3;
+      pushLine(s, 'volumetric flood // firewall and proxy down // the trace is on');
       break;
     case 'CrackPassword': {
       const svc = h.services[task.arg];

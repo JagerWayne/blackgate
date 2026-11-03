@@ -8,6 +8,7 @@ const BY_LEVEL = {
   FirewallBypass: (v) => `gets past firewalls up to FW ${v + 1}`,
   ProxyBypass: (v) => `scrubs proxies up to PX ${v}`,
   MonitorBypass: (v) => `blinds monitors up to strength ${v}`,
+  DdosCannon: (v) => `drops firewalls up to FW ${v} and proxies up to PX ${Math.min(v, 2)} at once, loudly`,
   Decrypter: (v) => `opens files encrypted up to v${v}`,
   TraceTracker: (v) => `warns of a trace ${5 * v}% earlier`,
   VoiceAnalyser: (v) => `records voices and matches voice locks up to v${v}`,

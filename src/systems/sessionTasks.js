@@ -44,7 +44,7 @@ export function taskError(game, s, kind, arg) {
 }
 
 /// The tasks that make no sense twice on the same target at once.
-const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'CrackPassword', 'DeleteFile']);
+const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'Ddos', 'CrackPassword', 'DeleteFile']);
 
 const VOICE_TASKS = new Set(['RecordVoice', 'CallRecord', 'SpoofCall']);
 
@@ -76,6 +76,16 @@ function planTask(game, s, h, kind, arg) {
       const lvl = toolLevel(game, 'ProxyBypass');
       if (lvl < h.proxy) return { error: 'proxy bypass too weak' };
       return { label: 'scrub proxy trail', dur: 2.5 + h.proxy * 0.9, loud: false };
+    }
+    case 'Ddos': {
+      // one flood drops both the firewall and the proxy, if the cannon is strong enough for each
+      const fw = h.firewall > 0 && !s.fwBypassed;
+      const px = h.proxy > 0 && !s.proxyBypassed;
+      if (!fw && !px) return { error: 'nothing to drop' };
+      const lvl = toolLevel(game, 'DdosCannon');
+      if (fw && lvl < h.firewall) return { error: `cannon too weak for the firewall (FW ${h.firewall})` };
+      if (px && lvl < h.proxy) return { error: `cannon too weak for the proxy (PX ${h.proxy})` };
+      return { label: 'volumetric flood', dur: 4, loud: true };
     }
     case 'CrackPassword': {
       const svc = h.services[arg];
@@ -210,7 +220,7 @@ function planPeople(game, s, h, kind, i) {
       if (it.inbox) return { error: 'inbox already hacked' };
       const stuff = knows(game, i, 'leak') && toolLevel(game, 'CredentialStuff') > 0;
       const brute = toolLevel(game, 'PasswordCracker') >= p.clearance;
-      if (!stuff && !brute) return { error: `needs their leaked password + CREDENTIAL STUFFER, or a breaker v${p.clearance}` };
+      if (!stuff && !brute) return { error: `needs their leaked password + CREDENTIAL STUFFING ENGINE, or a cracker v${p.clearance}` };
       return { label: `hack inbox ${p.email}`, dur: stuff ? 4 : 6 + p.clearance * 2, loud: !stuff };
     }
     case 'Phish':
@@ -233,6 +243,7 @@ export function toolFor(kind) {
     case 'BypassFirewall': return 'FirewallBypass';
     case 'BypassMonitor': return 'MonitorBypass';
     case 'BypassProxy': return 'ProxyBypass';
+    case 'Ddos': return 'DdosCannon';
     case 'CrackPassword': return 'PasswordCracker';
     case 'CopyFile': return 'FileCopier';
     case 'DecryptFile': return 'Decrypter';

@@ -1,0 +1,12 @@
+{
+  "id": "ddos",
+  "kind": "Ddos",
+  "label": "DDOS",
+  "tool": "DdosCannon",
+  "reasons": {
+    "none": "no firewall or proxy to drop",
+    "noTool": "no cannon installed",
+    "weak": "the cannon is too weak",
+    "done": "already down"
+  }
+}

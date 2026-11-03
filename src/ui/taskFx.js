@@ -110,4 +110,5 @@ const FX = {
   BypassFirewall: ports,
   BypassMonitor: ports,
   BypassProxy: ports,
+  Ddos: ports,
 };

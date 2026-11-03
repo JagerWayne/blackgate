@@ -71,6 +71,15 @@ function whyNot(game, s, spec) {
       if (lvl < h.proxy) return r.weak ?? '';
       if (s.proxyBypassed) return r.done ?? '';
       return '';
+    case 'Ddos': {
+      const fw = h.firewall > 0 && !s.fwBypassed;
+      const px = h.proxy > 0 && !s.proxyBypassed;
+      if (!h.firewall && !h.proxy) return r.none ?? '';
+      if (lvl === 0) return r.noTool ?? '';
+      if (!fw && !px) return r.done ?? '';
+      if ((fw && lvl < h.firewall) || (px && lvl < h.proxy)) return r.weak ?? '';
+      return '';
+    }
     case 'WipeLogs':
       if (lvl === 0) return r.noTool ?? '';
       if (!h.logs.length) return r.none ?? '';

@@ -1,12 +1,13 @@
 {
+  "schema": 2,
   "software": [
     {
       "cpu": 1.399999976158142,
-      "desc": "Brute-forces service passwords. Level must meet or beat the lock.",
+      "desc": "Sends the lock's hash to rented cloud GPUs. Each version beats a stronger lock; accelerator cards in your rig make it faster.",
       "kind": "PasswordCracker",
-      "name": "PASSWORD BREAKER",
+      "name": "CLOUD GPU HASH CRACKER",
       "price": 700,
-      "short": "BREAKER",
+      "short": "CRACKER",
       "versions": [
         "HASHBUSTER",
         "KRAKEN",
@@ -17,11 +18,11 @@
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Routes your traffic through relays that scrub the origin address.",
+      "desc": "Pivots through a cloud tunnel to scrub the proxy trail and open the relay.",
       "kind": "ProxyBypass",
-      "name": "PROXY BYPASS",
+      "name": "CLOUD PIVOT TUNNEL",
       "price": 600,
-      "short": "PROXY",
+      "short": "PIVOT",
       "versions": [
         "GHOSTLINE",
         "COLDSPOT"
@@ -29,11 +30,11 @@
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Opens a hole in a host firewall so intrusive actions can run.",
+      "desc": "Tunnels past the web application firewall over DNS.",
       "kind": "FirewallBypass",
-      "name": "FIREWALL BYPASS",
+      "name": "WAF / DNS TUNNEL",
       "price": 750,
-      "short": "FIREWALL",
+      "short": "WAF",
       "versions": [
         "CROWBAR",
         "RAM",
@@ -43,11 +44,11 @@
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Blinds the intrusion monitor, starving the active trace of evidence.",
+      "desc": "Blinds the host's endpoint detection so the intrusion monitor goes quiet and the trace slows.",
       "kind": "MonitorBypass",
-      "name": "MONITOR BYPASS",
+      "name": "EDR BLINDER",
       "price": 900,
-      "short": "MONITOR",
+      "short": "EDR",
       "versions": [
         "BLINDFOLD",
         "DEAF EYE",
@@ -56,12 +57,26 @@
       ]
     },
     {
+      "cpu": 1.5,
+      "desc": "Floods the host's edge: drops the firewall and the proxy in one go. The trace starts at once and runs three times faster.",
+      "kind": "DdosCannon",
+      "name": "VOLUMETRIC DDOS CANNON",
+      "price": 2600,
+      "short": "DDOS",
+      "versions": [
+        "SYN FLOOD",
+        "UDP STORM",
+        "AMPLIFIER",
+        "BOTNET"
+      ]
+    },
+    {
       "cpu": 0.6000000238418579,
-      "desc": "Displays exact trace progress instead of a coarse estimate.",
+      "desc": "Intercepts the security operations centre's alerts: the trace warning comes earlier.",
       "kind": "TraceTracker",
-      "name": "TRACE TRACKER",
+      "name": "SOC TRACE INTERCEPTOR",
       "price": 500,
-      "short": "TRACE",
+      "short": "SOC",
       "versions": [
         "PING",
         "RADAR",
@@ -72,33 +87,33 @@
     },
     {
       "cpu": 0.800000011920929,
-      "desc": "Pulls files across the link. Higher levels move more data per second.",
+      "desc": "Exfiltrates files to your storage over the link. How fast is set by your uplink.",
       "kind": "FileCopier",
-      "name": "FILE COPIER",
+      "name": "S3 EXFILTRATOR",
       "price": 650,
-      "short": "COPIER",
+      "short": "EXFIL",
       "versions": [
         "STRAW"
       ]
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Destroys files and, at higher levels, their shadow copies.",
+      "desc": "Shreds files on the host.",
       "kind": "FileDeleter",
-      "name": "FILE DELETER",
+      "name": "FILE SHREDDER",
       "price": 450,
-      "short": "DELETER",
+      "short": "SHRED",
       "versions": [
         "ERASER"
       ]
     },
     {
       "cpu": 1.399999976158142,
-      "desc": "Decrypts protected files so they can be read or submitted.",
+      "desc": "Breaks ransomware-grade protection so a file can be copied or handed in.",
       "kind": "Decrypter",
-      "name": "DECRYPTER",
+      "name": "RANSOM DECRYPTOR",
       "price": 1100,
-      "short": "DECRYPT",
+      "short": "RANSOM",
       "versions": [
         "PIN",
         "LOCKPICK"
@@ -106,33 +121,33 @@
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Rewrites an entry instead of removing it. Subtle, slower, safer.",
+      "desc": "Rewrites only your own audit-log lines instead of removing them. Subtle, slower, safer.",
       "kind": "LogModifier",
-      "name": "LOG MODIFIER",
+      "name": "AUDIT LOG FABRICATOR",
       "price": 550,
-      "short": "LOGMOD",
+      "short": "FABRICATE",
       "versions": [
         "BLUR"
       ]
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Removes access logs. Cheap, and suspicious if it is overused.",
+      "desc": "Stomps on the host's logs: wipes them all.",
       "kind": "LogDeleter",
-      "name": "LOG DELETER",
+      "name": "SIEM STOMPER",
       "price": 400,
-      "short": "LOGDEL",
+      "short": "STOMPER",
       "versions": [
         "TEAR"
       ]
     },
     {
       "cpu": 1.399999976158142,
-      "desc": "Crawls social and breach data for credentials and personal detail.",
+      "desc": "Crawls the open web and social media for the people of a company: email, phone, handles, leaked passwords.",
       "kind": "OsintSweep",
-      "name": "OSINT SWEEPER",
+      "name": "SOCIAL OSINT CRAWLER",
       "price": 1300,
-      "short": "OSINT",
+      "short": "CRAWLER",
       "versions": [
         "CRAWL",
         "SPIDER",
@@ -142,9 +157,9 @@
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Replays leaked credentials against a target's services.",
+      "desc": "Fires leaked credential dumps at a mail login.",
       "kind": "CredentialStuff",
-      "name": "CREDENTIAL STUFFER",
+      "name": "CREDENTIAL STUFFING ENGINE",
       "price": 1800,
       "short": "STUFFER",
       "versions": [
@@ -153,11 +168,11 @@
     },
     {
       "cpu": 0.6000000238418579,
-      "desc": "Synthesises a matching voiceprint for voice-authorised systems.",
+      "desc": "Records a voice on a call and clones it to open voice locks.",
       "kind": "VoiceAnalyser",
-      "name": "VOICE ANALYSER",
+      "name": "NEURAL VOICE CLONER",
       "price": 3000,
-      "short": "VOICE",
+      "short": "CLONER",
       "versions": [
         "SAMPLE",
         "MIMIC",

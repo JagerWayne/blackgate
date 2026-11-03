@@ -328,9 +328,9 @@ matching button does, with the same costs, checks and messages.
 | `bg logs [wipe\|scrub]` | Show the logs; `wipe` deletes them, `scrub` quietly removes only yours |
 | `bg records [text]` | The people on the host, with search |
 | `bg crack [service #]` | Break a password (the first locked password service by default) |
-| `bg record [service #]` | Call a voice lock's admin and record their voice (needs the VOICE ANALYSER) |
+| `bg record [service #]` | Call a voice lock's admin and record their voice (needs the NEURAL VOICE CLONER) |
 | `bg voiceprint [service #]` | Play the admin's recording to open a voice lock |
-| `bg bypass firewall\|monitor\|proxy` | Bypass a defence |
+| `bg bypass firewall|monitor|proxy|ddos` | Bypass a defence (`ddos` drops the firewall and the proxy together, but starts the trace at once and three times as fast) |
 | `bg copy <file>` / `bg delete <file>` / `bg decrypt <file>` | File tasks |
 | `bg alter <person> <field> <value>` | Change a record |
 | `bg osint` | Run an OSINT sweep |
@@ -424,7 +424,7 @@ staff to **DOSSIERS** as leads. The **PEOPLE** tab of a live link lists the
 staff of that company. **PROFILE** fills in a dossier; the better your OSINT
 SWEEPER, the more it finds:
 
-| OSINT SWEEPER | PROFILE finds |
+| SOCIAL OSINT CRAWLER | PROFILE finds |
 |---|---|
 | v1 | email and role |
 | v2 | + phone |
@@ -436,10 +436,10 @@ the person's company. Each button says what it needs and what it gets.
 
 | Attack | Needs | Gets you |
 |---|---|---|
-| **CALL + RECORD** | phone, VOICE ANALYSER | a voice recording (for voice locks); leaves a call log |
+| **CALL + RECORD** | phone, NEURAL VOICE CLONER | a voice recording (for voice locks); leaves a call log |
 | **SPOOFED CALL** | phone, SPOOF KIT | the same recording, posing as their IT desk: no log, slower |
 | **TAP PHONE** | phone, SPOOF KIT v2 | a password they read out: opens the strongest lock their clearance reaches on their company's hosts |
-| **HACK INBOX** | email, plus their leaked password and the CREDENTIAL STUFFER, or a breaker at their clearance | their mail: every host of the company on your map, colleagues as leads, and (clearance 3+) a saved password that opens a lock |
+| **HACK INBOX** | email, plus their leaked password and the CREDENTIAL STUFFING ENGINE, or a cracker at their clearance | their mail: every host of the company on your map, colleagues as leads, and (clearance 3+) a saved password that opens a lock |
 | **PHISH** | email, SPOOF KIT | a fake reset mail. Three game hours later they take it or not (the lower their clearance, the likelier): if taken, the inbox is hacked and a lock opens |
 | **SPAM** | email, SPOOF KIT | their inbox buried for a day. If they are the host's admin (highest clearance), links to their hosts trace 30% slower |
 
@@ -559,7 +559,7 @@ own colours and header layout.
 
 - **The trace.** While you are connected, the target traces you back along
   your bounce route. More hops slow it down. A warning appears when it is
-  getting close; a TRACE TRACKER makes the warning come earlier. If the trace completes, the connection is seized
+  getting close; a SOC TRACE INTERCEPTOR makes the warning come earlier. If the trace completes, the connection is seized
   and **the run is over**. Disconnect in time. The one exception is the
   GHOST-VPS BASTION: its provider pulls the plug and **wipes every file on
   your drives**, but the run goes on (credits, tools and the world are kept).
@@ -662,9 +662,10 @@ the gateway goes back to the starter rig.
 
 The tools, each with several versions to buy:
 
-PASSWORD BREAKER, PROXY BYPASS, FIREWALL BYPASS, MONITOR BYPASS,
-TRACE TRACKER, FILE COPIER, FILE DELETER, DECRYPTER, LOG MODIFIER,
-LOG DELETER, OSINT SWEEPER, CREDENTIAL STUFFER, VOICE ANALYSER, SPOOF KIT.
+CLOUD GPU HASH CRACKER, CLOUD PIVOT TUNNEL, WAF / DNS TUNNEL, EDR BLINDER,
+VOLUMETRIC DDOS CANNON, SOC TRACE INTERCEPTOR, S3 EXFILTRATOR, FILE SHREDDER,
+RANSOM DECRYPTOR, AUDIT LOG FABRICATOR, SIEM STOMPER, SOCIAL OSINT CRAWLER,
+CREDENTIAL STUFFING ENGINE, NEURAL VOICE CLONER, SPOOF KIT.
 
 The shop only sells a tool once the game has a task that uses it.
 
@@ -695,33 +696,37 @@ proxy, monitor strength, encryption, voice lock).
 
 | Tool | Version | What it does |
 |---|---|---|
-| **BREAKER** | V1 HASHBUSTER | beats locks up to v1 |
+| **CRACKER** | V1 HASHBUSTER | beats locks up to v1 |
 | | V2 KRAKEN | beats locks up to v2 |
 | | V3 SKELETON KEY | beats locks up to v3 |
 | | V4 ZERODAY | beats locks up to v4 |
 | | V5 ORACLE | beats locks up to v5 |
-| **PROXY** | V1 GHOSTLINE | scrubs proxies up to PX 1 |
+| **PIVOT** | V1 GHOSTLINE | scrubs proxies up to PX 1 |
 | | V2 COLDSPOT | scrubs proxies up to PX 2 |
-| **FIREWALL** | V1 CROWBAR | gets past firewalls up to FW 2 |
+| **WAF** | V1 CROWBAR | gets past firewalls up to FW 2 |
 | | V2 RAM | gets past firewalls up to FW 3 |
 | | V3 BREACH | gets past firewalls up to FW 4 |
 | | V4 SIEGEBREAK | gets past firewalls up to FW 5 |
-| **MONITOR** | V1 BLINDFOLD | blinds monitors up to strength 1 |
+| **EDR** | V1 BLINDFOLD | blinds monitors up to strength 1 |
 | | V2 DEAF EYE | blinds monitors up to strength 2 |
 | | V3 SILENCE | blinds monitors up to strength 3 |
 | | V4 DEAD AIR | blinds monitors up to strength 4 |
-| **TRACE** | V1 PING | warns of a trace 5% earlier |
+| **DDOS** | V1 SYN FLOOD | drops firewalls up to FW 1 and proxies up to PX 1 at once, loudly |
+| | V2 UDP STORM | drops firewalls up to FW 2 and proxies up to PX 2 at once, loudly |
+| | V3 AMPLIFIER | drops firewalls up to FW 3 and proxies up to PX 2 at once, loudly |
+| | V4 BOTNET | drops firewalls up to FW 4 and proxies up to PX 2 at once, loudly |
+| **SOC** | V1 PING | warns of a trace 5% earlier |
 | | V2 RADAR | warns of a trace 10% earlier |
 | | V3 SONAR | warns of a trace 15% earlier |
 | | V4 LIDAR | warns of a trace 20% earlier |
 | | V5 OMNISCIENT | warns of a trace 25% earlier |
-| **DECRYPT** | V1 PIN | opens files encrypted up to v1 |
+| **RANSOM** | V1 PIN | opens files encrypted up to v1 |
 | | V2 LOCKPICK | opens files encrypted up to v2 |
-| **OSINT** | V1 CRAWL | PROFILE finds email and role |
+| **CRAWLER** | V1 CRAWL | PROFILE finds email and role |
 | | V2 SPIDER | PROFILE finds the phone too |
 | | V3 DREDGE | PROFILE finds the social handle too |
 | | V4 SIPHON | PROFILE finds leaked passwords too |
-| **VOICE** | V1 SAMPLE | records voices and matches voice locks up to v1 |
+| **CLONER** | V1 SAMPLE | records voices and matches voice locks up to v1 |
 | | V2 MIMIC | records voices and matches voice locks up to v2 |
 | | V3 PARROT | records voices and matches voice locks up to v3 |
 | **SPOOF** | V1 MASK | spoofed calls, phishing and spam; taps need v2 |
