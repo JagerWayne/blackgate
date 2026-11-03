@@ -1,0 +1,9 @@
+{
+  "id": "escalateKernel",
+  "kind": "EscalateKernel",
+  "label": "ROOT",
+  "tool": "KernelPrivesc",
+  "reasons": {
+    "noTool": "no exploit installed"
+  }
+}

@@ -340,6 +340,8 @@ function handleClick(state, e, desk) {
   else if (id.startsWith('sess.task.')) tryTask(game, id.slice(10));
   else if (id.startsWith('sess.crack.')) tryTask(game, 'CrackPassword', Number(id.slice(11)));
   else if (id.startsWith('sess.hijack.')) tryTask(game, 'HijackSession', Number(id.slice(12)));
+  else if (id.startsWith('net.forge.')) tryTask(game, 'ForgeTicket', Number(id.slice(10)));
+  else if (id === 'net.map') tryTask(game, 'MapNetwork');
   else if (id.startsWith('dos.del.')) {
     const view = (state.win.dossiers ??= {});
     if (view.armed === id) {

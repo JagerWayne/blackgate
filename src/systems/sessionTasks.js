@@ -4,6 +4,7 @@ import { freeLane, pushLine } from '../state/session.js';
 import { toolLevel, storageUsed, keepsRecord, validRecord } from '../state/gameState.js';
 import { crypt, fpga, hasHsm, storage } from '../state/gateway.js';
 import { authOf, inboxAuth, hijackerLevel, AUTH_LABEL, AUTH_LEVEL } from '../data/auth.js';
+import { REACH, difficultyOf, companyHosts, keyLocks } from '../data/network.js';
 import { copyRate } from '../state/transfer.js';
 import { roomFor, SATURATED } from './compute.js';
 import { software } from '../data/content.js';
@@ -45,7 +46,7 @@ export function taskError(game, s, kind, arg) {
 }
 
 /// The tasks that make no sense twice on the same target at once.
-const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'Ddos', 'CrackPassword', 'HijackSession', 'DeleteFile']);
+const ONE_AT_A_TIME = new Set(['BypassFirewall', 'BypassMonitor', 'BypassProxy', 'Ddos', 'CrackPassword', 'HijackSession', 'MapNetwork', 'ProbeIam', 'EscalateKernel', 'DeleteFile']);
 
 const VOICE_TASKS = new Set(['RecordVoice', 'CallRecord', 'SpoofCall']);
 
@@ -88,6 +89,30 @@ function planTask(game, s, h, kind, arg) {
       if (px && lvl < h.proxy) return { error: `cannon too weak for the proxy (PX ${h.proxy})` };
       return { label: 'volumetric flood', dur: 4, loud: true };
     }
+    case 'MapNetwork': {
+      if (h.company == null) return { error: 'a public host has no network to map' };
+      const reach = REACH[toolLevel(game, 'ZeroTrustMapper')];
+      if (!companyHosts(game.world, h).some((x) => !x.discovered && difficultyOf(x) <= reach)) return { error: 'nothing more to map at this version' };
+      return { label: 'map the network', dur: 8, loud: false };
+    }
+    case 'ForgeTicket': {
+      // a ticket moves the session to another host of the same company
+      const to = game.world.hosts[arg];
+      if (!to) return { error: 'no such host' };
+      if (to.id === s.target) return { error: 'already on this host' };
+      if (h.company == null || to.company !== h.company) return { error: 'that host belongs to another company' };
+      if (!to.discovered) return { error: 'that host is not on your map // map the network first' };
+      const lvl = toolLevel(game, 'KerberosForger');
+      if (difficultyOf(to) > REACH[lvl]) return { error: `forger v${lvl} is too weak for ${to.name}` };
+      if (s.tasks.length) return { error: 'finish the running tasks first' };
+      return { label: `forge a ticket to ${to.name}`, dur: 8, loud: false };
+    }
+    case 'ProbeIam':
+      if (!keyLocks(h, toolLevel(game, 'IamProbe')).length) return { error: 'no locked service a service-account key reaches' };
+      return { label: 'harvest service-account keys', dur: 9, loud: false };
+    case 'EscalateKernel':
+      if (!keyLocks(h, toolLevel(game, 'KernelPrivesc')).length) return { error: 'no locked service the exploit reaches' };
+      return { label: 'escalate to root', dur: 6, loud: true };
     case 'HijackSession': {
       // an adversary-in-the-middle capture of a live session: no password, a token that lasts a while
       const svc = h.services[arg];
@@ -270,6 +295,10 @@ export function toolFor(kind) {
     case 'BypassProxy': return 'ProxyBypass';
     case 'Ddos': return 'DdosCannon';
     case 'HijackSession': return 'SessionHijacker';
+    case 'MapNetwork': return 'ZeroTrustMapper';
+    case 'ForgeTicket': return 'KerberosForger';
+    case 'ProbeIam': return 'IamProbe';
+    case 'EscalateKernel': return 'KernelPrivesc';
     case 'CrackPassword': return 'PasswordCracker';
     case 'CopyFile': return 'FileCopier';
     case 'DecryptFile': return 'Decrypter';

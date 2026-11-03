@@ -15,6 +15,13 @@ await initContent();
 const NAMES = {
   PasswordCracker: 'CLOUD GPU HASH CRACKER',
   SessionHijacker: 'SESSION TOKEN HIJACKER',
+  ZeroTrustMapper: 'ZERO-TRUST MAPPER',
+  IamProbe: 'IAM PROBE',
+  KerberosForger: 'KERBEROS FORGER',
+  KernelPrivesc: 'KERNEL PRIVESC',
+  AttackSurfaceHud: 'SOC ATTACK SURFACE HUD',
+  HopVisualizer: 'HOP VISUALIZER',
+  CloudGraphHud: 'CLOUD GRAPH',
   ProxyBypass: 'CLOUD PIVOT TUNNEL',
   FirewallBypass: 'WAF / DNS TUNNEL',
   MonitorBypass: 'EDR BLINDER',

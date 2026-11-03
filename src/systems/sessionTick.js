@@ -4,6 +4,7 @@ import { makeSession, pushLine } from '../state/session.js';
 import { note, discover, routeFactor, toolLevel } from '../state/gameState.js';
 import { bandwidth, chassisOf, fpga, hops, traceFactor, triangulation, warnAt, heatFactor } from '../state/gateway.js';
 import { exfilWindow } from '../state/transfer.js';
+import { isInternal } from '../data/network.js';
 import { tokenTick, dropTokens } from './tokens.js';
 import { heatGain, wipeStorage } from './physical.js';
 import { completeTask } from './sessionComplete.js';
@@ -16,6 +17,7 @@ export function connect(game, target) {
   if (game.gameOver) return 'run is over';
   if (game.session) return 'already connected';
   if (game.player.gateway.migrateUntil > game.clock.minutes) return 'chassis is being reconfigured';
+  if (isInternal(game.world.hosts[target])) return 'internal segment // link to another host of this company and forge a ticket';
   discover(game, target);
   const hopCount = game.player.bounce.length;
   const modem = bandwidth(game.player.gateway);

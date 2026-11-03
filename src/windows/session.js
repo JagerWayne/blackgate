@@ -7,7 +7,8 @@ import { drawFrame, splitPanel, detailPane, emptyNote } from '../ui/panel.js';
 import { ghost } from '../ui/styles.js';
 import { drawButton } from '../ui/widgets.js';
 import { drawScrolled } from '../ui/scroll.js';
-import { section, label, keyValue, meter } from '../ui/controls.js';
+import { section, label, keyValue, meter, para } from '../ui/controls.js';
+import { surfaceText, routeText } from '../state/hud.js';
 import { routeLines } from '../state/session.js';
 import { guardTint } from '../ui/guard.js';
 import { HOST_LABEL } from '../data/enums.js';
@@ -68,6 +69,11 @@ export function drawSession(ctx, sk, r, game, ui, input, events, view) {
   if (s.windowLeft !== undefined) {
     controls.push(keyValue('WINDOW', `${Math.max(Math.ceil(s.windowLeft), 0)}s until the host drops the link`, s.windowLeft < 20 ? sk.danger : sk.warn));
   }
+  // what the HUD programs add: the surface of the target and the route of the link
+  const surface = surfaceText(game, s);
+  if (surface) controls.push(para(surface, 9.5, sk.accent));
+  const route = routeText(game, s);
+  if (route) controls.push(para(route, 9.5, sk.dim));
   // the actions that work on the host itself
   controls.push(...sessionActionControls(game, sk, s));
   controls.push(section(`THREAD SLOTS // ${demand(game, s)}/${slots(game)}`));

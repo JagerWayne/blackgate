@@ -14,6 +14,7 @@ import { drawGateway } from '../windows/gateway.js';
 import { drawSoftware } from '../windows/software.js';
 import { drawFiles } from '../windows/files.js';
 import { drawNews } from '../windows/news.js';
+import { drawNetwork } from '../windows/network.js';
 import { drawBank } from '../windows/bank.js';
 import { drawStats } from '../windows/stats.js';
 import { drawSettings } from '../windows/settings.js';
@@ -34,6 +35,7 @@ const APPS = {
   software: drawSoftware,
   files: drawFiles,
   news: drawNews,
+  network: drawNetwork,
   bank: drawBank,
   stats: drawStats,
   settings: drawSettings,

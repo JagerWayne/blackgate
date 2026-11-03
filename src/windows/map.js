@@ -11,6 +11,7 @@ import { drawButton } from '../ui/widgets.js';
 import { drawScrolled } from '../ui/scroll.js';
 import { label, keyValue, chips, spacer, custom, meter, buttons as buttonRow } from '../ui/controls.js';
 import { draw as drawText, ellipsize } from '../core/text.js';
+import { isInternal } from '../data/network.js';
 import { color } from '../core/theme.js';
 import { ghost, flat, primary, solid } from '../ui/styles.js';
 import { guardTint } from '../ui/guard.js';
@@ -68,6 +69,7 @@ function drawHosts(ctx, sk, right, game, hosts, ui, input, events, view) {
       { text: `${HOST_LABEL[h.kind] ?? ''}${ownerOf(game, h) ? ` // ${ownerOf(game, h)}` : ''}`, size: FONT.body, color: sk.dim, col: 0, line: 1 },
     ];
     if (hop) cells.push({ text: `HOP ${hop}`, size: FONT.body, color: sk.warn, align: 'right', col: 1, line: 1 });
+    else if (isInternal(h)) cells.push({ text: 'INTERNAL', size: FONT.body, color: sk.warn, align: 'right', col: 1, line: 1 });
     return {
       grid: true,
       cells,

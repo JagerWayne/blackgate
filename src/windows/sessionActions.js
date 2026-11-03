@@ -7,6 +7,7 @@ import { primary, ghost } from '../ui/styles.js';
 import { sessionActions, hint } from '../data/content.js';
 import { toolLevel } from '../state/gameState.js';
 import { roomFor } from '../systems/compute.js';
+import { taskError } from '../systems/sessionTasks.js';
 
 /// The host action block for the left pane of the session window.
 export function sessionActionControls(game, sk, s) {
@@ -71,6 +72,11 @@ function whyNot(game, s, spec) {
       if (lvl < h.proxy) return r.weak ?? '';
       if (s.proxyBypassed) return r.done ?? '';
       return '';
+    case 'MapNetwork':
+    case 'ProbeIam':
+    case 'EscalateKernel':
+      if (lvl === 0) return r.noTool ?? '';
+      return taskError(game, s, spec.kind) ?? '';
     case 'Ddos': {
       const fw = h.firewall > 0 && !s.fwBypassed;
       const px = h.proxy > 0 && !s.proxyBypassed;

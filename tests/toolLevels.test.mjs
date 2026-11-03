@@ -69,7 +69,7 @@ test('a tool with one job has one level', () => {
 
 test('a monitor bypass has to match the monitor', () => {
   const g = makeGame('LEVELS', 7);
-  const h = g.world.hosts.find((x) => x.monitor >= 2);
+  const h = g.world.hosts.find((x) => x.monitor >= 2 && !x.internal);
   assert.ok(h, 'the world has a strong monitor');
   g.player.tools = g.player.tools.filter((t) => t.kind !== 'MonitorBypass');
   g.player.tools.push({ kind: 'MonitorBypass', level: 1 });

@@ -2,6 +2,8 @@
 
 import { pushLine } from '../state/session.js';
 import { TOKEN_SECS } from '../data/auth.js';
+import { REACH, difficultyOf, companyHosts, keyLocks } from '../data/network.js';
+import { moveSession } from './lateral.js';
 import { evaluateMissions } from '../state/contracts.js';
 import { discover } from '../state/gameState.js';
 import { voiceAdmin, sampleName } from '../state/voice.js';
@@ -41,6 +43,36 @@ export function completeTask(game, s, task) {
       s.traceRate *= 3;
       pushLine(s, 'volumetric flood // firewall and proxy down // the trace is on');
       break;
+    case 'MapNetwork': {
+      const reach = REACH[toolLevel(game, 'ZeroTrustMapper')];
+      const found = companyHosts(game.world, h).filter((x) => !x.discovered && difficultyOf(x) <= reach);
+      found.forEach((x) => discover(game, x.id));
+      pushLine(s, `network mapped // ${found.map((x) => x.name).join(', ')}`);
+      break;
+    }
+    case 'ForgeTicket':
+      moveSession(game, task.arg);
+      break;
+    // a service-account key opens one lock, quietly
+    case 'ProbeIam': {
+      const svc = keyLocks(h, toolLevel(game, 'IamProbe'))[0];
+      if (svc) {
+        svc.open = true;
+        pushLine(s, `service-account key used // ${svc.name}:${svc.port} open`);
+        h.logs.push({ minute: game.clock.minutes, ip, text: `service account ${svc.name}`, loud: false });
+      }
+      break;
+    }
+    // root opens every lock it reaches, and the incident responder always comes
+    case 'EscalateKernel': {
+      keyLocks(h, toolLevel(game, 'KernelPrivesc')).forEach((svc) => { svc.open = true; });
+      s.alerted = true;
+      s.trace = Math.min(s.trace + 0.15, 1);
+      s.traceRate *= 2;
+      pushLine(s, 'root // locks open // the incident responder is on its way');
+      h.logs.push({ minute: game.clock.minutes, ip, text: 'privilege escalation', loud: true });
+      break;
+    }
     // a captured session token opens the service for a while
     case 'HijackSession': {
       const svc = h.services[task.arg];

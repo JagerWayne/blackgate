@@ -5,6 +5,7 @@
 import { makeRng, range, nextF32 } from '../core/rng.js';
 import { cities } from './content.js';
 import { buildCompanies } from './worldCompanies.js';
+import { markInternal } from './network.js';
 
 /// Builds the whole world for a seed.
 export function generateWorld(seed) {
@@ -33,6 +34,7 @@ export function generateWorld(seed) {
   }
 
   buildCompanies(rng, hosts, companies, people, accounts, usedIps, mkHost);
+  markInternal({ hosts, companies });
   return { companies, hosts, people, accounts, nic, news, blackgate, homeCity };
 }
 

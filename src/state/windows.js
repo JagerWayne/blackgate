@@ -12,6 +12,7 @@ export const WINDOWS = [
   { key: 'files', title: 'STORAGE', w: 640, h: 500, minW: 320, minH: 240 },
   { key: 'bank', title: 'BANKING', w: 720, h: 540, minW: 320, minH: 240 },
   { key: 'dossiers', title: 'DOSSIERS', w: 980, h: 640, minW: 560, minH: 360 },
+  { key: 'network', title: 'CLOUD GRAPH', w: 720, h: 520, minW: 360, minH: 260 },
   { key: 'news', title: 'NEWSWIRE', w: 660, h: 580, minW: 320, minH: 240 },
   { key: 'stats', title: 'OPERATOR', w: 620, h: 540, minW: 320, minH: 240 },
   { key: 'settings', title: 'SYSTEM', w: 600, h: 480, minW: 320, minH: 240 },

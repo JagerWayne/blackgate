@@ -3,6 +3,7 @@
 import { range } from '../core/rng.js';
 import { unlocks } from '../data/content.js';
 import { authOf, AUTH_LEVEL } from '../data/auth.js';
+import { isInternal } from '../data/network.js';
 import { storage } from './gateway.js';
 import { storageUsed } from './gameHelpers.js';
 import { recordsKept } from './records.js';
@@ -56,6 +57,8 @@ export function targetsFor(game, kind, { only = null, anyGuard = false } = {}) {
     .filter((h) => only === null || h.id === only)
     .filter((h) => hostKinds(kind).includes(h.kind))
     .filter((h) => anyGuard || (h.firewall <= cap.firewall && h.monitor <= cap.monitor && h.proxy <= cap.proxy))
+    // an internal segment is reached with a forged ticket: from the third unlock level on
+    .filter((h) => anyGuard || !isInternal(h) || unlocks().filter((u) => game.player.rating >= u.rating).length >= 3)
     .filter((h) => {
       // the job names a file the operator can take: it has to be there, plain,
       // and small enough for the gateway

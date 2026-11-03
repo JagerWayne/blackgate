@@ -1,0 +1,9 @@
+{
+  "id": "probeIam",
+  "kind": "ProbeIam",
+  "label": "IAM KEYS",
+  "tool": "IamProbe",
+  "reasons": {
+    "noTool": "no IAM probe installed"
+  }
+}

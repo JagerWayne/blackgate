@@ -19,6 +19,8 @@ import { versionEffect, NO_TASK } from '../state/toolEffects.js';
 const FAMILY = {
   PasswordCracker: ['BREAK-IN', 0xff6b6b], Decrypter: ['BREAK-IN', 0xff6b6b], CredentialStuff: ['BREAK-IN', 0xff6b6b], SessionHijacker: ['BREAK-IN', 0xff6b6b],
   DdosCannon: ['BYPASS', 0xffc857],
+  ZeroTrustMapper: ['NETWORK', 0x4fc3f7], IamProbe: ['NETWORK', 0x4fc3f7], KerberosForger: ['NETWORK', 0x4fc3f7], KernelPrivesc: ['NETWORK', 0x4fc3f7],
+  AttackSurfaceHud: ['HUD', 0xb39ddb], HopVisualizer: ['HUD', 0xb39ddb], CloudGraphHud: ['HUD', 0xb39ddb],
   ProxyBypass: ['BYPASS', 0xffc857], FirewallBypass: ['BYPASS', 0xffc857], MonitorBypass: ['BYPASS', 0xffc857],
   TraceTracker: ['STEALTH', 0x7aa2ff], LogModifier: ['STEALTH', 0x7aa2ff], LogDeleter: ['STEALTH', 0x7aa2ff],
   FileCopier: ['DATA', 0x5be49b], FileDeleter: ['DATA', 0x5be49b],

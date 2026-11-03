@@ -10,6 +10,7 @@ import { personRecord } from '../data/worldCompanies.js';
 import { rankName } from '../core/theme.js';
 import { toolPrice } from './economy.js';
 import { assignAuth } from '../data/auth.js';
+import { markInternal } from '../data/network.js';
 import { hostReport } from './hostReport.js';
 
 // One save per operator, under PREFIX + their file-safe name. LEGACY is the
@@ -186,6 +187,8 @@ function clampLocks(g) {
     // a world from before MFA gets the guards its hosts would have been given
     assignAuth(h);
   });
+  // and the crown hosts become internal segments
+  if (g.world) markInternal(g.world);
 }
 
 /// A run that owns a tool level the catalogue no longer sells: the tool is cut

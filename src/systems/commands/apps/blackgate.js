@@ -82,6 +82,16 @@ export const blackgateApp = {
         return task(ctx, 'CrackPassword', i, `crack ${h.services[i].name}`);
       },
     },
+    netmap: { args: '', help: "map the company's hidden segments (zero-trust mapper)", run: (ctx) => task(ctx, 'MapNetwork', undefined, 'map the network') },
+    forge: {
+      args: '<host>', help: 'forge a ticket and move the link to another host of the same company',
+      run(ctx, [w]) {
+        const to = hostArg(ctx, w);
+        return task(ctx, 'ForgeTicket', to.id, `forge a ticket to ${to.name}`);
+      },
+    },
+    probe: { args: '', help: 'use a service-account key to open a locked service quietly (IAM probe)', run: (ctx) => task(ctx, 'ProbeIam', undefined, 'harvest service-account keys') },
+    root: { args: '', help: 'escalate to root: opens every lock it reaches, always raises the alert', run: (ctx) => task(ctx, 'EscalateKernel', undefined, 'escalate to root') },
     hijack: {
       args: '[service #]', help: 'capture a live session behind MFA (the first MFA service by default); the token lasts 40 s',
       run(ctx, [w]) {

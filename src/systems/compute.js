@@ -6,7 +6,7 @@ import { pushLine } from '../state/session.js';
 
 /// The tasks that take two thread slots: the crackers, the decrypters and the
 /// voice work. Every other task takes one.
-const HEAVY = new Set(['CrackPassword', 'DecryptFile', 'RecordVoice', 'CallRecord', 'SpoofCall', 'PlayVoiceprint']);
+const HEAVY = new Set(['CrackPassword', 'DecryptFile', 'RecordVoice', 'CallRecord', 'SpoofCall', 'PlayVoiceprint', 'ForgeTicket']);
 
 /// A demand above this many times the slots is an overload...
 const OVERLOAD_AT = 1.5;

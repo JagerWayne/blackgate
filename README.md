@@ -331,6 +331,8 @@ matching button does, with the same costs, checks and messages.
 | `bg record [service #]` | Call a voice lock's admin and record their voice (needs the NEURAL VOICE CLONER) |
 | `bg voiceprint [service #]` | Play the admin's recording to open a voice lock |
 | `bg hijack [service #]` | Capture a session behind MFA (the token lasts 40 s) |
+| `bg netmap` / `bg forge <host>` | Map the company's hidden segments / move the link to another host of the company |
+| `bg probe` / `bg root` | Open a lock with a service-account key / escalate to root (always raises the alert) |
 | `bg bypass firewall\|monitor\|proxy\|ddos` | Bypass a defence (`ddos` drops the firewall and the proxy together, but starts the trace at once and three times as fast) |
 | `bg copy <file>` / `bg delete <file>` / `bg decrypt <file>` | File tasks |
 | `bg alter <person> <field> <value>` | Change a record |
@@ -584,6 +586,31 @@ own colours and header layout.
   MFA, credential stuffing and brute force are blocked and only the hijacker
   opens an inbox. Alteration jobs only appear on hosts whose guard your rating
   can beat (MFA from rating 6, session-bound from 16, tokens from 30).
+- **Internal networks.** The last host of a company that guards it is its
+  crown jewel and an **internal segment**: it cannot be linked from outside
+  (the map marks it INTERNAL). Link to another host of the company, then
+  move inside:
+  - the **ZERO-TRUST MAPPER** maps the company's hidden hosts onto your map,
+    up to the difficulty its version reaches (6, 10, any);
+  - the **KERBEROS FORGER** forges a ticket that moves the live link to
+    another host of the same company (`bg forge <host>` or the CLOUD GRAPH
+    window), with the same reach. The host you leave becomes a hop of the
+    route (its logs still count as heat), the firewall and the proxy are
+    behind you, the monitor is not, and the trace goes with you. Wait for the
+    running tasks to finish first;
+  - the **IAM PROBE** opens one locked service quietly with a stolen
+    service-account key (v1 password locks, v2 also app MFA, v3 also
+    session-bound MFA; never a hardware token);
+  - the **KERNEL PRIVESC** (`bg root`) opens every lock it reaches at once,
+    but the incident responder always comes: the trace starts, jumps and runs
+    twice as fast.
+
+  The job board offers internal hosts from the third unlock level (rating 16).
+  Three HUD programs only add information: the **SOC ATTACK SURFACE HUD**
+  writes the target's guards, difficulty, window and lock guards in the link
+  panel, the **HOP VISUALIZER** draws the route, and the **CLOUD GRAPH**
+  opens a window with the company's segments you know of and a FORGE button
+  on each. None of them is needed to use a bypass.
 - **Logs.** Every link writes a *session open* log with your address on the
   target and on each bounce hop, and your actions add more on the target.
   A machine keeps its logs until you scrub or wipe them. Logs you leave
@@ -682,7 +709,9 @@ The tools, each with several versions to buy:
 CLOUD GPU HASH CRACKER, CLOUD PIVOT TUNNEL, WAF / DNS TUNNEL, EDR BLINDER,
 VOLUMETRIC DDOS CANNON, SOC TRACE INTERCEPTOR, S3 EXFILTRATOR, FILE SHREDDER,
 RANSOM DECRYPTOR, AUDIT LOG FABRICATOR, SIEM STOMPER, SOCIAL OSINT CRAWLER,
-CREDENTIAL STUFFING ENGINE, NEURAL VOICE CLONER, SPOOF KIT.
+CREDENTIAL STUFFING ENGINE, NEURAL VOICE CLONER, SPOOF KIT, SESSION TOKEN HIJACKER,
+ZERO-TRUST MAPPER, IAM PROBE, KERBEROS FORGER, KERNEL PRIVESC and the HUD programs
+(SOC ATTACK SURFACE HUD, HOP VISUALIZER, CLOUD GRAPH).
 
 The shop only sells a tool once the game has a task that uses it.
 
@@ -771,6 +800,21 @@ rating 100). Each version has its own price.
 | **CLONER** | V1 SAMPLE | records voices and matches voice locks up to v1 |
 | **SPOOF** | V1 MASK | spoofed calls, phishing and spam; taps need v2 |
 |  | V2 MIMIC | spoofed calls, phishing, spam and phone taps |
+| **MAPPER** | V1 SEGMENT SCAN | maps hosts of a company up to difficulty 6 |
+|  | V2 FLOW MAP | maps hosts of a company up to difficulty 10 |
+|  | V3 FULL TOPOLOGY | maps hosts of a company up to difficulty 15 |
+| **IAM** | V1 KEY HARVEST | opens a locked password service with a stolen key |
+|  | V2 TOKEN GRAB | also opens app MFA services |
+|  | V3 ROLE CHAIN | also opens session-bound MFA services |
+| **KERB** | V1 SILVER TICKET | forges tickets to hosts of a company up to difficulty 6 |
+|  | V2 GOLDEN TICKET | forges tickets to hosts of a company up to difficulty 10 |
+|  | V3 DIAMOND TICKET | forges tickets to hosts of a company up to difficulty 15 |
+| **PRIVESC** | V1 SUID | roots the host: opens every password lock, and always raises the alert |
+|  | V2 DIRTY PIPE | also opens app MFA services, and always raises the alert |
+|  | V3 KERNEL ROOT | also opens session-bound MFA services, and always raises the alert |
+| **SURFACE** | V1 HUD | shows the target's whole attack surface in the link panel |
+| **HOPS** | V1 HUD | draws the route of the link hop by hop |
+| **GRAPH** | V1 HUD | opens the CLOUD GRAPH of the company's segments |
 
 A saved run that owns a version that no longer exists is cut back to the tool's
 last version when it loads, and the price of the levels above it is paid back.

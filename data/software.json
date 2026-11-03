@@ -1,5 +1,5 @@
 {
-  "schema": 4,
+  "schema": 5,
   "software": [
     {
       "cpu": 1.399999976158142,
@@ -262,6 +262,120 @@
       "versions": [
         "MASK",
         "MIMIC"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Maps a company's internal segments from a host inside it, so hosts that were hidden show up on your map. Each version reaches harder hosts.",
+      "kind": "ZeroTrustMapper",
+      "name": "ZERO-TRUST MAPPER",
+      "price": 2500,
+      "prices": [
+        2500,
+        5500,
+        9000
+      ],
+      "short": "MAPPER",
+      "versions": [
+        "SEGMENT SCAN",
+        "FLOW MAP",
+        "FULL TOPOLOGY"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Digs service-account keys out of the containers on a host and uses one to open a locked service quietly. Service accounts skip MFA, but not hardware tokens.",
+      "kind": "IamProbe",
+      "name": "IAM PROBE",
+      "price": 3000,
+      "prices": [
+        3000,
+        6000,
+        10000
+      ],
+      "short": "IAM",
+      "versions": [
+        "KEY HARVEST",
+        "TOKEN GRAB",
+        "ROLE CHAIN"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Forges a ticket that moves a live session to another host of the same company, inside its network, without a new route. Each version reaches harder hosts.",
+      "kind": "KerberosForger",
+      "name": "KERBEROS FORGER",
+      "price": 4500,
+      "prices": [
+        4500,
+        8000,
+        12500
+      ],
+      "short": "KERB",
+      "versions": [
+        "SILVER TICKET",
+        "GOLDEN TICKET",
+        "DIAMOND TICKET"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Roots the host and opens every locked service it reaches at once. The incident responder is always summoned: the trace starts and runs twice as fast.",
+      "kind": "KernelPrivesc",
+      "name": "KERNEL PRIVESC",
+      "price": 5000,
+      "prices": [
+        5000,
+        9000,
+        14000
+      ],
+      "short": "PRIVESC",
+      "versions": [
+        "SUID",
+        "DIRTY PIPE",
+        "KERNEL ROOT"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Puts the target's whole attack surface in the link panel: firewall, monitor, proxy, difficulty, the time window and the guard on each lock.",
+      "kind": "AttackSurfaceHud",
+      "name": "SOC ATTACK SURFACE HUD",
+      "price": 5000,
+      "prices": [
+        5000
+      ],
+      "short": "SURFACE",
+      "versions": [
+        "HUD"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Draws the route of the live link in the link panel, hop by hop, down to the target.",
+      "kind": "HopVisualizer",
+      "name": "HOP VISUALIZER",
+      "price": 3500,
+      "prices": [
+        3500
+      ],
+      "short": "HOPS",
+      "versions": [
+        "HUD"
+      ]
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Opens the CLOUD GRAPH window: the company's segments you know of, where you are, and a FORGE button on each.",
+      "kind": "CloudGraphHud",
+      "name": "CLOUD GRAPH",
+      "price": 6000,
+      "prices": [
+        6000
+      ],
+      "short": "GRAPH",
+      "versions": [
+        "HUD"
       ]
     }
   ]
