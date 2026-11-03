@@ -2,7 +2,8 @@
 
 import { freeLane, pushLine } from '../state/session.js';
 import { toolLevel, storageUsed, keepsRecord, validRecord } from '../state/gameState.js';
-import { bandwidth, crypt, storage, lanes } from '../state/gateway.js';
+import { bandwidth, crypt, fpga, storage } from '../state/gateway.js';
+import { roomFor, SATURATED } from './compute.js';
 import { software } from '../data/content.js';
 import { voiceAdmin, hasSample } from '../state/voice.js';
 import { knows, spammed } from '../state/intel.js';
@@ -15,12 +16,11 @@ export function startTask(game, kind, arg) {
   const s = game.session;
   if (!s) return 'not connected';
   if (s.phase !== 'online') return LINK_DOWN;
-  const lane = freeLane(s, Math.max(lanes(game.player.gateway), 1));
-  if (lane === null) return 'all task lanes busy';
+  if (!roomFor(game, s, kind)) return SATURATED;
   const h = game.world.hosts[s.target];
   const spec = planTask(game, s, h, kind, arg);
   if (spec.error) return spec.error;
-  s.tasks.push({ kind, arg, label: spec.label, progress: 0, dur: spec.dur, lane });
+  s.tasks.push({ kind, arg, label: spec.label, progress: 0, dur: spec.dur, lane: freeLane(s, s.tasks.length + 1) });
   pushLine(s, `> ${spec.label}`);
   if (spec.loud) {
     s.alerted = true;
@@ -35,8 +35,7 @@ export function startTask(game, kind, arg) {
 export function taskError(game, s, kind, arg) {
   if (!s) return 'not connected';
   if (s.phase !== 'online') return LINK_DOWN;
-  const lane = freeLane(s, Math.max(lanes(game.player.gateway), 1));
-  if (lane === null) return 'all task lanes busy';
+  if (!roomFor(game, s, kind)) return SATURATED;
   const h = game.world.hosts[s.target];
   if (!h) return 'no such host';
   const spec = planTask(game, s, h, kind, arg);
@@ -84,7 +83,7 @@ function planTask(game, s, h, kind, arg) {
       if (svc.kind === 'voice') return { error: "voice lock // needs the admin's voiceprint" };
       const lvl = toolLevel(game, 'PasswordCracker');
       if (lvl < svc.password) return { error: `breaker v${lvl} cannot beat lock v${svc.password}` };
-      const dur = (2.5 + svc.password * 2.2) / Math.max(crypt(game.player.gateway), 1);
+      const dur = (2.5 + svc.password * 2.2) / crypt(game.player.gateway);
       return { label: `crack ${svc.name}:${svc.port}`, dur: Math.max(dur, 0.6), loud: true };
     }
     case 'CopyFile': {
@@ -106,7 +105,7 @@ function planTask(game, s, h, kind, arg) {
       if (s.tasks.some((t) => t.kind === 'DecryptFile' && t.arg === arg)) return { error: 'already decrypting this file' };
       const lvl = toolLevel(game, 'Decrypter');
       if (lvl < f.enc) return { error: `decrypter v${lvl} cannot open v${f.enc}` };
-      const dur = (2 + f.enc * 3) / Math.max(crypt(game.player.gateway), 1);
+      const dur = (2 + f.enc * 3) / (crypt(game.player.gateway) * fpga(game.player.gateway));
       return { label: `decrypt ${f.name}`, dur: Math.max(dur, 0.6), loud: true };
     }
     case 'DeleteFile': {
@@ -168,7 +167,7 @@ function planTask(game, s, h, kind, arg) {
       if (who === null || !hasSample(game, who)) return { error: "record the admin's voice first" };
       const lvl = toolLevel(game, 'VoiceAnalyser');
       if (lvl < svc.password) return { error: `analyser v${lvl} cannot match lock v${svc.password}` };
-      return { label: `voiceprint ${svc.name}:${svc.port}`, dur: 3 + svc.password, loud: false };
+      return { label: `voiceprint ${svc.name}:${svc.port}`, dur: Math.max((3 + svc.password) / crypt(game.player.gateway), 0.6), loud: false };
     }
     default:
       return { error: 'not a task' };
@@ -200,7 +199,8 @@ function planPeople(game, s, h, kind, i) {
       if (storageUsed(game) + pendingStorage(s, h) + 1 > storage(game.player.gateway)) return { error: 'no room on the gateway' };
       if (kind === 'SpoofCall' && toolLevel(game, 'VoiceAnalyser') === 0) return { error: 'no VoiceAnalyser installed' };
       const spoof = kind === 'SpoofCall';
-      return { label: `${spoof ? 'spoofed call' : 'call'} ${p.name}`, dur: spoof ? 14 : 8, loud: false };
+      // a spoofed call is synthesised, so the accelerator shortens it; a recorded one runs in real time
+      return { label: `${spoof ? 'spoofed call' : 'call'} ${p.name}`, dur: spoof ? Math.max(14 / crypt(game.player.gateway), 1.8) : 8, loud: false };
     }
     case 'TapPhone':
       if (!phone) return { error: 'phone unknown // PROFILE with OSINT v2+' };

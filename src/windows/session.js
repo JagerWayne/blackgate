@@ -15,6 +15,7 @@ import { drawAccess, drawFiles, drawLogs, drawRecords } from './sessionTabs.js';
 import { sessionActionControls } from './sessionActions.js';
 import { contractLabel } from '../state/contracts.js';
 import { traceWarnAt } from '../systems/sessionTick.js';
+import { demand, slots, throttle, OVERLOAD_SECS } from '../systems/compute.js';
 import { RECORD_LABEL, recordText } from '../state/gameState.js';
 import { hint } from '../data/content.js';
 import { taskRow } from '../ui/taskFx.js';
@@ -66,7 +67,12 @@ export function drawSession(ctx, sk, r, game, ui, input, events, view) {
   controls.push(meter(`TRACE ${(s.trace * 100).toFixed(0)}% // WARNS AT ${Math.round(warn * 100)}%`, s.trace, traceTint, warn));
   // the actions that work on the host itself
   controls.push(...sessionActionControls(game, sk, s));
-  controls.push(section(`TASK LANES // ${s.tasks.length}`));
+  controls.push(section(`THREAD SLOTS // ${demand(game, s)}/${slots(game)}`));
+  const slow = throttle(game, s);
+  if (slow < 1) {
+    const drop = s.overload ? ` // a bypass drops in ${Math.ceil(OVERLOAD_SECS - s.overload)}s` : '';
+    controls.push(label(`overloaded // tasks run at ${Math.round(slow * 100)}%${drop}`, 9.5, sk.warn));
+  }
   if (!s.tasks.length) controls.push(label('no tasks running', 10, sk.dim));
   s.tasks.forEach((t) => controls.push(taskRow(t, game.uiTime ?? 0)));
   const scroll = { x: pane.x, y: pane.y, w: pane.w, h: Math.max(pane.h - 36, 20) };

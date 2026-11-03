@@ -594,6 +594,14 @@ The parts:
 - **Compute:** each socket gives thread slots, which is how many tasks can
   run at once. All compute parts in a machine must be the same model.
   SERVER XEON GEN 1 // 32 CORES (1,200 cr); SERVER EPYC GEN 2 // 64 CORES (3,500 cr); SERVER EPYC GEN 3 // 128 CORES (7,000 cr).
+- **Accelerator:** one PCIe card, which speeds up password cracking, file
+  decrypting and voice synthesis (not a recorded call, which runs in real
+  time). The best card fitted counts.
+  TENSOR HASH ACCELERATOR // 1 UNIT (4,500 cr, 1.5x); // 2 UNITS (9,000 cr, 2.5x); // 3 UNITS (15,000 cr, 3.5x); // 4 UNITS (24,000 cr, 5x).
+- **FPGA:** custom silicon that decrypts and shakes hands 3x faster, and a
+  decryption on it takes no thread slot. Every chassis from the Micro-Server up
+  takes one.
+  FPGA WIRE-SPEED CRYPTO ENGINE (35,000 cr).
 - **Storage:** how much you can download. Cards add to the onboard drive; the
   ZFS enclosures need a rack chassis.
   ENCRYPTED NVME STRIP 4 TB (1,500 cr); ENCRYPTED NVME STRIP 8 TB (3,200 cr); ENCRYPTED NVME STRIP 16 TB (6,000 cr); ZFS FLASH ENCLOSURE 32 TB (9,500 cr); ZFS FLASH ENCLOSURE 64 TB (16,000 cr); ZFS FLASH ENCLOSURE 128 TB (28,000 cr).
@@ -604,6 +612,13 @@ The parts:
   together: the earliest warning, the best shield and any failsafe count. A
   chassis with no defense slot cannot fit them.
   MULTI-SPECTRUM PERIMETER SENSORS (3,000 cr); AUTOMATED THERMITE CORE MELT (8,500 cr).
+
+**Thread slots.** Every running task takes one thread slot; cracking,
+decrypting and voice work take two. Up to the slots, tasks run at full speed.
+Past them every task slows to slots over demand, and no task starts once the
+demand would pass twice the slots. If the demand stays above one and a half
+times the slots for 20 seconds, the weakest bypass (one in place or one still
+running) drops and the digital trace starts. The session window shows the load.
 
 Parts you take out go to your **stock**. Selling a part from stock pays 30%
 to 55% of its price.

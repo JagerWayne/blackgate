@@ -167,7 +167,7 @@ test('the STOCK tab lists what is in stock', () => {
   sellPart(g, g.player.gateway.parts.findIndex((p) => p.kind === 'modem'));
   const state = playState(g);
   openWindow(state.windows, 'gateway', DESK);
-  state.win.gateway = { tab: 5 };
+  state.win.gateway = { tab: 7 }; // COMPUTE, ACCEL, FPGA, STORAGE, MODEM, SECURITY, CHASSIS, STOCK
   const ctx = frame(state);
   assert.ok(ctx.texts.some((t) => t.s === 'STOCK 1'), 'the tab counts it');
   assert.ok(ctx.texts.some((t) => /^sells for \d+ cr \(\d+%\)$/.test(t.s)));

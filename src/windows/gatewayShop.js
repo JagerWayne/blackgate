@@ -70,11 +70,13 @@ function componentRows(ctx, wrapW, sk, game, g, cat, migrating, armed) {
     const sure = armed === id && !why && swap;
     const stat = cat === 'cpu'
       ? `${d.lanes} thread slots a socket`
-      : cat === 'storage'
-        ? `${d.capacity >= 1024 ? `${d.capacity / 1024} TB` : `${d.capacity} GB`} of drive space`
-        : cat === 'modem'
-          ? `${d.bandwidth >= 1000 ? `${d.bandwidth / 1000} Gb/s` : `${d.bandwidth} Mb/s`} // ${d.hops} hops`
-          : `trace delay ${d.trace_delay} // +${Math.round(d.raid_shield * 100)}% shield${d.failsafe ? ' // burns the drives in a raid' : ''}`;
+      : cat === 'accel' || cat === 'fpga'
+        ? `${d.multiplier}x on ${cat === 'fpga' ? 'decrypting and handshakes' : 'cracking, decrypting and voice'}`
+        : cat === 'storage'
+          ? `${d.capacity >= 1024 ? `${d.capacity / 1024} TB` : `${d.capacity} GB`} of drive space`
+          : cat === 'modem'
+            ? `${d.bandwidth >= 1000 ? `${d.bandwidth / 1000} Gb/s` : `${d.bandwidth} Mb/s`} // ${d.hops} hops`
+            : `trace delay ${d.trace_delay} // +${Math.round(d.raid_shield * 100)}% shield${d.failsafe ? ' // burns the drives in a raid' : ''}`;
     const cells = [
       { text: d.name, size: FONT.emphasis, color: sk.text_hi, col: 0, line: 0 },
       { text: `${d.price} cr`, size: FONT.body, color: sk.warn, align: 'right', col: 1, line: 0 },

@@ -1,9 +1,11 @@
 {
-  "schema": 2,
+  "schema": 3,
   "chassis": [
     {
+      "accel_slots": 1,
       "cpu_slots": 1,
       "emergency_purge": false,
+      "fpga_slots": 0,
       "heat_factor": 1,
       "migration": 0,
       "modem_slots": 1,
@@ -21,8 +23,10 @@
       "trait_note": "A ruggedized case on a desk: found within a day of an open trace. No room for a self-destruct charge."
     },
     {
+      "accel_slots": 1,
       "cpu_slots": 2,
       "emergency_purge": false,
+      "fpga_slots": 0,
       "heat_factor": 0,
       "migration": 60,
       "modem_slots": 1,
@@ -40,8 +44,10 @@
       "trait_note": "A rented server: there is no door to knock on, so no physical raid."
     },
     {
+      "accel_slots": 1,
       "cpu_slots": 2,
       "emergency_purge": false,
+      "fpga_slots": 1,
       "heat_factor": 0.33,
       "migration": 120,
       "modem_slots": 1,
@@ -59,8 +65,10 @@
       "trait_note": "Investigations take three times as long to reach the door. One defense slot."
     },
     {
+      "accel_slots": 1,
       "cpu_slots": 4,
       "emergency_purge": false,
+      "fpga_slots": 1,
       "heat_factor": 0.5,
       "migration": 180,
       "modem_slots": 1,
@@ -78,8 +86,10 @@
       "trait_note": "Takes ZFS enclosures and heavy parallel work; the power draw makes it a moderate target."
     },
     {
+      "accel_slots": 1,
       "cpu_slots": 3,
       "emergency_purge": false,
+      "fpga_slots": 1,
       "heat_factor": 0.4,
       "migration": 240,
       "modem_slots": 1,
@@ -97,8 +107,10 @@
       "trait_note": "Holds a whole datacenter dump; trades processing for room."
     },
     {
+      "accel_slots": 1,
       "cpu_slots": 12,
       "emergency_purge": false,
+      "fpga_slots": 1,
       "heat_factor": 1.33,
       "migration": 300,
       "modem_slots": 1,
@@ -116,8 +128,10 @@
       "trait_note": "The most compute in the game; the utility company notices the draw."
     },
     {
+      "accel_slots": 1,
       "cpu_slots": 8,
       "emergency_purge": false,
+      "fpga_slots": 1,
       "heat_factor": 0.67,
       "migration": 400,
       "modem_slots": 2,
@@ -397,6 +411,91 @@
       "price": 8500,
       "raid_shield": 0.3,
       "tier": 2,
+      "trace_delay": 0,
+      "warn_at": 0.85
+    },
+    {
+      "bandwidth": 0,
+      "defense": "",
+      "effect": "Cracking, decrypting and voice synthesis run 1.5x faster.",
+      "failsafe": "",
+      "hops": 0,
+      "kind": "accel",
+      "lanes": 1,
+      "multiplier": 1.5,
+      "name": "TENSOR HASH ACCELERATOR // 1 UNIT",
+      "note": "PCIe Gen 5 card // 1 unit",
+      "price": 4500,
+      "raid_shield": 0,
+      "tier": 1,
+      "trace_delay": 0,
+      "warn_at": 0.85
+    },
+    {
+      "bandwidth": 0,
+      "defense": "",
+      "effect": "Cracking, decrypting and voice synthesis run 2.5x faster.",
+      "failsafe": "",
+      "hops": 0,
+      "kind": "accel",
+      "lanes": 1,
+      "multiplier": 2.5,
+      "name": "TENSOR HASH ACCELERATOR // 2 UNITS",
+      "note": "PCIe Gen 5 card // 2 units",
+      "price": 9000,
+      "raid_shield": 0,
+      "tier": 2,
+      "trace_delay": 0,
+      "warn_at": 0.85
+    },
+    {
+      "bandwidth": 0,
+      "defense": "",
+      "effect": "Cracking, decrypting and voice synthesis run 3.5x faster.",
+      "failsafe": "",
+      "hops": 0,
+      "kind": "accel",
+      "lanes": 1,
+      "multiplier": 3.5,
+      "name": "TENSOR HASH ACCELERATOR // 3 UNITS",
+      "note": "PCIe Gen 5 card // 3 units",
+      "price": 15000,
+      "raid_shield": 0,
+      "tier": 3,
+      "trace_delay": 0,
+      "warn_at": 0.85
+    },
+    {
+      "bandwidth": 0,
+      "defense": "",
+      "effect": "Cracking, decrypting and voice synthesis run 5x faster.",
+      "failsafe": "",
+      "hops": 0,
+      "kind": "accel",
+      "lanes": 1,
+      "multiplier": 5,
+      "name": "TENSOR HASH ACCELERATOR // 4 UNITS",
+      "note": "PCIe Gen 5 card // 4 units",
+      "price": 24000,
+      "raid_shield": 0,
+      "tier": 4,
+      "trace_delay": 0,
+      "warn_at": 0.85
+    },
+    {
+      "bandwidth": 0,
+      "defense": "",
+      "effect": "Solves handshakes and decryptions in hardware: 3x faster, and a decryption takes no thread slot.",
+      "failsafe": "",
+      "hops": 0,
+      "kind": "fpga",
+      "lanes": 1,
+      "multiplier": 3,
+      "name": "FPGA WIRE-SPEED CRYPTO ENGINE",
+      "note": "custom silicon // needs a socket it can sit in",
+      "price": 35000,
+      "raid_shield": 0,
+      "tier": 1,
       "trace_delay": 0,
       "warn_at": 0.85
     }

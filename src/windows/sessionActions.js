@@ -6,15 +6,15 @@ import { section, label, spacer, buttons as buttonRow } from '../ui/controls.js'
 import { primary, ghost } from '../ui/styles.js';
 import { sessionActions, hint } from '../data/content.js';
 import { toolLevel } from '../state/gameState.js';
-import { freeLane } from '../state/session.js';
-import { lanes } from '../state/gateway.js';
+import { roomFor } from '../systems/compute.js';
 
 /// The host action block for the left pane of the session window.
 export function sessionActionControls(game, sk, s) {
   const controls = [section('HOST ACTIONS')];
   const items = [];
   const reasons = [];
-  const busy = freeLane(s, Math.max(lanes(game.player.gateway), 1)) === null;
+  // every host action takes one thread slot
+  const busy = !roomFor(game, s, 'WipeLogs');
   for (const spec of sessionActions()) {
     const why = busy ? hint('allLanesBusy') : whyNot(game, s, spec);
     items.push({

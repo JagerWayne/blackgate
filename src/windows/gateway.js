@@ -15,10 +15,10 @@ import { FONT } from '../core/text.js';
 /// Draws the gateway window.
 export function drawGateway(ctx, sk, r, game, ui, input, events, view) {
   const tab = view.tab ?? 0;
-  const cats = ['cpu', 'storage', 'modem', 'security', 'gateway', 'stock'];
+  const cats = ['cpu', 'accel', 'fpga', 'storage', 'modem', 'security', 'gateway', 'stock'];
   const stocked = game.player.stock?.length ?? 0;
   const labels = {
-    cpu: 'COMPUTE', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'CHASSIS',
+    cpu: 'COMPUTE', accel: 'ACCEL', fpga: 'FPGA', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'CHASSIS',
     stock: stocked ? `STOCK ${stocked}` : 'STOCK',
   };
   const body = drawFrame(ctx, sk, r, ui, input, events, '', 'your chassis, its parts and the supply line');
@@ -37,8 +37,8 @@ export function drawGateway(ctx, sk, r, game, ui, input, events, view) {
   }
   // the numbers the operator checks every job, in a compact grid
   const stats = [
-    ['TASK LANES', String(gw.lanes(g))],
-    ['CRYPT', `${gw.crypt(g).toFixed(1)}x`],
+    ['THREAD SLOTS', String(gw.lanes(g))],
+    ['CRYPTO SPEED', `${(gw.crypt(g) * gw.fpga(g)).toFixed(1)}x`],
     ['STORAGE', `${storageUsed(game)}/${gw.storage(g)} GB`],
     ['LINK', `${gw.bandwidth(g)} Mb/s`],
     ['DEFENSE SLOTS', `${gw.usedSlots(g, 'security')}/${gw.slotsFor(g, 'security')}`],

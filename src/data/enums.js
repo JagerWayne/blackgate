@@ -51,10 +51,10 @@ export const MISSION_LABEL = {
 export const RATING_MAX = 150;
 
 /// The hardware kinds the gateway takes.
-export const HW_KINDS = ['cpu', 'storage', 'modem', 'security'];
+export const HW_KINDS = ['cpu', 'accel', 'fpga', 'storage', 'modem', 'security'];
 
 export const HW_LABEL = {
-  cpu: 'COMPUTE', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'GATEWAY',
+  cpu: 'COMPUTE', accel: 'ACCELERATOR', fpga: 'FPGA', storage: 'STORAGE', modem: 'MODEM', security: 'SECURITY', gateway: 'GATEWAY',
 };
 
 /// The price of a tool at a level, over its level one price.

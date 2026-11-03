@@ -2,8 +2,9 @@
 
 import { makeSession, pushLine } from '../state/session.js';
 import { note, discover, routeFactor, toolLevel } from '../state/gameState.js';
-import { bandwidth, hops, traceFactor, warnAt, heatFactor } from '../state/gateway.js';
+import { bandwidth, fpga, hops, traceFactor, warnAt, heatFactor } from '../state/gateway.js';
 import { completeTask } from './sessionComplete.js';
+import { overloadTick, throttle, weight } from './compute.js';
 import { voiceAdmin } from '../state/voice.js';
 import { spammed, SPAM_TRACE } from '../state/intel.js';
 
@@ -17,7 +18,7 @@ export function connect(game, target) {
   const modem = bandwidth(game.player.gateway);
   const clean = hops(game.player.gateway);
   const penalty = hopCount > clean ? 1 + 0.35 * (hopCount - clean) : 1;
-  const connectDur = Math.max((1.2 + hopCount * 0.5 + 12 / Math.sqrt(modem || 1)) * penalty, 1);
+  const connectDur = Math.max((1.2 + hopCount * 0.5 + 12 / Math.sqrt(modem || 1)) * penalty / fpga(game.player.gateway), 1);
   const targetName = game.world.hosts[target].name;
   const s = makeSession(target, game.player.bounce, connectDur);
   s.started = game.clock.minutes;
@@ -92,15 +93,17 @@ export function sessionTick(game, dt) {
     return;
   }
   const done = [];
+  // more tools than thread slots slow every task; a decryption on the FPGA is exempt
+  const slow = throttle(game, s);
   s.tasks.forEach((t, i) => {
-    const load = Math.max(1 - 0.05 * (s.tasks.length - 1), 0.6);
-    t.progress += (dt / t.dur) * load;
+    t.progress += (dt / t.dur) * (weight(game, t.kind) ? slow : 1);
     if (t.progress >= 1) done.push(i);
   });
   done.reverse().forEach((i) => {
     const task = s.tasks.splice(i, 1)[0];
     completeTask(game, s, task);
   });
+  overloadTick(game, s, dt);
   // a trace frozen from the cheat menu holds where it is
   if (s.alerted && !game.cheats?.freezeTrace) {
     let rate = s.traceRate;

@@ -17,6 +17,8 @@ export function slotsFor(gw, kind) {
   const c = chassisOf(gw);
   switch (kind) {
     case 'cpu': return c.cpu_slots;
+    case 'accel': return c.accel_slots ?? 0;
+    case 'fpga': return c.fpga_slots ?? 0;
     case 'storage': return c.storage_slots ?? 1;
     case 'modem': return c.modem_slots;
     case 'security': return c.security_slots;
@@ -63,15 +65,20 @@ function securityDefs(gw) {
   return partsOf(gw, 'security').map((p) => componentDef('security', p.level)).filter(Boolean);
 }
 
-/// How many heavy processes run at once.
+/// The thread slots: how many tools the processors run at full speed.
 export function lanes(gw) {
   return partsOf(gw, 'cpu').reduce((n, p) => n + (componentDef('cpu', p.level)?.lanes ?? 0), 0);
 }
 
-/// The cryptanalysis multiplier: every fitted processor adds its own.
+/// The speed-up cracking, decrypting and voice synthesis get from the
+/// accelerator card (the best one fitted).
 export function crypt(gw) {
-  const mult = partsOf(gw, 'cpu').reduce((m, p) => m * Math.max(componentDef('cpu', p.level)?.multiplier ?? 1, 0), 1);
-  return Math.max(mult, 1);
+  return Math.max(1, ...partsOf(gw, 'accel').map((p) => componentDef('accel', p.level)?.multiplier ?? 1));
+}
+
+/// The speed-up of decryptions and handshakes on the FPGA, 1 without one.
+export function fpga(gw) {
+  return Math.max(1, ...partsOf(gw, 'fpga').map((p) => componentDef('fpga', p.level)?.multiplier ?? 1));
 }
 
 /// The drive space, in GB: what the chassis carries onboard plus every card.
