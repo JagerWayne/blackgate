@@ -560,7 +560,9 @@ own colours and header layout.
 - **The trace.** While you are connected, the target traces you back along
   your bounce route. More hops slow it down. A warning appears when it is
   getting close; a TRACE TRACKER makes the warning come earlier. If the trace completes, the connection is seized
-  and **the run is over**. Disconnect in time.
+  and **the run is over**. Disconnect in time. The one exception is the
+  GHOST-VPS BASTION: its provider pulls the plug and **wipes every file on
+  your drives**, but the run goes on (credits, tools and the world are kept).
 - **Logs.** Every link writes a *session open* log with your address on the
   target and on each bounce hop, and your actions add more on the target.
   A machine keeps its logs until you scrub or wipe them. Logs you leave
@@ -571,6 +573,23 @@ own colours and header layout.
 - **Raids.** If heat reaches 100, you are raided. Security parts can save
   you: a security part's own failsafe triggers first; otherwise the shield,
   and last the chassis purge. Without protection, the raid ends the run.
+  The Pelican has no room for a security part but a surge protector absorbs
+  15% of a raid. The GHOST-VPS cannot be raided at all.
+- **The sensor bands.** With the MULTI-SPECTRUM PERIMETER SENSORS fitted, the
+  heat meter reads **CLEAR** (below 70), **RECON** (70 and up: unmarked
+  vehicles near the hideout) and, at 100, **BREACH**: a 15-second countdown
+  in real time (the clock is forced to 1x) before the raid lands. Without
+  the sensors there is no warning and the raid lands at once.
+- **Ways out.**
+  - The **RF JAMMER** adds 45 seconds to the countdown, but for the next 6
+    game hours every link leaves twice the heat.
+  - The **THERMITE CORE MELT** burns the rig when the raid lands: the warrant
+    is void and you start again on a Pelican with one compute part, with your
+    credits, tools and stock kept and the drives empty.
+  - The **MOBILE C2 VAN** can drive to a new grid from a RECON investigation
+    (heat 70 or more, no link open): the heat drops to 0, the rig is on the
+    road for 2 hours, and it can do this once a day (`gw relocate` or the
+    RELOCATE button).
 
 ---
 
@@ -611,7 +630,7 @@ The parts:
 - **Security:** sensors and failsafes against traces and raids. They work
   together: the earliest warning, the best shield and any failsafe count. A
   chassis with no defense slot cannot fit them.
-  MULTI-SPECTRUM PERIMETER SENSORS (3,000 cr); AUTOMATED THERMITE CORE MELT (8,500 cr).
+  MULTI-SPECTRUM PERIMETER SENSORS (3,000 cr); AUTOMATED THERMITE CORE MELT (8,500 cr); BROADBAND RF JAMMER & SNIFFER (12,000 cr).
 
 **Thread slots.** Every running task takes one thread slot; cracking,
 decrypting and voice work take two. Up to the slots, tasks run at full speed.

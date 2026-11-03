@@ -4,15 +4,31 @@
 import { failsafe, ownFailsafe, raidShield } from '../state/gateway.js';
 import { note } from '../state/gameState.js';
 import { holdHeat } from '../state/cheats.js';
+import { band, beginRaid, raidCountdown, resetRig } from './physical.js';
 
-/// The heat on the operator, and the raid when it is full.
+/// The heat on the operator, and the raid when it is full. With the
+/// perimeter sensors the raid is first a 15-second Red countdown.
 export function heatTick(game, dt) {
-  if (!game.session) {
+  if (!game.session && !game.raid) {
     game.player.heat = Math.max(game.player.heat - dt * 0.12, 0);
   }
   // a heat frozen from the cheat menu is put back before the raid check
   holdHeat(game);
-  if (game.player.heat >= 100) raid(game);
+  if (game.raid) {
+    if (raidCountdown(game, dt)) raid(game);
+    return;
+  }
+  if (game.player.heat >= 100 && beginRaid(game)) raid(game);
+  announce(game);
+}
+
+/// The sensors say so when the band changes to Yellow or Red.
+function announce(game) {
+  const now = band(game);
+  if (now === game.band) return;
+  game.band = now;
+  if (now === 'yellow') game.toasts.push({ text: 'Perimeter sensors: unmarked vehicles near the hideout', kind: 'bad', born: game.uiTime });
+  if (now === 'red') game.toasts.push({ text: 'Perimeter sensors: BREACH IN PROGRESS', kind: 'bad', born: game.uiTime });
 }
 
 /// A raid reached the machine.
@@ -31,14 +47,13 @@ export function raid(game) {
     if (game.player.heat < 100) return;
   }
   switch (failsafe(game.player.gateway)) {
-    // the injector burns every drive and every buffer: the hardware is lost,
-    // the operator is not
+    // the charge burns the rig and every file: the warrant is void and the
+    // operator starts again on a field rig, with the credits and the tools
     case 'PURGE': {
       const lost = game.player.storage.length;
-      game.player.storage = [];
-      game.player.heat = 45;
-      note(game, 'raid // thermite injector fired // storage destroyed');
-      game.toasts.push({ text: `Raid // ${lost} staged files burned`, kind: 'bad', born: game.uiTime });
+      resetRig(game);
+      note(game, 'raid // thermite fired // the rig is ash and the warrant is void');
+      game.toasts.push({ text: `Raid // rig destroyed, ${lost} staged files burned`, kind: 'bad', born: game.uiTime });
       break;
     }
     // the decoy system answers the search team's questions

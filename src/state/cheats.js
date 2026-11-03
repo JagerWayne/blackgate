@@ -27,6 +27,8 @@ export function cheatsOf(game) {
 /// How fast the world clock runs. A run saved before the speeds keeps its
 /// fast-forward box.
 export function timeScale(game) {
+  // the Red countdown runs in real time
+  if (game.raid) return 1;
   const s = game.settings;
   if (SPEEDS.includes(s.timeScale)) return s.timeScale;
   return s.fastForward ? 8 : 1;

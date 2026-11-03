@@ -1,13 +1,15 @@
 {
-  "schema": 3,
+  "schema": 4,
   "chassis": [
     {
       "accel_slots": 1,
+      "base_shield": 0.15,
       "cpu_slots": 1,
       "emergency_purge": false,
       "fpga_slots": 0,
       "heat_factor": 1,
       "migration": 0,
+      "mobile": false,
       "modem_slots": 1,
       "name": "PELICAN FIELD RIG",
       "note": "1 socket // 2 TB onboard // 1 Gbps uplink // 0 defense slots",
@@ -20,15 +22,18 @@
       "tier": 1,
       "trace_factor": 1,
       "trait_name": "HIGH PHYSICAL RISK",
-      "trait_note": "A ruggedized case on a desk: found within a day of an open trace. No room for a self-destruct charge."
+      "trait_note": "A ruggedized case on a desk: found within a day of an open trace. No room for a self-destruct charge.",
+      "vps": false
     },
     {
       "accel_slots": 1,
+      "base_shield": 0,
       "cpu_slots": 2,
       "emergency_purge": false,
       "fpga_slots": 0,
       "heat_factor": 0,
       "migration": 60,
+      "mobile": false,
       "modem_slots": 1,
       "name": "GHOST-VPS BASTION",
       "note": "2 sockets // 4 TB onboard // 2.5 Gbps uplink // 0 defense slots",
@@ -41,15 +46,18 @@
       "tier": 2,
       "trace_factor": 1,
       "trait_name": "OFFSHORE HOSTING",
-      "trait_note": "A rented server: there is no door to knock on, so no physical raid."
+      "trait_note": "A rented server: there is no door to knock on, so no physical raid.",
+      "vps": true
     },
     {
       "accel_slots": 1,
+      "base_shield": 0,
       "cpu_slots": 2,
       "emergency_purge": false,
       "fpga_slots": 1,
       "heat_factor": 0.33,
       "migration": 120,
+      "mobile": false,
       "modem_slots": 1,
       "name": "STEALTH MICRO-SERVER",
       "note": "2 sockets // 8 TB onboard // 5 Gbps uplink // 1 defense slot",
@@ -62,15 +70,18 @@
       "tier": 3,
       "trace_factor": 0.95,
       "trait_name": "HIDDEN IN A UTILITY ENCLOSURE",
-      "trait_note": "Investigations take three times as long to reach the door. One defense slot."
+      "trait_note": "Investigations take three times as long to reach the door. One defense slot.",
+      "vps": false
     },
     {
       "accel_slots": 1,
+      "base_shield": 0,
       "cpu_slots": 4,
       "emergency_purge": false,
       "fpga_slots": 1,
       "heat_factor": 0.5,
       "migration": 180,
+      "mobile": false,
       "modem_slots": 1,
       "name": "SUB-ZERO RACK",
       "note": "4 sockets // 32 TB onboard // 10 Gbps uplink // 2 defense slots",
@@ -83,15 +94,18 @@
       "tier": 4,
       "trace_factor": 1,
       "trait_name": "SOUNDPROOFED SAFEHOUSE",
-      "trait_note": "Takes ZFS enclosures and heavy parallel work; the power draw makes it a moderate target."
+      "trait_note": "Takes ZFS enclosures and heavy parallel work; the power draw makes it a moderate target.",
+      "vps": false
     },
     {
       "accel_slots": 1,
+      "base_shield": 0,
       "cpu_slots": 3,
       "emergency_purge": false,
       "fpga_slots": 1,
       "heat_factor": 0.4,
       "migration": 240,
+      "mobile": false,
       "modem_slots": 1,
       "name": "DATASTORE RACK",
       "note": "3 sockets // 128 TB onboard // 10 Gbps uplink // 2 defense slots",
@@ -104,15 +118,18 @@
       "tier": 5,
       "trace_factor": 1,
       "trait_name": "COLD STORAGE",
-      "trait_note": "Holds a whole datacenter dump; trades processing for room."
+      "trait_note": "Holds a whole datacenter dump; trades processing for room.",
+      "vps": false
     },
     {
       "accel_slots": 1,
+      "base_shield": 0,
       "cpu_slots": 12,
       "emergency_purge": false,
       "fpga_slots": 1,
       "heat_factor": 1.33,
       "migration": 300,
+      "mobile": false,
       "modem_slots": 1,
       "name": "CRYO-COOLED CLUSTER",
       "note": "12 sockets // 16 TB onboard // 10 Gbps uplink // 1 defense slot",
@@ -125,15 +142,18 @@
       "tier": 6,
       "trace_factor": 1.15,
       "trait_name": "POWER SPIKES",
-      "trait_note": "The most compute in the game; the utility company notices the draw."
+      "trait_note": "The most compute in the game; the utility company notices the draw.",
+      "vps": false
     },
     {
       "accel_slots": 1,
+      "base_shield": 0,
       "cpu_slots": 8,
       "emergency_purge": false,
       "fpga_slots": 1,
       "heat_factor": 0.67,
       "migration": 400,
+      "mobile": true,
       "modem_slots": 2,
       "name": "MOBILE C2 VAN",
       "note": "8 sockets // 64 TB onboard // 25 Gbps uplink // 3 defense slots",
@@ -146,7 +166,8 @@
       "tier": 7,
       "trace_factor": 1,
       "trait_name": "BASE ON WHEELS",
-      "trait_note": "Faraday cage and a generator. Three defense slots and a second uplink."
+      "trait_note": "Faraday cage and a generator. Three defense slots and a second uplink.",
+      "vps": false
     }
   ],
   "components": [
@@ -386,6 +407,8 @@
       "effect": "Wireless PIR, seismic and Doppler sensors around the hideout: sounds a warning when a trace reaches 85%.",
       "failsafe": "",
       "hops": 0,
+      "hud": true,
+      "jammer": false,
       "kind": "security",
       "lanes": 1,
       "multiplier": 1,
@@ -403,6 +426,8 @@
       "effect": "A thermite canister over the drive and CPU sockets: when a raid reaches the machine it burns everything it would find.",
       "failsafe": "PURGE",
       "hops": 0,
+      "hud": false,
+      "jammer": false,
       "kind": "security",
       "lanes": 1,
       "multiplier": 1,
@@ -496,6 +521,25 @@
       "price": 35000,
       "raid_shield": 0,
       "tier": 1,
+      "trace_delay": 0,
+      "warn_at": 0.85
+    },
+    {
+      "bandwidth": 0,
+      "defense": "RF JAMMER",
+      "effect": "Blasts the local 5G, LTE and emergency bands when a raid is closing in: the Red countdown gains 45 seconds. The signature is loud: for the next 6 hours every link leaves twice the heat.",
+      "failsafe": "",
+      "hops": 0,
+      "hud": false,
+      "jammer": true,
+      "kind": "security",
+      "lanes": 1,
+      "multiplier": 1,
+      "name": "BROADBAND RF JAMMER & SNIFFER",
+      "note": "adds 45 s to a raid countdown",
+      "price": 12000,
+      "raid_shield": 0,
+      "tier": 3,
       "trace_delay": 0,
       "warn_at": 0.85
     }

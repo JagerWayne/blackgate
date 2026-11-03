@@ -100,8 +100,15 @@ export function hops(gw) {
 /// How much the security units slow an active trace.
 function traceDelay(gw) { return Math.max(0, ...securityDefs(gw).map((d) => d.trace_delay)); }
 
-/// The share of a raid the security units absorb: the best of them.
-export function raidShield(gw) { return Math.max(0, ...securityDefs(gw).map((d) => d.raid_shield)); }
+/// The share of a raid the security units absorb: the best of them, or the
+/// chassis's own surge protector.
+export function raidShield(gw) { return Math.max(chassisOf(gw).base_shield ?? 0, ...securityDefs(gw).map((d) => d.raid_shield)); }
+
+/// Whether the perimeter sensors are fitted: they show the Green, Yellow and Red bands.
+export function hasSensors(gw) { return securityDefs(gw).some((d) => d.hud); }
+
+/// Whether an RF jammer is fitted.
+export function hasJammer(gw) { return securityDefs(gw).some((d) => d.jammer); }
 
 /// The trace level at which the security units warn: the earliest of them.
 export function warnAt(gw) { return Math.min(0.85, ...securityDefs(gw).map((d) => d.warn_at)); }

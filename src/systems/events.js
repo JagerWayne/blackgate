@@ -16,6 +16,7 @@ import { acceptContract, declineContract, dropContract, submitContract, contract
 import { generateCustomContract } from '../state/contractSpawn.js';
 import { parseRecord, validRecord, RECORD_LABEL } from '../state/gameState.js';
 import { buyComponent, buyChassis, sellPart, buyTool, sellStock, fitStock } from '../state/economy.js';
+import { relocate } from './physical.js';
 import { fitPlan } from '../state/gateway.js';
 import { connect, disconnect } from './sessionTick.js';
 import { startTask } from './sessionTasks.js';
@@ -121,7 +122,10 @@ function handleGatewayClick(state, id) {
   } else if (id.startsWith('gw.chassis.')) buyChassis(game, chassisDef(Number(id.slice(11))));
   else if (id.startsWith('gw.sell.')) sellPart(game, Number(id.slice(8)));
   else if (id.startsWith('gw.stock.sell.')) sellStock(game, Number(id.slice(14)));
-  else if (id.startsWith('gw.stock.fit.')) {
+  else if (id === 'gw.relocate') {
+    const why = relocate(game);
+    toast(game, why ?? 'the Van is on the road // the investigation lost the trail', why ? 'bad' : 'good');
+  } else if (id.startsWith('gw.stock.fit.')) {
     const why = fitStock(game, Number(id.slice(13)));
     if (why) toast(game, why, 'bad');
   }

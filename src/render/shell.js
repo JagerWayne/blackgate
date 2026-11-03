@@ -9,6 +9,7 @@ import { rankName } from '../core/theme.js';
 import { hhmm, weekday, dateLine, day } from '../core/clock.js';
 import { hit } from '../ui/kit.js';
 import { timeScale } from '../state/cheats.js';
+import { band } from '../systems/physical.js';
 
 import { HEADER_H } from '../state/desk.js';
 
@@ -80,7 +81,10 @@ export function drawHeader(ctx, game, sk, r, ui, input, events) {
     x += rw;
   }
   if (x + 170 <= limit) {
-    drawText(ctx, 'HEAT', x, r.y + 17, FONT.body, color(sk.dim), { baseline: 'middle' });
+    // the perimeter sensors turn the label into the band they read
+    const bandNow = band(game);
+    const bandLabel = { green: 'HEAT // CLEAR', yellow: 'HEAT // RECON', red: `BREACH // ${Math.ceil(game.raid?.left ?? 0)}s` }[bandNow];
+    drawText(ctx, bandLabel ?? 'HEAT', x, r.y + 17, FONT.body, color(bandNow === 'red' ? sk.danger : bandNow === 'yellow' ? sk.warn : sk.dim), { baseline: 'middle' });
     const heat = Math.min(Math.max(game.player.heat / 100, 0), 1);
     const hc = heat > 0.75 ? sk.danger : heat > 0.4 ? sk.warn : sk.accent;
     // the track is a groove the same colour as every other meter's

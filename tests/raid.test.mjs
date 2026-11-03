@@ -34,6 +34,8 @@ function raided(tier, chassisTier = 4) {
   g.player.storage = [{ name: 'loot.db', size: 4, enc: 0, tag: 0, source: 'x' }];
   g.player.heat = 100;
   heatTick(g, 0);
+  // the sensors give a Red countdown first: let it run out
+  if (g.raid) heatTick(g, 100);
   return g;
 }
 
@@ -42,14 +44,15 @@ test('no security part: the raid ends the run', () => {
   assert.equal(g.gameOver, 'raided');
 });
 
-test('a chassis with an emergency purge and no security part: the drives burn, the run goes on', () => {
+test('a chassis with an emergency purge and no security part: the rig burns, the run goes on', () => {
   const def = chassis().find((c) => c.tier === 4);
   def.emergency_purge = true;
   try {
     const g = raided(0);
     assert.equal(g.gameOver, null);
     assert.equal(g.player.storage.length, 0);
-    assert.equal(g.player.heat, 45);
+    assert.equal(g.player.heat, 0);
+    assert.equal(g.player.gateway.chassis, 1);
   } finally {
     def.emergency_purge = false;
   }
@@ -63,11 +66,12 @@ test('the perimeter sensors absorb their share and the run goes on', () => {
   assert.equal(g.player.storage.length, 1, 'nothing is burned');
 });
 
-test('the thermite core melt (PURGE): the drives burn and the heat drops to 45', () => {
+test('the thermite core melt (PURGE): the rig and the drives burn and the warrant is void', () => {
   const g = raided(THERMITE);
   assert.equal(g.gameOver, null);
   assert.equal(g.player.storage.length, 0, 'the staged files are destroyed');
-  assert.equal(g.player.heat, 45);
+  assert.equal(g.player.heat, 0);
+  assert.equal(g.player.gateway.chassis, 1, 'back on a field rig');
 });
 
 test('a decoy failsafe: the search finds nothing and the heat goes to 0', () => {

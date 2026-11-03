@@ -2,8 +2,9 @@
 
 import { drawFrame, splitPanel, detailPane, sectionHead } from '../ui/panel.js';
 import { drawTable, flex } from '../ui/table.js';
-import { section, label, keyValue } from '../ui/controls.js';
-import { ghost, danger } from '../ui/styles.js';
+import { section, label, keyValue, buttons } from '../ui/controls.js';
+import { ghost, danger, primary } from '../ui/styles.js';
+import { relocateError } from '../systems/physical.js';
 import { storageUsed } from '../state/gameState.js';
 import * as gw from '../state/gateway.js';
 import { drawScrolled } from '../ui/scroll.js';
@@ -48,6 +49,12 @@ export function drawGateway(ctx, sk, r, game, ui, input, events, view) {
   ];
   controls.push(section('MACHINE'));
   controls.push(...stats.map(([k, v]) => keyValue(k, v, sk.text)));
+  // the Van can drive away from an investigation; the button says why it cannot
+  if (chassis.mobile) {
+    const why = relocateError(game);
+    controls.push(buttons([{ id: 'gw.relocate', text: 'RELOCATE', style: { ...(why ? ghost() : primary()), disabled: !!why } }]));
+    controls.push(label(why ?? 'two hours on the road; the investigation loses the trail', FONT.body, why ? sk.dim : sk.warn));
+  }
 
   // the machine card is as tall as what it says, so no number hides under a
   // scroll; the fitted parts (and the slots they fill) list under it

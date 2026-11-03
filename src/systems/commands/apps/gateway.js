@@ -17,14 +17,14 @@ export const gatewayApp = {
       },
     },
     shop: {
-      args: '[cpu|storage|modem|security|chassis]', help: 'the parts for sale',
+      args: '[cpu|accel|fpga|storage|modem|security|chassis]', help: 'the parts for sale',
       run(ctx, [kind = 'cpu']) {
         if (kind === 'chassis') {
           ctx.term.last = { kind: 'shop', ids: chassis().map((c) => `gw.chassis.${c.tier}`) };
           return chassis().map((c, i) => ({ text: `${pad(`#${i + 1}`, 5)}${pad(c.name, 26)}${pad(cr(c.price), 12)}${c.note ?? ''}` }));
         }
         const list = componentsOf(kind);
-        if (!list.length) fail('usage: gw shop [cpu|storage|modem|security|chassis]');
+        if (!list.length) fail('usage: gw shop [cpu|accel|fpga|storage|modem|security|chassis]');
         ctx.term.last = { kind: 'shop', ids: list.map((d) => `gw.buy.${kind}.${d.tier}`) };
         return list.map((d, i) => ({ text: `${pad(`#${i + 1}`, 5)}T${d.tier} ${pad(d.name, 30)}${pad(cr(d.price), 12)}${d.note ?? ''}` }));
       },
@@ -47,6 +47,10 @@ export const gatewayApp = {
         if (!ctx.game.player.gateway.parts[i]) fail('pick a slot #n from `gw specs`');
         return gwPress(ctx, `gw.sell.${i}`, yes, 'part moved to stock');
       },
+    },
+    relocate: {
+      args: '', help: 'drive the Mobile C2 Van to a new grid (from a Yellow investigation, once a day)',
+      run: (ctx) => press(ctx, 'gw.relocate', 'the Van is on the road'),
     },
     stock: {
       args: '', help: 'the parts in stock',

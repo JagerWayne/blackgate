@@ -173,3 +173,14 @@ test('the STOCK tab lists what is in stock', () => {
   assert.ok(ctx.texts.some((t) => /^sells for \d+ cr \(\d+%\)$/.test(t.s)));
   assert.ok(ctx.texts.some((t) => t.s === 'SELL'));
 });
+
+test('the Van\'s gateway window offers RELOCATE, and the click drives away from a Yellow case', () => {
+  const g = rich(7);
+  const state = playState(g);
+  openWindow(state.windows, 'gateway', DESK);
+  assert.ok(frame(state).texts.some((t) => t.s === 'RELOCATE'));
+  g.player.heat = 80;
+  click(state, 'gw.relocate');
+  assert.equal(g.player.heat, 0);
+  assert.ok(g.player.gateway.migrateUntil > g.clock.minutes);
+});

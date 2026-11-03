@@ -2,7 +2,8 @@
 
 import { makeSession, pushLine } from '../state/session.js';
 import { note, discover, routeFactor, toolLevel } from '../state/gameState.js';
-import { bandwidth, fpga, hops, traceFactor, warnAt, heatFactor } from '../state/gateway.js';
+import { bandwidth, chassisOf, fpga, hops, traceFactor, warnAt, heatFactor } from '../state/gateway.js';
+import { heatGain, wipeStorage } from './physical.js';
 import { completeTask } from './sessionComplete.js';
 import { overloadTick, throttle, weight } from './compute.js';
 import { voiceAdmin } from '../state/voice.js';
@@ -48,7 +49,7 @@ export function disconnect(game) {
   });
   heat += fresh(game.world.hosts[s.target].logs) * 2;
   if (heat > 0) {
-    const kept = heat * heatFactor(game.player.gateway);
+    const kept = heat * heatFactor(game.player.gateway) * heatGain(game);
     game.player.heat = Math.min(game.player.heat + kept, 100);
     note(game, `residual evidence: +${kept.toFixed(1)} heat`);
   } else if (s.alerted) {
@@ -118,11 +119,18 @@ export function sessionTick(game, dt) {
       game.toasts.push({ text: 'Security unit: a trace is closing in', kind: 'bad', born: game.uiTime });
     }
   }
-  // the trace landed: the link is seized and the run is over
+  // the trace landed: the link is seized and the run is over, unless the rig
+  // is a rented server whose provider pulls the plug and wipes it
   if (s.trace >= 1) {
+    game.session = null;
+    if (chassisOf(game.player.gateway).vps) {
+      wipeStorage(game);
+      note(game, 'TRACE COMPLETE // the provider wiped the server // the files are gone');
+      game.toasts.push({ text: 'Trace complete: the VPS was wiped, the link is gone', kind: 'bad', born: game.uiTime });
+      return;
+    }
     game.gameOver = 'caught';
     note(game, 'TRACE COMPLETE // connection seized');
-    game.session = null;
   }
 }
 
