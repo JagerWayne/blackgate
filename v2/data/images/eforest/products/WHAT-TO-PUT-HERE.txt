@@ -1,0 +1,65 @@
+eForest product pictures: the cards, the product page and the cart. One picture per item, named <kind>.<tier>.png.
+
+Every image: PNG, 320x320, transparent or solid background. Put the files in THIS folder; the game reads them by file name.
+A file that is missing shows a grey rectangle instead, so you can add them one at a time.
+
+file - size - what it shows
+case.2.png - 320x320 - Rented Overseas Server
+case.3.png - 320x320 - Hidden Mini Server
+case.4.png - 320x320 - Soundproof Server Rack
+case.5.png - 320x320 - Big Storage Rack
+case.6.png - 320x320 - Super Computer Cluster
+case.7.png - 320x320 - Mobile Hideout Van
+board.2.png - 320x320 - Mini-ITX Board
+board.3.png - 320x320 - Micro-ATX Board
+board.4.png - 320x320 - ATX Board
+board.5.png - 320x320 - E-ATX Workstation Board
+board.6.png - 320x320 - Server Rack Board
+cpu.1.png - 320x320 - Basic Processor // 32 cores
+cpu.2.png - 320x320 - Fast Processor // 64 cores
+cpu.3.png - 320x320 - Ultra Processor // 128 cores
+cpu.4.png - 320x320 - Server Processor // 192 cores
+cpu.5.png - 320x320 - Datacentre Processor // 384 cores
+storage.1.png - 320x320 - M.2 SSD 32 GB
+storage.2.png - 320x320 - M.2 SSD 64 GB
+storage.3.png - 320x320 - M.2 SSD 128 GB
+storage.4.png - 320x320 - M.2 SSD 256 GB
+storage.5.png - 320x320 - M.2 SSD 512 GB
+storage.6.png - 320x320 - M.2 SSD 1 TB
+storage.7.png - 320x320 - M.2 SSD 2 TB
+storage.8.png - 320x320 - 1.8" HDD 32 GB (5200 rpm)
+storage.9.png - 320x320 - 1.8" HDD 64 GB (5200 rpm)
+storage.10.png - 320x320 - 1.8" HDD 128 GB (5200 rpm)
+storage.11.png - 320x320 - 2.5" SSD 256 GB
+storage.12.png - 320x320 - 2.5" SSD 512 GB
+storage.13.png - 320x320 - 2.5" SSD 1 TB
+storage.14.png - 320x320 - 2.5" SSD 2 TB
+storage.15.png - 320x320 - 2.5" HDD 512 GB (5200 rpm)
+storage.16.png - 320x320 - 2.5" HDD 1 TB (5200 rpm)
+storage.17.png - 320x320 - 2.5" HDD 2 TB (5200 rpm)
+storage.18.png - 320x320 - 3.5" HDD 1 TB (5200 rpm)
+storage.19.png - 320x320 - 3.5" HDD 2 TB (5200 rpm)
+storage.20.png - 320x320 - 3.5" HDD 4 TB (5200 rpm)
+storage.21.png - 320x320 - 3.5" HDD 12 TB (5200 rpm)
+storage.22.png - 320x320 - 3.5" HDD 512 GB (7200 rpm)
+storage.23.png - 320x320 - 3.5" HDD 1 TB (7200 rpm)
+storage.24.png - 320x320 - 3.5" HDD 2 TB (7200 rpm)
+storage.25.png - 320x320 - 3.5" HDD 4 TB (7200 rpm)
+storage.26.png - 320x320 - 3.5" HDD 512 GB (10000 rpm)
+storage.27.png - 320x320 - 3.5" HDD 1 TB (10000 rpm)
+storage.28.png - 320x320 - 3.5" HDD 2 TB (10000 rpm)
+storage.29.png - 320x320 - 3.5" HDD 4 TB (10000 rpm)
+storage.30.png - 320x320 - 3.5" HDD 12 TB (10000 rpm)
+accel.1.png - 320x320 - Booster Card x1
+accel.2.png - 320x320 - Booster Card x2
+accel.3.png - 320x320 - Booster Card x3
+accel.4.png - 320x320 - Booster Card x4
+fpga.1.png - 320x320 - Unlock Speed Chip
+hsm.1.png - 320x320 - Security Key Reader
+modem.1.png - 320x320 - Home Fibre 1 Gbps
+modem.2.png - 320x320 - Home Fibre 2.5 Gbps
+modem.3.png - 320x320 - Business Fibre 10 Gbps
+modem.4.png - 320x320 - Satellite Dish 25 Gbps
+security.1.png - 320x320 - Intruder Alarm Sensors
+security.2.png - 320x320 - Self-Destruct Charge
+security.3.png - 320x320 - Radio Jammer

@@ -1,0 +1,9 @@
+{
+  "id": "mapNetwork",
+  "kind": "MapNetwork",
+  "label": "MAP NET",
+  "tool": "ZeroTrustMapper",
+  "reasons": {
+    "noTool": "no mapper installed"
+  }
+}

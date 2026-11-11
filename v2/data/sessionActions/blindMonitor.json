@@ -1,0 +1,12 @@
+{
+  "id": "blindMonitor",
+  "kind": "BypassMonitor",
+  "label": "BLIND MONITOR",
+  "tool": "MonitorBypass",
+  "reasons": {
+    "none": "no monitor here",
+    "noTool": "no bypass installed",
+    "weak": "the bypass is too weak",
+    "done": "already blinded"
+  }
+}

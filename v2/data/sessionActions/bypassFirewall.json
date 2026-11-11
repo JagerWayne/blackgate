@@ -1,0 +1,12 @@
+{
+  "id": "bypassFirewall",
+  "kind": "BypassFirewall",
+  "label": "BYPASS FIREWALL",
+  "tool": "FirewallBypass",
+  "reasons": {
+    "none": "no firewall here",
+    "noTool": "no bypass installed",
+    "weak": "the bypass is too weak",
+    "done": "already bypassed"
+  }
+}

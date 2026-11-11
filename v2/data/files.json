@@ -1,0 +1,36 @@
+{
+  "extensions": [
+    "xls",
+    "sql",
+    "csv",
+    "doc",
+    "pdf",
+    "bin",
+    "dat",
+    "saf"
+  ],
+  "stems": [
+    "q3_forecast",
+    "payroll_2027",
+    "customer_ledger",
+    "board_minutes",
+    "audit_trail",
+    "employee_records",
+    "contract_draft",
+    "network_topology",
+    "vulnerability_scan",
+    "acquisition_memo",
+    "model_weights",
+    "training_corpus",
+    "keyring_backup",
+    "incident_report",
+    "vendor_list",
+    "revenue_projection",
+    "legal_brief",
+    "source_repo",
+    "rnd_roadmap",
+    "supplier_terms",
+    "biometric_index",
+    "backup_manifest"
+  ]
+}

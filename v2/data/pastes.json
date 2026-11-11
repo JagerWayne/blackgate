@@ -1,0 +1,33 @@
+{
+  "_note": "Paste templates for pastedump.nx. One is picked per paste from the seed and the day. Placeholders: {co} {short} {name} {email} {role} {domain} {host}.",
+  "mail": [
+    "# mail export, {co}\n{name} <{email}>",
+    "From: {name} <{email}>\nTo: all-staff@{short}.nx\nSubject: re: password rotation",
+    "--- contacts.csv ({co}) ---\n{name},{email}",
+    "BEGIN ADDRESS BOOK\n{name} <{email}>\nEND ADDRESS BOOK // {co}",
+    "forwarded by mistake:\n{name} <{email}>\nplease do not forward outside {co}",
+    "newsletter list leak // {co}\n{email} ({name})",
+    "Auto-reply: Out of Office\nContact {name} ({email}) for urgent matters at {co}.",
+    "From: sysadmin@{domain}\nTo: {email}\nSubject: Provisioning credentials for {role}",
+    "CONFIDENTIAL // {co} Internal Directory\nEmployee: {name}\nTitle: Senior {role}\nDirect: {email}",
+    "Meeting invite: Q3 Architecture Sync\nOrganizer: {name} <{email}>\nTarget host: {host}.{domain}",
+    "delivery failure: undelivered message to {email}\nMX relay rejected by {co} boundary gateway",
+    "slack-bridge digest [{short}]\n<{name}> sent credentials via {email} -- please delete manually",
+    "IT Onboarding Ticket #0882\nAccount created for {name} ({email}) with {role} access."
+  ],
+  "ssh": [
+    "# ssh history, {name}\n$ ssh {domain}\n$ ls /srv/{role}",
+    "# {co} admin notes\nthe {role} box is {domain}\nnever moved it after the rebuild",
+    "$ ping {domain}\n$ nmap {domain}\n$ ssh {name}@{domain}",
+    "known_hosts ({co})\n{domain} ssh-ed25519 AAAAC3...",
+    "cron log\n02:00 backup -> {domain}\n02:05 backup done ({role})",
+    "ticket #4471: {role} server {domain} still answers from the old rack",
+    "# ~/.ssh/config snippet for {co}\nHost {host}\n    HostName {domain}\n    User {name}\n    Port 2222",
+    "$ ssh -i id_ed25519_{short} {name}@{host}.{domain}\nWelcome to {co} primary cluster ({role})",
+    "ansible-playbook -i hosts deploy_{role}.yml\nFAILED: fatal: [{host}.{domain}]: UNREACHABLE! => {\"changed\": false}",
+    "# emergency maintenance on {host}\nrouted traffic away from {domain} while {name} patches the {role} daemon",
+    "$ scp root@{domain}:/var/log/{role}/audit.log ./\n# warning: {host} disk 94% full ({co})",
+    "auth.log snippet [{co}]\nFailed password for invalid user admin from {domain} port 49152 ssh2\nAccepted publickey for {name} from internal-vpn",
+    "MOTD // {co} internal node {host}\nAuthorized access only. Logins logged by {role} team."
+  ]
+}

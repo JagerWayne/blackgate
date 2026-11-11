@@ -1,0 +1,35 @@
+{
+  "_note": "The main game settings. Changing a world number only affects NEW worlds; saved worlds keep what they were built with. A missing key, text or a number out of range falls back to the built-in value.",
+  "language": "en",
+  "profiles": {
+    "max": 8
+  },
+  "world": {
+    "companies": 50,
+    "population": 3000,
+    "relays": 25
+  },
+  "player": {
+    "startingCash": 6000,
+    "startingRating": 2
+  },
+  "routes": {
+    "minHopLimit": 10,
+    "maxSaved": 10
+  },
+  "jobs": {
+    "maxActive": 6
+  },
+  "notepad": {
+    "maxPads": 12
+  },
+  "browser": {
+    "maxTabs": 8
+  },
+  "bank": {
+    "savingsRatePerDay": 0.004,
+    "savingsCap": 90000,
+    "loanRatePerDay": 0.02,
+    "loanDays": 14
+  }
+}

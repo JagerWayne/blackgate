@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@source "./**/*.js";
+@source "../index.html";
+
+/* The canvas game's own palette (src/core/theme.js), so the DOM shell looks like the same desk. */
+@theme {
+  --color-bg: #050810;
+  --color-deep: #0e1420;
+  --color-panel: #1d2433;
+  --color-panel2: #263046;
+  --color-line: #38466a;
+  --color-ink: #e9eef8;
+  --color-dim: #b0bcd2;
+  --color-accent: #4c9df0;
+  --color-accent-dim: #27406b;
+  --color-warn: #f0a030;
+  --color-danger: #e86058;
+  --color-track: #2c3750;
+  --font-mono: "Cascadia Mono", "Consolas", monospace;
+}
+
+/* The wallpaper fills everything below the header; the header is a solid window of its own (h-14 in index.html),
+   so the picture never shows behind it. The faint grid the canvas desktop draws goes over it (#desktop::before). */
+body {
+  background: #050810;
+}
+/* The wallpaper is drawn, not a picture: glows, a data grid, faint binary rain and scanlines. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 3.5rem 0 0 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 0.18) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='320'%3E%3Cg font-family='monospace' font-size='13' fill='%234c9df0' fill-opacity='.10'%3E%3Ctext x='8' y='20'%3E01001101 11010010 00101101%3C/text%3E%3Ctext x='120' y='66'%3E10110100 01101110%3C/text%3E%3Ctext x='30' y='112'%3E00111010 10010111 01010011%3C/text%3E%3Ctext x='210' y='158'%3E11001010 00110101%3C/text%3E%3Ctext x='60' y='204'%3E01110001 10001100 11010110%3C/text%3E%3Ctext x='170' y='250'%3E00101101 10100011%3C/text%3E%3Ctext x='20' y='296'%3E11100010 01011001 00110110%3C/text%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(60rem 36rem at 85% 8%, rgb(76 157 240 / 0.28), transparent 60%),
+    radial-gradient(48rem 30rem at 8% 100%, rgb(127 212 193 / 0.16), transparent 60%),
+    linear-gradient(160deg, #060a16 0%, #0a1430 55%, #050810 100%);
+}
+/* the name, top right of the desktop */
+body::after {
+  content: 'BL@CKG@TE';
+  position: fixed;
+  top: 4.4rem;
+  right: 2rem;
+  z-index: 0;
+  pointer-events: none;
+  font: 700 3.6rem/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  color: #cfe6ff;
+  text-shadow: 0 0 12px rgb(76 157 240 / 0.9), 0 0 36px rgb(76 157 240 / 0.55);
+}
+#desktop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgb(127 212 193 / 0.08) 1px, transparent 1px), linear-gradient(90deg, rgb(127 212 193 / 0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Motion and polish. Everything is purely visual; the game never reads these classes. */
+@keyframes win-in { from { opacity: 0; scale: 0.94; } to { opacity: 1; scale: 1; } }
+@keyframes toast-in { 0% { opacity: 0; translate: 2rem 0; scale: 0.9; } 60% { scale: 1.04; } 100% { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes glow { 0%, 100% { text-shadow: 0 0 12px rgb(76 157 240 / 0.9), 0 0 36px rgb(76 157 240 / 0.55); } 50% { text-shadow: 0 0 18px rgb(76 157 240 / 1), 0 0 56px rgb(76 157 240 / 0.8); } }
+@keyframes drift { to { background-position: 0 0, 420px 320px, 0 0, 0 0, 0 0; } }
+.win-in { animation: win-in 180ms ease-out; }
+.toast-in { animation: toast-in 320ms cubic-bezier(0.2, 0.9, 0.3, 1); }
+body::after { animation: glow 5s ease-in-out infinite; }
+body::before { animation: drift 90s linear infinite; }
+#toasts > div { box-shadow: 0 0 18px -4px currentColor; }
+
+button { transition: filter 200ms ease-out, transform 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out; }
+button:not(:disabled):active { transform: scale(0.96); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+input, textarea, select { transition: border-color 200ms ease-out, box-shadow 200ms ease-out; }
+input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgb(76 157 240 / 0.25); }
+
+* { scrollbar-width: thin; scrollbar-color: var(--color-line) transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation: none !important; transition: none !important; }
+}
+
+/* Juice: all transform/opacity, driven by classes that header.js and fx.js add on state changes. */
+@keyframes float-up { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: 0 -2.5rem; } }
+@keyframes bump { 40% { scale: 1.25; } }
+@keyframes hit { 0% { opacity: 0.35; } 100% { opacity: 0; } }
+@keyframes shine { to { translate: 250% 0; } }
+@keyframes stage { from { opacity: 0; translate: 0 1rem; scale: 0.96; filter: blur(6px); } to { opacity: 1; translate: 0 0; scale: 1; filter: blur(0); } }
+@keyframes particles { to { translate: 0 -100vh; } }
+.float-up { position: fixed; z-index: 60; pointer-events: none; font-weight: 700; font-size: 0.8rem; animation: float-up 0.8s ease-out forwards; }
+.bump { display: inline-block; animation: bump 0.3s ease-out; }
+.hit-flash { background: rgb(255 40 50); animation: hit 0.3s ease-out forwards; }
+.shine::after { content: ''; position: absolute; inset: 0 auto 0 -60%; width: 40%; pointer-events: none; background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.35), transparent); transform: skewX(-20deg); animation: shine 3.5s ease-in-out infinite; }
+#over > *, #login > * { animation: stage 0.45s ease-out both; }
+#over > * > * { animation: stage 0.45s ease-out both; }
+#over > * > :nth-child(2) { animation-delay: 80ms; } #over > * > :nth-child(3) { animation-delay: 160ms; } #over > * > :nth-child(n+4) { animation-delay: 240ms; }
+#desktop::after { content: ''; position: absolute; left: 0; top: 100%; width: 2px; height: 2px; border-radius: 50%; pointer-events: none; color: rgb(127 212 193 / 0.5);
+  box-shadow: 8vw 0 currentColor, 21vw 18vh currentColor, 34vw 6vh currentColor, 47vw 30vh currentColor, 58vw 12vh currentColor, 71vw 40vh currentColor, 83vw 22vh currentColor, 94vw 8vh currentColor;
+  animation: particles 28s linear infinite; }
+
+/* DSNET / terminal: tactical cyber frame. Overlays are pointer-events:none; motion is transform/opacity. */
+@keyframes crt-on { 0% { opacity: 0; transform: scaleY(0.01) scaleX(0.6); filter: brightness(3); } 60% { opacity: 1; transform: scaleY(0.02) scaleX(1); } 100% { transform: none; filter: none; } }
+@keyframes ping { from { transform: translateX(-100%); } to { transform: translateX(400%); } }
+@keyframes flow { to { background-position: 10px 0; } }
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes aberrate { 50% { transform: translateX(2px); } }
+.crt-on { animation: crt-on 0.5s ease-out; }
+.cyber { position: relative; --tick: rgb(34 211 238 / 0.7); }
+.cyber::before { content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none; background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.14) 0 1px, transparent 1px 3px); box-shadow: inset 0 0 40px rgb(34 211 238 / 0.08); }
+.cyber::after { content: ''; position: absolute; inset: 3px; z-index: 6; pointer-events: none; opacity: 0.8;
+  background:
+    linear-gradient(var(--tick), var(--tick)) top left / 12px 1px no-repeat, linear-gradient(var(--tick), var(--tick)) top left / 1px 12px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) top right / 12px 1px no-repeat, linear-gradient(var(--tick), var(--tick)) top right / 1px 12px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) bottom left / 12px 1px no-repeat, linear-gradient(var(--tick), var(--tick)) bottom left / 1px 12px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) bottom right / 12px 1px no-repeat, linear-gradient(var(--tick), var(--tick)) bottom right / 1px 12px no-repeat; }
+.ping-bar { animation: ping 1s ease-in-out infinite; }
+.flow { background: repeating-linear-gradient(90deg, rgb(34 211 238 / 0.8) 0 4px, transparent 4px 7px); animation: flow 0.6s linear infinite; }
+.tac { box-shadow: 0 2px 0 rgb(0 0 0 / 0.5); transition: transform 150ms ease-out, box-shadow 150ms ease-out, filter 150ms ease-out; }
+.tac:enabled:hover { box-shadow: 0 2px 0 rgb(0 0 0 / 0.5), 0 0 12px rgb(34 211 238 / 0.4); }
+.tac:enabled:active { transform: translateY(2px); box-shadow: 0 0 0 rgb(0 0 0 / 0.5); }
+.sev::before { content: attr(data-tag) ' '; font-weight: 700; }
+.term-input { caret-color: var(--color-accent); caret-shape: block; }
+#desktop.aberrate { animation: aberrate 0.12s linear 2; filter: drop-shadow(2px 0 rgb(255 0 80 / 0.45)) drop-shadow(-2px 0 rgb(0 255 220 / 0.45)); }

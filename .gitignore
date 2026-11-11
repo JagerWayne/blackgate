@@ -1,0 +1,23 @@
+# temporary working files: screenshots, generators, toolchain helpers
+tasktemp/*
+
+# local tool settings
+.claude/
+
+# third-party trial map (licence forbids redistribution); not used by the game
+tools/html5worldmapv4.5/
+tools/localmap/
+
+# Electron build output
+node_modules/
+dist/
+
+# player saves never belong in the repo
+saves/
+*.save.json
+
+# planning notes, kept local
+/tasks/
+
+dist-dom/
+v2/dist/

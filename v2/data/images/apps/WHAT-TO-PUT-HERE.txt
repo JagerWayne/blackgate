@@ -1,0 +1,20 @@
+Desktop, Start menu and window title-bar icons, one per application. Keep the subject centred with a little margin; it is shown as small as 16x16.
+
+Every image: PNG, 128x128, transparent or solid background. Put the files in THIS folder; the game reads them by file name.
+A file that is missing shows a grey rectangle instead, so you can add them one at a time.
+
+file - size - what it shows
+dsn.png - 128x128 - Internet XPlorer
+files.png - 128x128 - My Computer
+blackgate.png - 128x128 - Bl@ckG@te
+bank.png - 128x128 - Money
+mail.png - 128x128 - Outlook
+gateway.png - 128x128 - Device Manager
+software.png - 128x128 - App Store
+operator.png - 128x128 - Control Panel
+notepad.png - 128x128 - Notepad
+terminal.png - 128x128 - Command Prompt
+calc.png - 128x128 - Calculator
+info.png - 128x128 - Info (the manual)
+cheats.png - 128x128 - Cheats (opened from the header logo, not the desktop)
+missions.png - 128x128 - Mission Builder (opened from the header logo, not the desktop)

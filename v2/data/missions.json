@@ -1,0 +1,28 @@
+{
+  "missions": [
+    {
+      "brief": [
+        "{co} keeps a second set of books on {host}. The file is {file}; bring us the copy they do not show auditors."
+      ],
+      "client": "THE COMMITTEE",
+      "id": "ghost_ledger",
+      "kind": "retrieve",
+      "min_rating": 12,
+      "reward_mult": 1.399999976158142,
+      "title": "GHOST LEDGER",
+      "weight": 1.0
+    },
+    {
+      "brief": [
+        "{file} on {host} is the only thing tying a former associate to {co}. Erase it and the trail ends there."
+      ],
+      "client": "M. HALLORAN",
+      "id": "clean_slate",
+      "kind": "delete",
+      "min_rating": 6,
+      "reward_mult": 1.2000000476837158,
+      "title": "CLEAN SLATE",
+      "weight": 1.0
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "name": "blackgate",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BLACKGATE hacking sim",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "vite build --config v2/vite.config.mjs && electron .",
+    "ui": "vite --config v2/vite.config.mjs",
+    "ui:build": "vite build --config v2/vite.config.mjs",
+    "test:v2": "node --test v2/tests/*.mjs",
+    "dist": "node electron/release.js --no-upload",
+    "test": "node --test v2/tests/*.mjs",
+    "release": "node electron/release.js"
+  },
+  "build": {
+    "appId": "com.blackgate.game",
+    "productName": "BLACKGATE",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "v2/dist/**/*",
+      "electron/main.js",
+      "electron/preload.js",
+      "electron/files.js",
+      "build/icon.png",
+      "package.json"
+    ],
+    "icon": "build/icon.png",
+    "win": {
+      "target": "dir",
+      "icon": "build/icon.png"
+    },
+    "electronLanguages": [
+      "en-US"
+    ]
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "electron": "^38.0.0",
+    "electron-builder": "26.18.0",
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.7"
+  },
+  "allowScripts": {
+    "electron@38.8.6": true,
+    "electron-winstaller@5.4.0": true
+  }
+}

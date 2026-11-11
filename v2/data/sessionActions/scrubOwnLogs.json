@@ -1,0 +1,10 @@
+{
+  "id": "scrubOwnLogs",
+  "kind": "ModifyLogs",
+  "label": "SCRUB OWN LOGS",
+  "tool": "LogModifier",
+  "reasons": {
+    "none": "none of the logs are yours",
+    "noTool": "no log modifier installed"
+  }
+}

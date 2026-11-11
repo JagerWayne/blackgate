@@ -1,0 +1,428 @@
+{
+  "schema": 6,
+  "software": [
+    {
+      "cpu": 1.399999976158142,
+      "desc": "Tries huge numbers of passwords every second until a locked service opens. Better versions open stronger locks, and booster cards in your machine make it faster.",
+      "kind": "PasswordCracker",
+      "name": "Password Breaker",
+      "price": 1500,
+      "prices": [
+        1500,
+        4000,
+        8500
+      ],
+      "short": "BREAKER",
+      "versions": [
+        "Basic",
+        "Advanced",
+        "Master"
+      ],
+      "tech": "password cracker",
+      "use": "A service is locked with a password."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Sits between a real user and the service and copies their logged-in session, so you walk in without the password or the code. The copy only lasts about 40 seconds.",
+      "kind": "SessionHijacker",
+      "name": "Two-Step Login Bypass",
+      "price": 3500,
+      "prices": [
+        3500,
+        7500
+      ],
+      "short": "2-STEP",
+      "versions": [
+        "Basic",
+        "Advanced"
+      ],
+      "tech": "session token hijacker",
+      "use": "A lock asks for a texted or app code, not just a password."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Clears the target's hiding-place relay machines, which slows the trace down and opens the relay services.",
+      "kind": "ProxyBypass",
+      "name": "Relay Cleaner",
+      "price": 1000,
+      "prices": [
+        1000,
+        2100,
+        4400,
+        9200,
+        19000
+      ],
+      "short": "RELAYS",
+      "versions": [
+        "Basic",
+        "Standard",
+        "Advanced",
+        "Expert",
+        "Master"
+      ],
+      "tech": "proxy bypass / pivot tunnel",
+      "use": "The target hides behind relay machines (PX above 0)."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Slips past the target's firewall, the wall that keeps outsiders out.",
+      "kind": "FirewallBypass",
+      "name": "Firewall Breaker",
+      "price": 1100,
+      "prices": [
+        1100,
+        2300,
+        4800,
+        10000,
+        21000
+      ],
+      "short": "FIREWALL",
+      "versions": [
+        "Basic",
+        "Standard",
+        "Advanced",
+        "Expert",
+        "Master"
+      ],
+      "tech": "firewall bypass",
+      "use": "The target shows a firewall rating (FW) above 0."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Blinds the target's security watcher, so the trace slows right down while you work.",
+      "kind": "MonitorBypass",
+      "name": "Alarm Silencer",
+      "price": 1200,
+      "prices": [
+        1200,
+        2500,
+        5200,
+        11000,
+        23000
+      ],
+      "short": "SILENCER",
+      "versions": [
+        "Basic",
+        "Standard",
+        "Advanced",
+        "Expert",
+        "Master"
+      ],
+      "tech": "EDR / monitor bypass",
+      "use": "The target has an intrusion monitor (MON above 0)."
+    },
+    {
+      "cpu": 1.5,
+      "desc": "Floods the target with traffic until its firewall and relays collapse at once. Fast, but very loud: the trace starts immediately and runs three times faster.",
+      "kind": "DdosCannon",
+      "name": "Overload Attack",
+      "price": 1800,
+      "prices": [
+        1800,
+        3600,
+        7000,
+        13000,
+        22000
+      ],
+      "short": "OVERLOAD",
+      "versions": [
+        "Basic",
+        "Standard",
+        "Advanced",
+        "Expert",
+        "Master"
+      ],
+      "tech": "DDoS cannon",
+      "use": "You are in a hurry and do not mind being noticed."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Listens in on the target's security team, so you are warned about a trace sooner.",
+      "kind": "TraceTracker",
+      "name": "Trace Alert",
+      "price": 1000,
+      "prices": [
+        1000,
+        2500,
+        4800,
+        8000
+      ],
+      "short": "ALERT",
+      "versions": [
+        "Basic",
+        "Standard",
+        "Advanced",
+        "Expert"
+      ],
+      "tech": "SOC trace interceptor",
+      "use": "You want more warning before a trace catches you."
+    },
+    {
+      "cpu": 0.800000011920929,
+      "desc": "Copies files from the target to your drive. How fast it goes depends on your internet speed.",
+      "kind": "FileCopier",
+      "name": "File Downloader",
+      "price": 650,
+      "short": "DOWNLOAD",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "exfiltrator",
+      "use": "A job asks you to steal a file."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Destroys files on the target for good.",
+      "kind": "FileDeleter",
+      "name": "File Shredder",
+      "price": 450,
+      "short": "SHRED",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "file shredder",
+      "use": "A job asks you to destroy a file."
+    },
+    {
+      "cpu": 1.399999976158142,
+      "desc": "Unscrambles protected files so they can be copied or handed in. Better versions open stronger scrambling.",
+      "kind": "Decrypter",
+      "name": "File Unlocker",
+      "price": 800,
+      "prices": [
+        800,
+        1500,
+        2700,
+        4800,
+        8500,
+        15000,
+        25000
+      ],
+      "short": "UNLOCK",
+      "versions": [
+        "Basic",
+        "Standard",
+        "Advanced",
+        "Expert",
+        "Elite",
+        "Master",
+        "Ultimate"
+      ],
+      "tech": "decryptor",
+      "use": "A file is scrambled (encrypted) and cannot be copied."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Rewrites only your own entries in the target's visit record, quietly.",
+      "kind": "LogModifier",
+      "name": "Quiet Log Cleaner",
+      "price": 550,
+      "short": "TIDY",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "log fabricator",
+      "use": "You want to remove your traces without raising an alarm."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Erases the target's logs, the record of who connected and what they did. Loud: the wipe itself can raise an alarm.",
+      "kind": "LogDeleter",
+      "name": "Log Wiper",
+      "price": 400,
+      "short": "WIPE",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "log wiper",
+      "use": "You want to erase the target's whole visit record."
+    },
+    {
+      "cpu": 1.399999976158142,
+      "desc": "Searches the open web and social media for a company's staff: emails, job titles, phone numbers and, with better versions, leaked passwords.",
+      "kind": "OsintSweep",
+      "name": "People Finder",
+      "price": 1300,
+      "short": "FINDER",
+      "versions": [
+        "Basic",
+        "Standard",
+        "Advanced",
+        "Expert"
+      ],
+      "tech": "OSINT crawler",
+      "use": "A job or a lock involves a person and you need their details."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Tries leaked passwords on someone's email account.",
+      "kind": "CredentialStuff",
+      "name": "Email Login Tester",
+      "price": 1800,
+      "short": "TESTER",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "credential stuffing",
+      "use": "You know a person's leaked password and want into their inbox."
+    },
+    {
+      "cpu": 0.6000000238418579,
+      "desc": "Records someone's voice on a call and copies it, to open locks that listen for a voice.",
+      "kind": "VoiceAnalyser",
+      "name": "Voice Copier",
+      "price": 4200,
+      "prices": [
+        4200
+      ],
+      "short": "VOICE",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "voice cloner",
+      "use": "A service is locked by voice."
+    },
+    {
+      "cpu": 0.8,
+      "desc": "Fakes caller ID and email senders: spoofed calls, phishing, spam and, with the advanced version, phone taps.",
+      "kind": "SpoofKit",
+      "name": "Fake Identity Kit",
+      "price": 2200,
+      "short": "FAKE ID",
+      "versions": [
+        "Basic",
+        "Advanced"
+      ],
+      "tech": "spoof kit",
+      "use": "You need to pretend to be someone on the phone or by email."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Maps a company's internal machines from a host inside it, so machines you could not see become reachable.",
+      "kind": "ZeroTrustMapper",
+      "name": "Network Mapper",
+      "price": 2500,
+      "prices": [
+        2500,
+        5500,
+        9000
+      ],
+      "short": "MAPPER",
+      "versions": [
+        "Basic",
+        "Advanced",
+        "Master"
+      ],
+      "tech": "zero-trust mapper",
+      "use": "You are inside a company and want to find its other machines."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Digs account keys out of a host and uses one to open a locked service without making noise.",
+      "kind": "IamProbe",
+      "name": "Key Finder",
+      "price": 3000,
+      "prices": [
+        3000,
+        6000,
+        10000
+      ],
+      "short": "KEYS",
+      "versions": [
+        "Basic",
+        "Advanced",
+        "Master"
+      ],
+      "tech": "IAM probe",
+      "use": "You are inside a host and want to open one lock quietly."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Forges a staff pass that carries your live session to another machine of the same company.",
+      "kind": "KerberosForger",
+      "name": "Staff Pass Forger",
+      "price": 4500,
+      "prices": [
+        4500,
+        8000,
+        12500
+      ],
+      "short": "PASS",
+      "versions": [
+        "Basic",
+        "Advanced",
+        "Master"
+      ],
+      "tech": "Kerberos forger",
+      "use": "You want to move to another machine of the same company."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Takes full administrator control of the host and opens every locked service it can. It always raises the alarm.",
+      "kind": "KernelPrivesc",
+      "name": "Admin Takeover",
+      "price": 5000,
+      "prices": [
+        5000,
+        9000,
+        14000
+      ],
+      "short": "TAKEOVER",
+      "versions": [
+        "Basic",
+        "Advanced",
+        "Master"
+      ],
+      "tech": "kernel privilege escalation",
+      "use": "You want every lock on a host open at once."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Shows the target's whole set of defences in the link panel: firewall, monitor, relays and services.",
+      "kind": "AttackSurfaceHud",
+      "name": "Target Overview",
+      "price": 5000,
+      "prices": [
+        5000
+      ],
+      "short": "OVERVIEW",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "attack surface HUD",
+      "use": "You want to see a target's defences at a glance."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Draws the path your connection takes, machine by machine, down to the target.",
+      "kind": "HopVisualizer",
+      "name": "Route Viewer",
+      "price": 3500,
+      "prices": [
+        3500
+      ],
+      "short": "ROUTE",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "hop visualizer",
+      "use": "You want to see which machines your link passes through."
+    },
+    {
+      "cpu": 1.2,
+      "desc": "Opens a map of the company's machines you know of, how they connect and where the way in is.",
+      "kind": "CloudGraphHud",
+      "name": "Company Map",
+      "price": 6000,
+      "prices": [
+        6000
+      ],
+      "short": "MAP",
+      "versions": [
+        "Standard"
+      ],
+      "tech": "cloud graph",
+      "use": "You want to see how a company's machines connect."
+    }
+  ]
+}
