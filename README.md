@@ -596,7 +596,7 @@ npm install
    version is unchanged. On the release page the files are assets named by their hash.
 5. `electron/launcher.nsi` is compiled with NSIS into `dist/Blackgate_Installer.exe`, which carries only
    `electron/launcher.ps1`, the updater.
-6. `npm run release` uploads `Blackgate_Installer.exe`, `latest.json` and the new files with the GitHub CLI
+6. `npm run release` uploads `Blackgate_Installer.exe` and `latest.json` to the release `v<version>`, and the new app files to a separate pre-release `app-files` (so the version's release page shows only two files), with the GitHub CLI
    (`gh`, logged in). A new version makes a new release; running it again at the same version replaces
    that release's files, which ships a new build to every launcher.
 

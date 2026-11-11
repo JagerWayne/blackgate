@@ -22,6 +22,8 @@ const launcher = path.join(dist, 'Blackgate_Installer.exe');
 const icon = path.join(dist, '.icon-ico', 'icon.ico');
 const walk = (dir, base = '') => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name), `${base}${e.name}/`) : [`${base}${e.name}`]));
 const sha = (f) => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+// the app's files are assets of this one release, so the release page of each version shows only the installer and latest.json
+const FILES_TAG = 'app-files';
 const run = (cmd) => execSync(cmd, { cwd: root, stdio: 'inherit' });
 
 async function main() {
@@ -57,9 +59,9 @@ async function main() {
     if (p === 'BLACKGATE.exe' && prevExe) return prevExe;
     const full = path.join(src, p);
     const h = sha(full);
-    return { p, h, s: fs.statSync(full).size, t: known.get(h) ?? tag };
+    return { p, h, s: fs.statSync(full).size, t: known.get(h) ?? FILES_TAG };
   });
-  const fresh = files.filter((f) => f.t === tag);
+  const fresh = files.filter((f) => !known.has(f.h));
 
   fs.writeFileSync(latest, JSON.stringify({ version, build, electron, files }, null, 2));
 
@@ -78,7 +80,13 @@ async function main() {
     fs.copyFileSync(path.join(src, f.p), path.join(blobs, h));
     return path.join(blobs, h);
   });
-  const toSend = [launcher, ...blobFiles, latest];
+  const toSend = [launcher, latest];
+  const has = (t) => { try { execFileSync('gh', ['release', 'view', t], { stdio: 'ignore' }); return true; } catch { return false; } };
+  if (!has(FILES_TAG)) {
+    execFileSync('gh', ['release', 'create', FILES_TAG, '--prerelease', '--title', 'App files (used by the installer)', '--notes',
+      'The files of the game, named by SHA-256. Blackgate_Installer.exe downloads the ones that changed; there is nothing to download here by hand.'], { stdio: 'inherit' });
+  }
+  if (blobFiles.length) execFileSync('gh', ['release', 'upload', FILES_TAG, ...blobFiles, '--clobber'], { stdio: 'inherit' });
   let exists = true;
   try {
     execFileSync('gh', ['release', 'view', tag], { stdio: 'ignore' });
