@@ -34,13 +34,20 @@ export function mountLogin(state) {
     st().sel = st().slots.length ? 1 : 0;
   };
 
-  function render() {
+  /// The line under the handle box and whether it warns: what starting with the typed handle would do.
+  function handleHint() {
     const l = st();
     const name = l.handle.trim() || 'OPERATOR';
     const same = l.slots.find((s) => safeName(s.handle) === safeName(name));
     const full = profilesFull(l.slots, l.handle);
     const line = same ? `replaces the saved run of ${same.handle}`
       : full ? `${maxProfiles()} profiles in use // delete one first` : `profile ${l.slots.length + 1} of ${maxProfiles()} // a new world of ${population().toLocaleString('en-US')} people`;
+    return { line, warn: !!(same || full) };
+  }
+
+  function render() {
+    const l = st();
+    const { line, warn } = handleHint();
     const dm = dailyMod(dailySeed());
     const slots = l.slots.slice(0, maxProfiles()).map((s, i) => {
       const on = l.sel === i + 1;
@@ -60,13 +67,13 @@ export function mountLogin(state) {
             <input data-keep="login-handle" data-field="handle" value="${esc(l.handle)}" maxlength="16" placeholder="type a handle" class="min-w-0 flex-1 rounded border border-white/60 bg-white px-2 py-1 text-sm text-black outline-none" />
             <button data-act="daily" class="rounded border border-white/70 px-2 py-1 text-xs ${l.daily ? 'bg-[#2f7a2f]' : 'bg-[#2a55c0]'}">Daily: ${l.daily ? 'ON' : 'OFF'}</button>
             <button data-act="go" class="rounded bg-[#2f7a2f] px-4 py-1 text-xs font-bold hover:brightness-125">START &rarr;</button></div>
-            <div class="mt-1 text-[11px] ${same || full ? 'text-[#ff9a86]' : 'text-[#d6e4ff]'}">${esc(l.daily ? `daily world // ${dm.label}: ${dm.text}` : line)}</div>` : '')}
+            <div data-hint class="mt-1 text-[11px] ${warn ? 'text-[#ff9a86]' : 'text-[#d6e4ff]'}">${esc(l.daily ? `daily world // ${dm.label}: ${dm.text}` : line)}</div>` : '')}
           ${l.notice ? `<p class="pt-3 text-center text-xs text-[#ffe9a8]">${esc(l.notice)}</p>` : ''}
         </div></div>
       <div class="flex h-16 shrink-0 items-center justify-end border-t-2 border-[#f8b048] bg-[#00309c] px-6"><button data-act="off" class="rounded border border-white/70 bg-[#2a55c0] px-4 py-1.5 text-xs font-bold text-white hover:brightness-125">Turn off</button></div></div>`;
   }
 
-  const refresh = autoRender(el, () => JSON.stringify([st().handle, st().sel, st().slots, st().confirmDelete, st().daily, st().notice]), render);
+  const refresh = autoRender(el, () => JSON.stringify([st().sel, st().slots, st().confirmDelete, st().daily, st().notice]), render);
 
   function go() {
     const l = st();
@@ -112,7 +119,17 @@ export function mountLogin(state) {
     }
     refresh();
   });
-  el.addEventListener('input', (e) => { if (e.target.dataset.field === 'handle') { st().handle = e.target.value; refresh(); } });
+  // typing only touches the hint under the box: a full redraw on every key made the screen flash
+  el.addEventListener('input', (e) => {
+    if (e.target.dataset.field !== 'handle') return;
+    st().handle = e.target.value;
+    const hint = el.querySelector('[data-hint]');
+    if (!hint || st().daily) return;
+    const { line, warn } = handleHint();
+    hint.textContent = line;
+    hint.classList.toggle('text-[#ff9a86]', warn);
+    hint.classList.toggle('text-[#d6e4ff]', !warn);
+  });
   el.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.dataset.field === 'handle') go(); });
 
   // the ending: told over the desk, with the two ways on
