@@ -983,5 +983,7 @@
   "apps.operator.notify_heat": "Heat alerts: perimeter sensors and raids",
   "header.cr": "Cr",
   "header.rt": "Rt",
-  "header.brand_tip": "Opens the Debug menu."
+  "header.brand_tip": "Opens the Debug menu.",
+  "windows.bring_to_front": "Bring to Front",
+  "windows.end_task": "End Task"
 }

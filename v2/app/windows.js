@@ -1,6 +1,8 @@
 import { WINDOWS, ordered } from '../game/state/windows.js';
 import { bus } from './bridge.js';
 import { iconUrl } from './icons.js';
+import { showMenu } from './ui.js';
+import { t as tl } from '../game/data/language.js';
 
 // The game's window manager (state.windows) is the single source of truth. The DOM never decides
 // anything: a click emits bus 'window' {key, action}, main.js applies it to the manager, and
@@ -64,6 +66,11 @@ function build(key, n) {
   task.innerHTML = `<img src="${iconUrl(key)}" alt="" class="h-4 w-4 shrink-0" draggable="false" /><span class="truncate"></span>`;
   task.lastElementChild.textContent = def.title;
   task.onclick = () => emit(key, focused === key ? 'min' : 'open');
+  // right click: bring the window forward (restoring it if minimised) or close it
+  task.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showMenu([{ id: 'open', text: tl('windows.bring_to_front') }, { id: 'close', text: tl('windows.end_task') }], e.clientX, e.clientY, (act) => emit(key, act));
+  });
   $('tasks').append(task);
   task.scrollIntoView({ inline: 'nearest', block: 'nearest' });
 
