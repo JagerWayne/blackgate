@@ -21,7 +21,7 @@ There is no linter. Releasing: raise `version` in `package.json` **and** `VERSIO
 
 ## Layout
 
-- `v2/app/` the DOM shell: `main.js` (the loop and `state.mode`: boot/login/setup/play/off), windows, header, login, screens (boot/setup/off), spotlight (tutorial), keys, tooltips, fx (sound and effects), `apps/` one file per window.
+- `v2/app/` the DOM shell: `main.js` (the loop and `state.mode`: boot/login/setup/play/off), windows, header (the tray in the taskbar: credits, rating, heat, speed, pause, jobs, clock; and the BL@CKG@TE name that opens Debug), login, screens (boot/setup/off), spotlight (tutorial), keys, tooltips, fx (sound and effects), `apps/` one file per window.
 - `v2/game/` the rules and world (`core`, `data`, `state`, `systems`): fixed-step tick, seeded RNG, content loading, world generation, saves. Never import `app/` or `pages/` from here.
 - `v2/pages/` canvas-era page and window builders the DOM still reads (Internet XPlorer pages build controls, each custom block carrying a `dom` descriptor that `app/apps/dsn*.js` draws). This is debt to port away.
 - `v2/data/` the JSON content and the images (see each `images/*/WHAT-TO-PUT-HERE.txt`); a missing image shows a grey rectangle. `game/data/contentLoad.js` reads the JSON relative to the page. Portraits are whatever is in `images/people/male` and `/female`: `vite.config.mjs` lists the folders itself, there is no index file.
@@ -41,4 +41,3 @@ There is no linter. Releasing: raise `version` in `package.json` **and** `VERSIO
 - Saves are versioned (`SAVE_VERSION` in `game/state/save.js`); old saves must load into a world matching a new world of the same seed.
 - The main game numbers (profiles, companies, people, relays, starting cash, route, job, notepad, tab and bank limits) live in `v2/data/mainsettings.json`, read through `game/data/settings.js` (accessors such as `maxProfiles()`; a missing or out-of-range value falls back to the built-in default). Four profiles by default. World numbers only affect new worlds.
 - Tests render windows onto `v2/tests/stubCanvas.mjs`, a recording fake 2D context (every glyph 7 px wide). Use `stubCtx()` for new UI tests of `pages/` code. The DOM apps themselves have no tests yet.
-- The `vite.config.mjs` header-height pairing: the wallpaper layer starts at `3.5rem` in `app/style.css`, which must match `h-14` on the header in `index.html`.

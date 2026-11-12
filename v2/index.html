@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="./app/style.css" />
 </head>
 <body class="h-full overflow-hidden font-mono text-ink text-sm select-none">
-  <!-- z-20: the status bar along the top -->
-  <header id="header" class="pointer-events-auto absolute inset-x-0 top-0 z-20 flex h-14 items-center gap-6 border-b border-accent/30 bg-gradient-to-b from-panel2/95 to-panel/90 px-2 shadow-lg shadow-accent/10 backdrop-blur-md"></header>
-
   <!-- z-10: the desktop, between the status bar and the taskbar. It ignores the mouse; icons and windows opt in. -->
-  <div id="desktop" class="pointer-events-none absolute inset-x-0 bottom-10 top-14 z-10 overflow-hidden p-4">
+  <div id="desktop" class="pointer-events-none absolute inset-x-0 bottom-10 top-0 z-10 overflow-hidden p-4">
     <div id="icons" class="relative flex h-full flex-col flex-wrap content-start gap-3"></div>
     <div id="windows" class="absolute inset-0"></div>
   </div>
+
+  <!-- the name, top right of the desk (z-[1]: under the desktop layer, which lets clicks through); it opens the Debug menu -->
+  <button id="brand" data-id="hdr.cheat" class="fixed right-8 top-6 z-[1] block text-right"><b class="block">BL@CKG@TE</b><span class="block"></span></button>
 
   <nav id="startmenu" hidden class="fixed bottom-10 left-0 z-40 w-64 overflow-hidden rounded-tr-lg border border-b-0 border-accent/30 bg-[#1a2133]/85 text-ink shadow-2xl shadow-accent/20 backdrop-blur-md">
     <div class="bg-[#202a42] px-3 py-2 text-xs font-bold tracking-widest text-white">BLACKGATE</div>
@@ -27,8 +27,8 @@
 
   <footer id="taskbar" class="pointer-events-auto fixed bottom-0 z-30 flex h-10 w-full items-center gap-1 border-t border-accent/30 bg-gradient-to-b from-[#232c42]/90 to-[#141a29]/95 text-white backdrop-blur-md">
     <button id="start" class="shine relative ml-0 h-8 w-[104px] overflow-hidden shrink-0 rounded-r-full border border-emerald-300/30 bg-gradient-to-b from-[#2f7a2f] to-[#1e551e] text-[11px] font-bold tracking-widest shadow-md shadow-emerald-500/30 transition-all duration-200 ease-out hover:brightness-125 active:scale-95 aria-expanded:brightness-75">Start</button>
-    <div id="tasks" class="ml-1 flex min-w-0 flex-1 gap-1"></div>
-    <span id="clock" class="flex h-full w-40 shrink-0 items-center justify-end bg-[#1a2133] pr-8 text-[11px]"></span>
+    <div id="tasks" class="ml-1 flex min-w-0 flex-1 gap-1 overflow-x-auto overflow-y-hidden"></div>
+    <div id="tray" class="flex h-full shrink-0 items-center gap-3 bg-[#1a2133] px-3 text-[11px]"></div>
   </footer>
 
   <!-- the welcome screen and the ending cover the desk; main.js shows whichever the game's mode asks for -->

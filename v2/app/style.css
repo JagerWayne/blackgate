@@ -19,8 +19,7 @@
   --font-mono: "Cascadia Mono", "Consolas", monospace;
 }
 
-/* The wallpaper fills everything below the header; the header is a solid window of its own (h-14 in index.html),
-   so the picture never shows behind it. The faint grid the canvas desktop draws goes over it (#desktop::before). */
+/* The wallpaper fills the whole screen above the taskbar. The faint grid the canvas desktop draws goes over it (#desktop::before). */
 body {
   background: #050810;
 }
@@ -28,7 +27,7 @@ body {
 body::before {
   content: '';
   position: fixed;
-  inset: 3.5rem 0 0 0;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
   background:
@@ -38,19 +37,11 @@ body::before {
     radial-gradient(48rem 30rem at 8% 100%, rgb(127 212 193 / 0.16), transparent 60%),
     linear-gradient(160deg, #060a16 0%, #0a1430 55%, #050810 100%);
 }
-/* the name, top right of the desktop */
-body::after {
-  content: 'BL@CKG@TE';
-  position: fixed;
-  top: 4.4rem;
-  right: 2rem;
-  z-index: 0;
-  pointer-events: none;
-  font: 700 3.6rem/1 var(--font-mono);
-  letter-spacing: 0.12em;
-  color: #cfe6ff;
-  text-shadow: 0 0 12px rgb(76 157 240 / 0.9), 0 0 36px rgb(76 157 240 / 0.55);
-}
+/* the name, top right of the desktop: a button that opens the Debug menu */
+#brand { cursor: pointer; color: #cfe6ff; }
+#brand b { font: 700 3.6rem/1 var(--font-mono); letter-spacing: 0.12em; text-shadow: 0 0 12px rgb(76 157 240 / 0.9), 0 0 36px rgb(76 157 240 / 0.55); animation: glow 5s ease-in-out infinite; }
+#brand span { margin-top: 0.4rem; font: 600 0.8rem/1 var(--font-mono); letter-spacing: 0.5em; margin-right: -0.5em; color: #9fc4ee; }
+#brand:hover b { color: #fff; }
 #desktop::before {
   content: '';
   position: absolute;
@@ -67,7 +58,6 @@ body::after {
 @keyframes drift { to { background-position: 0 0, 420px 320px, 0 0, 0 0, 0 0; } }
 .win-in { animation: win-in 180ms ease-out; }
 .toast-in { animation: toast-in 320ms cubic-bezier(0.2, 0.9, 0.3, 1); }
-body::after { animation: glow 5s ease-in-out infinite; }
 body::before { animation: drift 90s linear infinite; }
 #toasts > div { box-shadow: 0 0 18px -4px currentColor; }
 
@@ -127,4 +117,7 @@ input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgb(76 157 240
 
 /* the desktop is hidden until a run is on (main.js sets data-play), so the welcome screen never shows it behind */
 html { background: #05080c; }
-body:not([data-play]) :is(#header, #desktop, #taskbar, #startmenu) { visibility: hidden; }
+body:not([data-play]) :is(#brand, #desktop, #taskbar, #startmenu) { visibility: hidden; }
+
+/* the taskbar's task list scrolls sideways when it is full */
+#tasks { scrollbar-width: thin; scrollbar-color: #38466a transparent; }

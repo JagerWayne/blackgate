@@ -18,6 +18,9 @@ const $ = (id) => document.getElementById(id);
 const btn = 'grid h-5 w-5 place-items-center rounded text-xs hover:bg-white/10';
 const emit = (key, action) => bus.emit('window', { key, action });
 
+// the task row scrolls sideways; the mouse wheel does it too
+$('tasks').addEventListener('wheel', (e) => { e.currentTarget.scrollLeft += e.deltaY + e.deltaX; e.preventDefault(); }, { passive: false });
+
 /// How much of a dragged window must stay on the desk.
 const MARGIN = 10;
 
@@ -27,7 +30,7 @@ function drag(el, handle) {
     const dx = e.clientX - el.offsetLeft, dy = e.clientY - el.offsetTop;
     handle.setPointerCapture(e.pointerId);
     // a window can leave the desk on any side, but MARGIN px of it stay in view so its title bar can be grabbed again;
-    // the top stops at the header (the title bar must never slide under it)
+    // the top stops at the desk's edge (the title bar must never leave the screen)
     const move = (m) => {
       const desk = el.parentElement;
       el.style.left = `${Math.min(Math.max(m.clientX - dx, MARGIN - el.offsetWidth), desk.clientWidth - MARGIN)}px`;
@@ -57,10 +60,12 @@ function build(key, n) {
   $('windows').append(el);
 
   const task = document.createElement('button');
-  task.className = 'h-7 w-44 max-w-44 truncate rounded border border-line bg-[#232c42] px-3 text-left text-[10px] text-white transition-all duration-200 ease-out hover:border-accent/60 hover:bg-panel2 active:scale-95';
-  task.textContent = def.title;
+  task.className = 'flex h-7 w-44 max-w-44 shrink-0 items-center gap-2 truncate rounded border border-line bg-[#232c42] px-3 text-left text-[10px] text-white transition-all duration-200 ease-out hover:border-accent/60 hover:bg-panel2 active:scale-95';
+  task.innerHTML = `<img src="${iconUrl(key)}" alt="" class="h-4 w-4 shrink-0" draggable="false" /><span class="truncate"></span>`;
+  task.lastElementChild.textContent = def.title;
   task.onclick = () => emit(key, focused === key ? 'min' : 'open');
   $('tasks').append(task);
+  task.scrollIntoView({ inline: 'nearest', block: 'nearest' });
 
   el.addEventListener('pointerdown', () => focused !== key && emit(key, 'open'), true);
   drag(el, el.firstElementChild);

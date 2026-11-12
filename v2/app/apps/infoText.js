@@ -76,7 +76,7 @@ export const TOPICS = [
   [tl('apps.infoText.start_here'), 'desk', tl('apps.infoText.the_desktop_and_the'), [
     h(tl('apps.infoText.the_screen')),
     ul(
-      tl('apps.infoText.your_handle_and_rank', b('Header (top)')),
+      tl('apps.infoText.your_handle_and_rank', b('BL@CKG@TE (top right)')),
       tl('apps.infoText.one_icon_per_application', b('Desktop')),
       tl('apps.infoText.the_start_button_and', b('Taskbar (bottom)')),
     ),
@@ -93,7 +93,6 @@ export const TOPICS = [
       ['1x / 2x / 4x / 8x / 16x', tl('apps.infoText.cycles_the_world_clock')],
       ['pause', tl('apps.infoText.stops_or_restarts_the')],
       ['ACTIVE n', tl('apps.infoText.opens_my_jobs_the')],
-      ['logo', tl('apps.infoText.opens_the_debug_menu')],
     ]),
   ]],
 

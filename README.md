@@ -154,7 +154,7 @@ back), resized from their edges and minimised, maximised or closed.
 | **Calculator** | A pocket calculator; `calc eval 12*(3+4)` works a sum out in the Command Prompt. |
 | **Info** | The in-game manual: how to play and what every window does, with a search box. |
 
-Two more windows are not on the desktop: **Debug** (click the BLACKGATE logo in the header: the PLAYER, WORLD and SWITCHES cheats, and a SETTINGS editor for `mainsettings.json`) and
+Two more windows are not on the desktop: **Debug** (click the BL@CKG@TE name at the top right of the desktop: the PLAYER, WORLD and SWITCHES cheats, and a SETTINGS editor for `mainsettings.json`) and
 **Mission Builder** (opened from the Debug menu), which builds a job to order.
 
 ---

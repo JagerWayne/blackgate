@@ -11,7 +11,6 @@ import { reconcile, mounts } from './windows.js';
 import { spotlight } from './spotlight.js';
 import { iconUrl } from './icons.js';
 import { mountHeader } from './header.js';
-import { hhmm } from '../game/core/clock.js';
 import { saveOnLeave, saveRun } from '../game/state/save.js';
 import { toast, toastShown } from '../game/state/gameHelpers.js';
 import { mountLogin, makeLoginState } from './login.js';
@@ -147,7 +146,6 @@ const showToasts = (all) => {
   toasts.replaceChildren(...list.map((t) => Object.assign(document.createElement('div'), { textContent: t.text, className: `toast-in rounded-lg border bg-panel/85 px-3 py-2 text-xs shadow-lg backdrop-blur-md ${TOAST[t.kind] ?? 'border-accent text-ink'}` })));
 };
 
-const clock = document.getElementById('clock');
 const updateHeader = mountHeader(state);
 const updateFx = mountFx(state);
 const screens = mountScreens(state);
@@ -191,7 +189,6 @@ setInterval(() => {
     for (const w of state.windows.list) if (w.sub) { (state.win[w.key] ??= {}).suite = w.sub; w.sub = null; }
     reconcile(state.windows);
     showStep(state.game.gameOver ? null : tickTutorial(state.game, state));
-    clock.textContent = hhmm(state.game.clock);
     updateHeader();
     showToasts(state.game.toasts);
   } catch (err) {
