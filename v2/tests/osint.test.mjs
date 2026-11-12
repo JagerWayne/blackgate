@@ -426,3 +426,14 @@ test('every tl("key") in the code is in en.json, every key is used, and t() fill
   assert.equal(t('header.breach', 12), 'BREACH // 12s');
   assert.ok(languageCode() in languages());
 });
+
+test('notifications: every kind is shown until the Control Panel switches it off; heat alerts have their own switch', async () => {
+  const { toastShown, NOTIFY } = await import('../game/state/gameHelpers.js');
+  const g = { settings: {} };
+  for (const kind of ['money', 'good', 'info', 'bad']) assert.equal(toastShown(g, { kind }), true, `${kind} is on by default`);
+  g.settings.notify = { info: false, heat: false };
+  assert.equal(toastShown(g, { kind: 'info' }), false);
+  assert.equal(toastShown(g, { kind: 'bad' }), true, 'the other kinds are untouched');
+  assert.equal(toastShown(g, { kind: 'bad', topic: 'heat' }), false, 'a heat alert follows its topic, not its kind');
+  assert.deepEqual(NOTIFY, ['money', 'good', 'info', 'bad', 'heat']);
+});

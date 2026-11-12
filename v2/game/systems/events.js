@@ -31,6 +31,7 @@ import * as cheat from '../state/cheats.js';
 import { bankOf, deposit, withdraw, borrow, repay, loanLimit } from '../state/finance.js';
 import { buyCoin, sellCoin } from '../state/crypto.js';
 import { t as tl } from '../data/language.js';
+import { NOTIFY } from '../state/gameHelpers.js';
 
 /// Applies the events from one frame. A run that ended in this frame takes
 /// no more events.
@@ -265,6 +266,7 @@ function handleToggle(state, e) {
   else if (e.id === 'set.fx') g.settings.effects = e.value;
   else if (e.id === 'set.sound') g.settings.sound = e.value;
   else if (e.id === 'set.cli') g.settings.cliDefault = e.value;
+  else if (e.id.startsWith('set.notify.') && NOTIFY.includes(e.id.slice(11))) (g.settings.notify ??= {})[e.id.slice(11)] = e.value;
   else if (e.id === 'set.fast') cheat.setTimeScale(g, e.value ? 8 : 1);
   else if (e.id === 'mg.accept') (state.win.missions ??= {}).accept = e.value;
 }

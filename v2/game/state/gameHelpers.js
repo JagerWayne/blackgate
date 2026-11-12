@@ -24,6 +24,11 @@ export function note(game, text) {
 }
 
 /// Shows a toast.
+/// The notification kinds the Control Panel can switch off: a toast's `topic` (heat alerts) or else its `kind`.
+export const NOTIFY = ['money', 'good', 'info', 'bad', 'heat'];
+/// Whether a toast is shown: every kind is on unless the player turned it off (game.settings.notify).
+export const toastShown = (game, t) => game.settings?.notify?.[t.topic ?? t.kind] !== false;
+
 export function toast(game, text, kind = 'info') {
   game.toasts.push({ text, kind, born: game.uiTime });
 }

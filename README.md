@@ -148,7 +148,7 @@ back), resized from their edges and minimised, maximised or closed.
 | **Outlook** | Inbox (job offers, replies) and News. |
 | **Device Manager** | Your machine: case, motherboard, processors, drives, internet and security, with SLOT, STOCK and BUILD tabs. |
 | **App Store** | The tools you hack with, with upgrade tracks. |
-| **Control Panel** | Profile (rating, rank, record, rivals) and Settings (effects, sound, autosave, CLI links, 8x fast-forward, save and quit). |
+| **Control Panel** | Profile (rating, rank, record, rivals) and Settings (effects, sound, autosave, CLI links, 8x fast-forward, switches for each kind of notification, save and quit). |
 | **Notepad** | Up to 12 notepads with line numbers and word wrap. |
 | **Command Prompt** | Drives every other app by typing commands (`mail read new`, `ct accept 12`, `bg crack`...), plus shell commands: `ping`, `nmap`, `traceroute`, `ls` / `dir`, `cd`, `cat`, `ps`, `cls`. A host that answers `ping` appears on the map. Open it with the backtick key. |
 | **Calculator** | A pocket calculator; `calc eval 12*(3+4)` works a sum out in the Command Prompt. |

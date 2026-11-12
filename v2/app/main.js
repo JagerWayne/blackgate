@@ -13,7 +13,7 @@ import { iconUrl } from './icons.js';
 import { mountHeader } from './header.js';
 import { hhmm } from '../game/core/clock.js';
 import { saveOnLeave, saveRun } from '../game/state/save.js';
-import { toast } from '../game/state/gameHelpers.js';
+import { toast, toastShown } from '../game/state/gameHelpers.js';
 import { mountLogin, makeLoginState } from './login.js';
 import { click } from './ui.js';
 import { mountKeys } from './keys.js';
@@ -135,11 +135,12 @@ const showStep = (step) => {
   });
 };
 
-// Toasts: the game pushes {text, kind} onto game.toasts and drops each after 5 s; this just shows them.
+// Toasts: the game pushes {text, kind, topic?} onto game.toasts and drops each after 5 s; this just shows them.
 const toasts = document.getElementById('toasts');
 const TOAST = { bad: 'border-red-400 text-red-200', good: 'border-emerald-400 text-emerald-200' };
 let toastKey = '';
-const showToasts = (list) => {
+const showToasts = (all) => {
+  const list = all.filter((t) => toastShown(state.game, t)); // the Control Panel's Notifications switches
   const key = list.map((t) => t.text).join('\n');
   if (key === toastKey) return;
   toastKey = key;

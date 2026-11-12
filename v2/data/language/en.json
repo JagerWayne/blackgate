@@ -978,5 +978,11 @@
   "debug.tab_player": "PLAYER",
   "debug.tab_world": "WORLD",
   "debug.tab_switches": "SWITCHES",
-  "debug.tab_settings": "SETTINGS"
+  "debug.tab_settings": "SETTINGS",
+  "apps.operator.notifications": "NOTIFICATIONS",
+  "apps.operator.notify_money": "Money earned: contract rewards and payments",
+  "apps.operator.notify_good": "Good news: completed objectives, perks, successful actions",
+  "apps.operator.notify_info": "Information: tips, replies and progress notes",
+  "apps.operator.notify_bad": "Warnings and errors: refusals, failures, missing funds",
+  "apps.operator.notify_heat": "Heat alerts: perimeter sensors and raids"
 }

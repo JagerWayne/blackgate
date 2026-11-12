@@ -27,8 +27,8 @@ function announce(game) {
   const now = band(game);
   if (now === game.band) return;
   game.band = now;
-  if (now === 'yellow') game.toasts.push({ text: 'Perimeter sensors: unmarked vehicles near the hideout', kind: 'bad', born: game.uiTime });
-  if (now === 'red') game.toasts.push({ text: 'Perimeter sensors: BREACH IN PROGRESS', kind: 'bad', born: game.uiTime });
+  if (now === 'yellow') game.toasts.push({ text: 'Perimeter sensors: unmarked vehicles near the hideout', kind: 'bad', topic: 'heat', born: game.uiTime });
+  if (now === 'red') game.toasts.push({ text: 'Perimeter sensors: BREACH IN PROGRESS', kind: 'bad', topic: 'heat', born: game.uiTime });
 }
 
 /// A raid reached the machine.
@@ -42,7 +42,7 @@ export function raid(game) {
     game.toasts.push({
       text: `Raid // protection absorbed ${Math.round(shield * 100)}%`,
       kind: 'info',
-      born: game.uiTime,
+      topic: 'heat', born: game.uiTime,
     });
     if (game.player.heat < 100) return;
   }
@@ -53,14 +53,14 @@ export function raid(game) {
       const lost = game.player.storage.length;
       resetRig(game);
       note(game, 'raid // thermite fired // the rig is ash and the warrant is void');
-      game.toasts.push({ text: `Raid // rig destroyed, ${lost} staged files burned`, kind: 'bad', born: game.uiTime });
+      game.toasts.push({ text: `Raid // rig destroyed, ${lost} staged files burned`, kind: 'bad', topic: 'heat', born: game.uiTime });
       break;
     }
     // the decoy system answers the search team's questions
     case 'DECOY':
       game.player.heat = 0;
       note(game, 'raid // decoy system mounted // the search found nothing');
-      game.toasts.push({ text: 'Raid // decoy OS mounted', kind: 'good', born: game.uiTime });
+      game.toasts.push({ text: 'Raid // decoy OS mounted', kind: 'good', topic: 'heat', born: game.uiTime });
       break;
     // the emp cell takes the trace with it
     case 'EMP':
@@ -71,7 +71,7 @@ export function raid(game) {
         game.session.warned = false;
       }
       note(game, 'raid // local emp // every trace gone');
-      game.toasts.push({ text: 'Raid // emp cell fired', kind: 'good', born: game.uiTime });
+      game.toasts.push({ text: 'Raid // emp cell fired', kind: 'good', topic: 'heat', born: game.uiTime });
       break;
     default:
       game.gameOver = 'raided';

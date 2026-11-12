@@ -1,8 +1,11 @@
 import { rankName } from '../../game/core/theme.js';
 import { timeScale } from '../../game/state/cheats.js';
 import { esc, click, toggle, autoRender } from '../ui.js';
+import { t as tl } from '../../game/data/language.js';
 
 const TABS = [['stats', 'Profile'], ['settings', 'Settings']];
+// one switch per kind in NOTIFY (game/state/gameHelpers.js)
+const NOTE_LABELS = [['money', tl('apps.operator.notify_money')], ['good', tl('apps.operator.notify_good')], ['info', tl('apps.operator.notify_info')], ['bad', tl('apps.operator.notify_bad')], ['heat', tl('apps.operator.notify_heat')]];
 const num = (n) => n.toLocaleString('en-US');
 const head = (t) => `<h3 class="mb-2 mt-4 border-b border-line pb-1 text-[10px] tracking-widest text-dim">${t}</h3>`;
 const tiles = (items, cols) => `<div class="grid gap-3 ${cols}">${items.map(([k, v, tone]) => `<div class="rounded border border-line bg-panel2 p-3"><div class="text-[10px] tracking-widest text-dim">${k}</div><div class="mt-1 text-xl font-bold ${tone}">${v}</div></div>`).join('')}</div>`;
@@ -31,6 +34,7 @@ function settings(game) {
   const btn = (id, text, cls) => `<button data-id="${id}" class="rounded px-4 py-1.5 text-xs font-bold ${cls}">${text}</button>`;
   return `${head('APPEARANCE')}${check('set.fx', 'Screen effects: scanlines, trace pulse, glitch', s.effects !== false)}${check('set.sound', 'Sound', s.sound !== false)}
     ${head('BEHAVIOUR')}${check('set.auto', 'Autosave every 45 seconds', s.autosave)}${check('set.cli', 'Open every link on the CLI tab (for command-line players)', s.cliDefault === true)}${check('set.fast', 'Fast-forward world clock (8x)', timeScale(game) > 1)}
+    ${head(tl('apps.operator.notifications'))}${NOTE_LABELS.map(([k, text]) => check(`set.notify.${k}`, text, s.notify?.[k] !== false)).join('')}
     ${head('THE RUN')}<div class="flex gap-2">${btn('set.save', 'SAVE NOW', 'bg-accent text-white hover:brightness-125')}${btn('set.quit', 'SAVE + QUIT', 'border border-line hover:bg-white/10')}</div>`;
 }
 
