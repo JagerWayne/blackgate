@@ -10,7 +10,7 @@ const hot = 'shine relative overflow-hidden h-7 rounded border border-accent bg-
 const stat = (value, label, k = '') => `<div class="leading-tight"><b data-k="${k}" class="block text-sm text-white">${esc(value)}</b><span class="text-[11px] text-dim">${label}</span></div>`;
 
 /// The status bar across the top, as the canvas header: brand, operator and rank, credits, rating, heat,
-/// the world clock, and the speed, pause, ACTIVE and MAIL buttons. The logo opens the Debug menu.
+/// the world clock, and the speed, pause, and ACTIVE buttons. The logo opens the Debug menu.
 /// Returns update(), which main.js calls every tick; it redraws only when something shown has changed.
 export function mountHeader(state) {
   const el = document.getElementById('header');
@@ -20,13 +20,12 @@ export function mountHeader(state) {
   function update() {
     const g = state.game;
     const active = g.contracts.filter((c) => c.state === 'accepted' || c.state === 'ready').length;
-    const unread = g.mail.filter((m) => !m.read).length;
     const scale = timeScale(g);
     const heat = Math.min(Math.max(g.player.heat / 100, 0), 1);
     const b = band(g);
     const label = { green: tl('header.heat_clear'), yellow: tl('header.heat_recon'), red: tl('header.breach', Math.ceil(g.raid?.left ?? 0)) }[b] ?? tl('header.heat');
     const date = `${weekday(g.clock)} ${dateLine(g.clock)} // DAY ${day(g.clock) + 1}`;
-    const key = JSON.stringify([g.player.handle, g.player.rating, g.player.credits, Math.round(g.player.heat), b, label, hhmm(g.clock), date, scale, g.paused, active, unread]);
+    const key = JSON.stringify([g.player.handle, g.player.rating, g.player.credits, Math.round(g.player.heat), b, label, hhmm(g.clock), date, scale, g.paused, active]);
     if (key === last) return;
     last = key;
     const tone = b === 'red' ? 'text-danger' : b === 'yellow' ? 'text-warn' : 'text-dim';
@@ -46,7 +45,6 @@ export function mountHeader(state) {
         <button data-id="hdr.speed" class="${scale > 1 ? hot : btn}">${scale}x</button>
         <button data-id="hdr.pause" class="${btn}">${g.paused ? '&#9654;' : '&#10073;&#10073;'}</button>
         <button data-id="hdr.contracts" class="${btn} w-28">${tl('header.active', active)}</button>
-        <button data-id="hdr.mail" class="${unread ? hot : btn} w-28">${tl('header.mail', unread)}</button>
       </div>`;
     // value changes: the number pops and a +N/-N drifts up (CSS only; reads state, never writes it)
     for (const k of ['credits', 'rating']) {

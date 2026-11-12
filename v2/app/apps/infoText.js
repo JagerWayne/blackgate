@@ -93,7 +93,6 @@ export const TOPICS = [
       ['1x / 2x / 4x / 8x / 16x', tl('apps.infoText.cycles_the_world_clock')],
       ['pause', tl('apps.infoText.stops_or_restarts_the')],
       ['ACTIVE n', tl('apps.infoText.opens_my_jobs_the')],
-      ['MAIL n', tl('apps.infoText.opens_outlook_turns_bright')],
       ['logo', tl('apps.infoText.opens_the_debug_menu')],
     ]),
   ]],
@@ -425,7 +424,6 @@ export const TOPICS = [
       tl('apps.infoText.messages_from_the_broker', b('Inbox'), b('MARK ALL READ')),
       tl('apps.infoText.the_newswire_including_stories', b('News')),
     ),
-    p(tl('apps.infoText.the_header_s_mail')),
   ]],
 
   // ---------------------------------------------------------------- tools

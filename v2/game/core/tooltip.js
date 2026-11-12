@@ -48,7 +48,6 @@ const TIPS = {
   'hdr.speed': 'World clock speed. Click to step through the speeds.',
   'hdr.pause': 'Pause or resume the world clock (Space also does it).',
   'hdr.contracts': 'The jobs in hand: opens your list of jobs.',
-  'hdr.mail': 'Your mail. The number is how many messages you have not read.',
   'gw.': 'Change your machine: its parts, its case and the supply line.',
 };
 

@@ -366,7 +366,6 @@ function handleClick(state, e, desk) {
   else if (id.startsWith('win.min.')) minimizeWindow(state.windows, id.slice(8));
   else if (id.startsWith('win.max.')) toggleMax(state.windows, id.slice(8));
   else if (id === 'hdr.contracts') openPortal(state, desk, 'jobs');
-  else if (id === 'hdr.mail') openWindow(state.windows, 'mail', desk);
   else if (id.startsWith('mail.open.')) openPortal(state, desk, `job/${id.slice(10)}`);
   else if (id === 'mail.readAll') game.mail.forEach((m) => { m.read = true; });
   else if (id.startsWith('dsn.') || id.startsWith('sp.') || id.startsWith('ef.')) handleDsn(state, id, desk);
