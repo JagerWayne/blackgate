@@ -15,6 +15,7 @@ import { cr, pad, clock, Fail, fail, hostArg } from './commands/helpers.js';
 import { APPS } from './commands/apps.js';
 import { UNIX, promptOf, routeInfo } from './commands/unix.js';
 import { t as tl } from '../data/language.js';
+import { allowDebug } from '../data/settings.js';
 export { promptOf };
 
 const MAX_LINES = 500;
@@ -38,6 +39,7 @@ export function words(line) {
 function appOf(word) {
   const w = (word ?? '').toLowerCase();
   const key = Object.keys(APPS).find((k) => k === w || APPS[k].alias.includes(w));
+  if (key === 'cheat' && !allowDebug()) return null; // with allowDebug at 0 the cheat commands do not exist
   return key ? { key, ...APPS[key] } : null;
 }
 

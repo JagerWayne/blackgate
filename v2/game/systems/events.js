@@ -32,12 +32,14 @@ import { bankOf, deposit, withdraw, borrow, repay, loanLimit } from '../state/fi
 import { buyCoin, sellCoin } from '../state/crypto.js';
 import { t as tl } from '../data/language.js';
 import { NOTIFY } from '../state/gameHelpers.js';
+import { allowDebug } from '../data/settings.js';
 
 /// Applies the events from one frame. A run that ended in this frame takes
 /// no more events.
 export function handleEvents(state, events, desk) {
   for (const e of events) {
     if (!state.game) break;
+    if (!allowDebug() && /^(cheat|mg)[.]/.test(e.id ?? '')) continue; // the Debug window's buttons are dead with allowDebug at 0
     if (e.type === 'select') handleSelect(state, e);
     else if (e.type === 'toggle') handleToggle(state, e);
     else if (e.type === 'edit') handleEdit(state, e);

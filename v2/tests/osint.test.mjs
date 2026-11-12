@@ -370,7 +370,7 @@ test('mainsettings.json matches the built-in defaults, bad values fall back, and
   assert.equal(language, 'en');
   assert.deepEqual(Object.keys(flat).sort(), settingList().map((x) => x.path).sort());
   settingList().forEach(({ path, min, max }) => assert.ok(flat[path] >= min && flat[path] <= max, path));
-  assert.deepEqual(Object.keys(defaultSettings()).sort(), Object.keys(values).sort());
+  assert.deepEqual([...Object.keys(defaultSettings()), 'allowDebug'].sort(), Object.keys(values).sort());
   assert.equal(maxProfiles(), flat['profiles.max']);
   const keep = content().mainsettings;
   try {
@@ -456,5 +456,41 @@ test('the number of jobs that can be taken at once follows jobs.maxActive', asyn
     }
   } finally {
     applySettings(keep);
+  }
+});
+
+test('allowDebug at 0 switches the Debug window, its buttons and the cheat commands off; only the file switches it on', async () => {
+  const { content } = await import('../game/data/content.js');
+  const { allowDebug, applySettings, currentSettings, defaultSettings, flatSettings } = await import('../game/data/settings.js');
+  const { openWindow } = await import('../game/state/windows.js');
+  const { handleEvents } = await import('../game/systems/events.js');
+  const { makeWindows } = await import('../game/state/windows.js');
+  const was = content().mainsettings.allowDebug;
+  try {
+    content().mainsettings.allowDebug = 1;
+    assert.equal(allowDebug(), true);
+    const g = roomy(makeGame('DBG', 5));
+    const term = makeTerm();
+    const state = { game: g, windows: makeWindows(), win: {}, ui: {} };
+    const desk = { x: 0, y: 0, w: 1000, h: 700 };
+    const credits = g.player.credits;
+    run(state, term, 'cheat money 5000', desk);
+    assert.equal(g.player.credits, 5000, 'the cheat command works while the flag is 1');
+    g.player.credits = credits;
+    content().mainsettings.allowDebug = 0;
+    assert.equal(allowDebug(), false);
+    assert.equal(openWindow(state.windows, 'cheats', desk), null, 'no Debug window');
+    assert.equal(openWindow(state.windows, 'missions', desk), null, 'no Mission Builder');
+    run(state, term, 'cheat money 5000', desk);
+    assert.equal(g.player.credits, credits, 'the cheat command does nothing');
+    assert.ok(JSON.stringify(term.lines).toLowerCase().includes('unknown'), 'it is an unknown command');
+    handleEvents(state, [{ type: 'click', id: 'cheat.money.set' }], desk);
+    assert.equal(g.player.credits, credits, 'a Debug button does nothing');
+    // the settings editor keeps the flag as it is and cannot turn it on
+    assert.deepEqual(applySettings({ ...currentSettings(), ...flatSettings(defaultSettings()) }), []);
+    assert.equal(content().mainsettings.allowDebug, 0, 'saving the editor leaves the flag alone');
+    assert.equal(allowDebug(), false);
+  } finally {
+    if (was === undefined) delete content().mainsettings.allowDebug; else content().mainsettings.allowDebug = was;
   }
 });

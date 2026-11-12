@@ -76,8 +76,8 @@ export function applySettings(draft) {
     }
   });
   if (problems.length) return problems;
-  const note = content().mainsettings?._note;
-  content().mainsettings = note ? { _note: note, ...nested } : nested;
+  const { _note: note, allowDebug: flag } = content().mainsettings ?? {};
+  content().mainsettings = { ...(note ? { _note: note } : {}), ...(flag === undefined ? {} : { allowDebug: flag }), ...nested };
   return [];
 }
 
@@ -95,6 +95,13 @@ export function flatSettings(obj) {
   });
   return out;
 }
+
+/// Whether the Debug window, the Mission Builder and the `cheat` commands work: the `allowDebug` flag of mainsettings.json.
+/// Anything but 0 (or false) allows them. Only the file can switch it back on: the Debug editor never writes this key.
+export const allowDebug = () => {
+  const v = content()?.mainsettings?.allowDebug;
+  return !(v === 0 || v === false || v === '0');
+};
 
 export const maxProfiles = () => setting('profiles.max');
 export const companyCount = () => setting('world.companies');

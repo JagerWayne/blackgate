@@ -4,6 +4,7 @@ import { timeScale } from '../game/state/cheats.js';
 import { hhmm, weekday, dateLine, day } from '../game/core/clock.js';
 import { click, esc } from './ui.js';
 import { t as tl } from '../game/data/language.js';
+import { allowDebug } from '../game/data/settings.js';
 
 const btn = 'h-6 rounded border border-line px-2 text-[11px] tracking-wider transition-all duration-200 ease-out hover:border-accent/60 hover:bg-white/10 active:scale-95';
 const hot = 'shine relative overflow-hidden h-6 rounded border border-accent bg-accent px-2 text-[11px] font-bold tracking-wider text-white shadow-md shadow-accent/40 transition-all duration-200 ease-out hover:brightness-110 active:scale-95';
@@ -15,7 +16,8 @@ export function mountHeader(state) {
   const el = document.getElementById('tray');
   const brand = document.getElementById('brand');
   brand.lastElementChild.textContent = tl('header.nexus_operations');
-  brand.title = tl('header.brand_tip');
+  if (allowDebug()) brand.title = tl('header.brand_tip');
+  else brand.style.pointerEvents = 'none'; // no Debug menu to open
   let last = '';
   const prev = {};
 

@@ -1,6 +1,7 @@
 {
   "_note": "The main game settings. Changing a world number only affects NEW worlds; saved worlds keep what they were built with. A missing key, text or a number out of range falls back to the built-in value.",
   "language": "en",
+  "allowDebug": 1,
   "profiles": {
     "max": 8
   },

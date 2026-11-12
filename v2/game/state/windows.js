@@ -1,4 +1,5 @@
 import { t as tl } from '../data/language.js';
+import { allowDebug } from '../data/settings.js';
 // The windows the shell holds open: their boxes, their order and the drags
 // that move them.
 
@@ -50,6 +51,7 @@ export function findWindow(mgr, key) {
 export function openWindow(mgr, key, desktop) {
   const def = windowDef(key);
   if (!def) return null;
+  if ((key === 'cheats' || key === 'missions') && !allowDebug()) return null; // allowDebug is 0 in mainsettings.json
   // an app that is a tab opens its window on that tab
   const sub = MERGED[key]?.[1] ?? null;
   const existing = findWindow(mgr, key);

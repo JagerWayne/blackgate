@@ -530,7 +530,7 @@ The **Debug** window's SETTINGS tab edits `mainsettings.json` and picks the lang
 | `darknet.json` | DSNET: the brokers, categories, rumours and 404 pages. |
 | `files.json` | File names found on machines. |
 | `hardware.json` | Cases and parts: slots, tiers, figures and prices. |
-| `mainsettings.json` | The main game numbers: profiles, companies, people, relays, starting cash, route / job / notepad / tab limits, bank rates, and the `language`. A missing or out-of-range value falls back to the built-in one. World numbers only shape a new world. |
+| `mainsettings.json` | The main game numbers: profiles, companies, people, relays, starting cash, route / job / notepad / tab limits, bank rates, the `language`, and `allowDebug` (1 by default; at 0 the Debug window, the Mission Builder and the `cheat` commands are switched off, and only editing this file turns them back on). A missing or out-of-range value falls back to the built-in one. World numbers only shape a new world. |
 | `language/<code>.json` | Every fixed string of the interface (`en.json`); `index.json` lists the languages. To translate, copy `en.json`, translate the values, add the code to `index.json` and pick it in Debug. Text inside the larger HTML templates is not moved yet. |
 | `missions.json` | Story missions. |
 | `pastes.json` | The texts that PasteDump shows. |
