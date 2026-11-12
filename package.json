@@ -1,6 +1,6 @@
 {
   "name": "blackgate",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "BLACKGATE hacking sim",
   "main": "electron/main.js",
