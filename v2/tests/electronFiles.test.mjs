@@ -59,6 +59,18 @@ test('an update replaces a file the player never touched and keeps an edited one
   assert.ok(!('edited.json' in next.hashes), 'an edited file is not recorded as shipped');
 });
 
+test('a copy of an older schema is replaced, keeping the old one beside it', () => {
+  const src = fs.mkdtempSync(path.join(os.tmpdir(), 'bg-src-'));
+  const dst = fs.mkdtempSync(path.join(os.tmpdir(), 'bg-dst-'));
+  const shipped = '{"schema": 13}';
+  fs.writeFileSync(path.join(src, 'hardware.json'), shipped);
+  fs.writeFileSync(path.join(dst, 'hardware.json'), '{"chassis":[]}');
+  const out = seed(src, dst, {});
+  assert.equal(fs.readFileSync(path.join(dst, 'hardware.json'), 'utf8'), shipped, 'the game would ignore the old copy, so it is replaced');
+  assert.equal(fs.readFileSync(path.join(dst, 'hardware.json.old'), 'utf8'), '{"chassis":[]}', 'the old one is kept');
+  assert.deepEqual(out.stale, []);
+});
+
 test('a save name is a plain name, never a path', () => {
   const dir = path.join('C:', 'x');
   assert.equal(saveFile(dir, 'WAAA'), path.join(dir, 'saves', 'WAAA.json'));

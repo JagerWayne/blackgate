@@ -42,8 +42,12 @@ function seed(src, dst, known = {}, base = '') {
       const mine = fs.readFileSync(s);
       const theirs = fs.existsSync(d) ? fs.readFileSync(d) : null;
       if (theirs && sha(theirs) !== sha(mine) && known[rel] !== sha(theirs)) {
-        stale.push(rel);
-        continue;
+        if (userCopyOk(theirs.toString('utf8'), mine.toString('utf8'))) {
+          stale.push(rel);
+          continue;
+        }
+        // made for older code (a lower schema): the game ignores it, so it is replaced, with the old one kept beside it
+        fs.writeFileSync(`${d}.old`, theirs);
       }
       if (!theirs || sha(theirs) !== sha(mine)) fs.writeFileSync(d, mine);
       hashes[rel] = sha(mine);
