@@ -15,7 +15,7 @@ import { darknet } from '../../../game/data/content.js';
 import { buildPage, normalize, listings, myJobs, HOME, MY_JOBS, START } from './pages.js';
 import { haggleOf, broker } from '../../../game/state/haggle.js';
 import { NET, KIND_COLOR, UI_FONT, hexOf, softAccent, netPrimary } from './theme.js';
-import { maxTabs } from '../../../game/data/settings.js';
+import { maxTabs, maxJobs } from '../../../game/data/settings.js';
 import { t as tl } from '../../../game/data/language.js';
 
 const LOAD_SECONDS = 0.5;
@@ -381,7 +381,7 @@ function drawStatus(ctx, sk, r, game, view, now) {
   ctx.arc(r.x + 16, cy, 3.5, 0, Math.PI * 2);
   ctx.fill();
   const credits = `${game.player.credits.toLocaleString('en-US')} cr`;
-  const left = `circuit ok  //  ${listings(game).length} listings  //  ${myJobs(game).length} of 4 jobs yours  //  ${waiting} repl${waiting === 1 ? 'y' : 'ies'} waiting`;
+  const left = `circuit ok  //  ${listings(game).length} listings  //  ${myJobs(game).length} of ${maxJobs()} jobs yours  //  ${waiting} repl${waiting === 1 ? 'y' : 'ies'} waiting`;
   drawText(ctx, ellipsize(ctx, left, FONT.body, r.w - credits.length * 10 - 60), r.x + 28, cy, FONT.body, color(sk.dim), { baseline: 'middle' });
   drawText(ctx, credits, r.x + r.w - 14, cy, FONT.body, color(sk.warn), { align: 'right', baseline: 'middle' });
 }

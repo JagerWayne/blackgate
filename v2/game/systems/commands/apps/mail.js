@@ -1,5 +1,6 @@
 import { pad, clock, fail, press, mailbox, mailArg, simple } from '../helpers.js';
 import { t as tl } from '../../../data/language.js';
+import { maxJobs } from '../../../data/settings.js';
 
 /// The message a word picks, which must offer a job that is still on offer.
 function offeredBy(ctx, word) {
@@ -42,7 +43,7 @@ export const mailApp = {
     readall: { args: '', help: tl('systems.commands.apps.mail.mark_every_message_read'), run: (ctx) => press(ctx, 'mail.readAll', 'all mail marked read') },
     accept: simple('<#>', 'accept the job a message offers', (ctx, [w]) => {
       const m = offeredBy(ctx, w);
-      if (ctx.game.contracts.filter((x) => x.state === 'accepted' || x.state === 'ready').length >= 4) fail(tl('systems.commands.apps.mail.your_job_slots_are'));
+      if (ctx.game.contracts.filter((x) => x.state === 'accepted' || x.state === 'ready').length >= maxJobs()) fail(tl('systems.commands.apps.mail.your_job_slots_are'));
       return { id: `mail.accept.${m.contract}`, done: `contract ${m.contract} accepted` };
     }),
     decline: simple('<#>', 'turn down the job a message offers', (ctx, [w]) => {

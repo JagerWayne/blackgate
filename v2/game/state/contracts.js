@@ -4,12 +4,13 @@ import { MISSION_LABEL, RATING_MAX } from '../data/enums.js';
 import { note, pushMail, pay } from './gameHelpers.js';
 import { collectArrears } from './upkeep.js';
 import { perk, perkOffer } from './perks.js';
+import { maxJobs } from '../data/settings.js';
 
 /// Takes a job.
 export function acceptContract(game, id) {
   const c = game.contracts.find((x) => x.id === id);
   if (!c || c.state !== 'offered') return false;
-  if (game.contracts.filter((x) => x.state === 'accepted' || x.state === 'ready').length >= 4) return false;
+  if (game.contracts.filter((x) => x.state === 'accepted' || x.state === 'ready').length >= maxJobs()) return false;
   c.state = 'accepted';
   note(game, `contract ${id} accepted`);
   evaluateMissions(game); // the work may already be done

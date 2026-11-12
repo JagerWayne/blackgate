@@ -10,7 +10,7 @@ import { siteBlock } from './dsnSites.js';
 import { shopBlock } from './dsnShop.js';
 import { sleekBlock } from './dsnSleek.js';
 import { webBlock } from './dsnWeb.js';
-import { maxTabs } from '../../game/data/settings.js';
+import { maxTabs, maxJobs } from '../../game/data/settings.js';
 
 // Internet XPlorer in the DOM. The pages are still built by src/windows/dsn/* as lists of form controls;
 // this file draws those controls as HTML. A `custom` control carries a `dom` descriptor (see the Object.assign
@@ -155,7 +155,7 @@ export function mountDsn(body, state) {
         <button data-id="dsn.addr.go" class="${nbtn}" style="background:#183a4d;border-color:#62a8c4;color:#eef2f7">GO</button>
         <button data-id="dsn.circuit" title="Your route through three relays. Click for a new one." class="ml-1 hidden border border-[#1f2a3b] px-2 py-1.5 text-[11px] text-[#808ea4] hover:text-white @2xl:block">${v.circuit.map((i) => `<b class="text-cyan-300">${RELAYS[i]}</b>`).join('<i class="flow mx-1.5 inline-block h-px w-5 align-middle"></i>')}</button></div>
       <div class="flex min-h-0 flex-1">${hasRail ? `<nav data-scroll="dsn-rail" class="hidden w-52 shrink-0 overflow-y-auto border-r border-[#1f2a3b] bg-[#0b1019] py-2 @2xl:block">${rail(game, tab.url)}</nav>` : ''}<main class="min-w-0 flex-1" ${page.bg ? `style="background:${page.bg}"` : ''}>${main}</main></div>
-      <div class="flex shrink-0 justify-between border-t border-[#1f2a3b] bg-[#0b1019] px-3 py-1 text-[11px] text-[#808ea4]"><span><i class="animate-pulse text-[#62b58c] [text-shadow:0_0_8px_#62b58c]">&#9679;</i> circuit ok  //  ${listings(game).length} listings  //  ${myJobs(game).length} of 4 jobs yours  //  ${waiting} repl${waiting === 1 ? 'y' : 'ies'} waiting</span><b class="text-[#c9a45c]">${money(game.player.credits)}</b></div></div>`;
+      <div class="flex shrink-0 justify-between border-t border-[#1f2a3b] bg-[#0b1019] px-3 py-1 text-[11px] text-[#808ea4]"><span><i class="animate-pulse text-[#62b58c] [text-shadow:0_0_8px_#62b58c]">&#9679;</i> circuit ok  //  ${listings(game).length} listings  //  ${myJobs(game).length} of ${maxJobs()} jobs yours  //  ${waiting} repl${waiting === 1 ? 'y' : 'ies'} waiting</span><b class="text-[#c9a45c]">${money(game.player.credits)}</b></div></div>`;
   }
 
   const refresh = autoRender(body, () => {

@@ -437,3 +437,24 @@ test('notifications: every kind is shown until the Control Panel switches it off
   assert.equal(toastShown(g, { kind: 'bad', topic: 'heat' }), false, 'a heat alert follows its topic, not its kind');
   assert.deepEqual(NOTIFY, ['money', 'good', 'info', 'bad', 'heat']);
 });
+
+test('the number of jobs that can be taken at once follows jobs.maxActive', async () => {
+  const { applySettings, currentSettings, defaultSettings, flatSettings } = await import('../game/data/settings.js');
+  const { acceptContract } = await import('../game/state/contracts.js');
+  const keep = currentSettings();
+  const g = roomy(makeGame('JOBS', 3));
+  const open = () => g.contracts.filter((c) => c.state === 'accepted' || c.state === 'ready').length;
+  const take = () => { const c = g.contracts.find((x) => x.state === 'offered'); return c ? acceptContract(g, c.id) : null; };
+  try {
+    for (const limit of [2, 6]) {
+      assert.deepEqual(applySettings({ ...flatSettings(defaultSettings()), 'jobs.maxActive': limit }), []);
+      g.contracts.forEach((c) => { if (c.state !== 'offered') c.state = 'offered'; });
+      while (g.contracts.length < 8) g.contracts.push({ ...g.contracts[0], id: `x${g.contracts.length}`, state: 'offered' });
+      let guard = 0;
+      while (take() && guard++ < 20);
+      assert.equal(open(), limit, `taking jobs stops at the setting (${limit})`);
+    }
+  } finally {
+    applySettings(keep);
+  }
+});
