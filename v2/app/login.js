@@ -73,7 +73,8 @@ export function mountLogin(state) {
       <div class="flex h-16 shrink-0 items-center justify-end border-t-2 border-[#f8b048] bg-[#00309c] px-6"><button data-act="off" class="rounded border border-white/70 bg-[#2a55c0] px-4 py-1.5 text-xs font-bold text-white hover:brightness-125">Turn off</button></div></div>`;
   }
 
-  const refresh = autoRender(el, () => JSON.stringify([st().sel, st().slots, st().confirmDelete, st().daily, st().notice]), render);
+  const sig = () => JSON.stringify([st().sel, st().slots, st().confirmDelete, st().daily, st().notice]);
+  const refresh = autoRender(el, sig, render);
 
   function go() {
     const l = st();
@@ -102,6 +103,7 @@ export function mountLogin(state) {
     if (!b) return;
     const l = st();
     const act = b.dataset.act;
+    const before = sig();
     if (act === 'go') { go(); return; }
     if (act === 'off') { state.mode = 'off'; return; }
     if (act === 'daily') l.daily = !l.daily;
@@ -117,7 +119,8 @@ export function mountLogin(state) {
       l.sel = Number(b.dataset.sel);
       l.confirmDelete = false;
     }
-    refresh();
+    // refresh() always redraws: a click that changed nothing (into the handle box, on the tile already chosen) must not
+    if (sig() !== before) refresh();
   });
   // typing only touches the hint under the box: a full redraw on every key made the screen flash
   el.addEventListener('input', (e) => {

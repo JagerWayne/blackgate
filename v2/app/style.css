@@ -124,3 +124,7 @@ input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgb(76 157 240
 .sev::before { content: attr(data-tag) ' '; font-weight: 700; }
 .term-input { caret-color: var(--color-accent); caret-shape: block; }
 #desktop.aberrate { animation: aberrate 0.12s linear 2; filter: drop-shadow(2px 0 rgb(255 0 80 / 0.45)) drop-shadow(-2px 0 rgb(0 255 220 / 0.45)); }
+
+/* the desktop is hidden until a run is on (main.js sets data-play), so the welcome screen never shows it behind */
+html { background: #05080c; }
+body:not([data-play]) :is(#header, #desktop, #taskbar, #startmenu) { visibility: hidden; }

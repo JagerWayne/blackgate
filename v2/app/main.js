@@ -164,6 +164,8 @@ setInterval(() => {
   try {
     screens.sync(dt); // boot, setup and power off; it moves state.mode on, so it runs before the welcome screen syncs
     login.sync();
+    // the desktop chrome shows only in a run: never behind the boot, welcome, setup or power-off screens
+    document.body.toggleAttribute('data-play', state.mode === 'play');
     if (state.mode !== 'play' || !state.game) {
       // at the welcome screen: no game runs, and whatever was on the desk is cleared away
       showStep(null);
