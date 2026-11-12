@@ -2,6 +2,7 @@
 // build id, the file list) and the small launcher (dist/Blackgate_Installer.exe). No zip is made.
 //   node electron/release.js             build, then upload to GitHub release v<version>
 //   node electron/release.js --no-upload build only (npm run dist)
+//   node electron/release.js --fresh-exe upload the newly built BLACKGATE.exe (about 200 MB) instead of reusing the last one
 // Every file of the app is also a release asset named by its SHA-256, and latest.json lists them (path, hash, size, release tag),
 // so the launcher downloads only the files that changed. A file whose hash an earlier release already holds is not uploaded again.
 // When the release already exists its files are replaced, which ships a new
@@ -54,7 +55,8 @@ async function main() {
   // BLACKGATE.exe is rewritten on every build only to record the asar hash, and the asar integrity fuse is off, so while Electron
   // is the same version the installed exe keeps working and is not downloaded again (it is 200 MB)
   const electron = require(path.join(root, 'node_modules', 'electron', 'package.json')).version;
-  const prevExe = prev?.electron === electron ? prev.files?.find((f) => f.p === 'BLACKGATE.exe') : null;
+  // --fresh-exe ships the exe as built now (a new icon or Electron resource lives in it)
+  const prevExe = prev?.electron === electron && !process.argv.includes('--fresh-exe') ? prev.files?.find((f) => f.p === 'BLACKGATE.exe') : null;
   const files = walk(src).map((p) => {
     if (p === 'BLACKGATE.exe' && prevExe) return prevExe;
     const full = path.join(src, p);
